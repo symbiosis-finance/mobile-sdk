@@ -1,0 +1,27 @@
+include:
+  - 'https://gitlab.icerockdev.com/open-source/gitlab-ci-mobile/-/raw/master/.common.yml'
+  - 'https://gitlab.icerockdev.com/open-source/gitlab-ci-mobile/-/raw/master/.ios.yml'
+  - 'https://gitlab.icerockdev.com/open-source/gitlab-ci-mobile/-/raw/master/.android.yml'
+
+stages:
+  - check
+
+tests:
+  stage: check
+  script:
+    - cd ios-mvp-app-new
+    - gem update xcodeproj
+    - pod install
+    - cd ..
+    - ./gradlew build
+  artifacts:
+    when: always
+    reports:
+      junit: "**/test-results/**/TEST-*.xml"
+  only:
+    - merge_requests
+  tags:
+    - gradle
+    - android
+    - osx
+    - xcode

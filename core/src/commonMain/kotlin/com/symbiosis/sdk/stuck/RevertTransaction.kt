@@ -1,0 +1,13 @@
+package com.symbiosis.sdk.stuck
+
+import dev.icerock.moko.web3.TransactionHash
+import dev.icerock.moko.web3.entity.TransactionReceipt
+import dev.icerock.moko.web3.requests.waitForTransactionReceipt
+
+class RevertTransaction(
+    val request: StuckRequest,
+    val transactionHash: TransactionHash
+) {
+    suspend fun waitForCompletion(): TransactionReceipt =
+        request.targetClient.waitForTransactionReceipt(transactionHash)
+}

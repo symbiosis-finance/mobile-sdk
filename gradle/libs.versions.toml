@@ -1,0 +1,44 @@
+[versions]
+kotlinTestVersion = "1.5.20"
+androidAppCompatVersion = "1.2.0"
+lifecycleVersion = "2.2.0"
+materialDesignVersion = "1.0.0"
+androidLifecycleVersion = "2.1.0"
+androidCoreTestingVersion = "2.1.0"
+coroutinesVersion = "1.5.1-native-mt"
+kotlinxSerializationVersion = "1.2.2"
+mokoTestVersion = "0.4.0"
+kbignumVersion = "2.4.1.1"
+mokoResourcesVersion = "0.16.1"
+mokoWeb3Version = "0.18.0"
+ktorClientVersion = "1.6.1"
+web3jVersion = "4.8.5"
+mokoMvvmVersion = "0.11.0"
+logbackVersion = "1.2.5"
+multiplatformSettingsVersion = "0.8.1"
+symbiosisSdkVersion = "0.5.4"
+
+[libraries]
+appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
+material = { module = "com.google.android.material:material", version.ref = "materialDesignVersion" }
+lifecycle = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycleVersion" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
+mokoTest = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestVersion" }
+kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlinTestVersion" }
+kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test-common", version.ref = "kotlinTestVersion" }
+kotlinTestJUnit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinTestVersion" }
+web3j = { module = "org.web3j:core", version.ref = "web3jVersion" }
+ktorClient = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientVersion" }
+ktorClientJson = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorClientVersion" }
+ktorClientLogging = { module =  "io.ktor:ktor-client-logging", version.ref = "ktorClientVersion" }
+ktorClientCio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientVersion" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logbackVersion" }
+kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationVersion" }
+mokoMvvmLiveData = { module = "dev.icerock.moko:mvvm-livedata", version.ref = "mokoMvvmVersion" }
+mokoResources = { module = "dev.icerock.moko:resources", version.ref = "mokoResourcesVersion" }
+mokoWeb3 = { module = "dev.icerock.moko:web3", version.ref = "mokoWeb3Version" }
+kbignum = { module = "com.soywiz.korlibs.kbignum:kbignum", version.ref = "kbignumVersion" }
+mokoTestCore = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestVersion" }
+symbiosisSdk = { module = "com.symbiosis:sdk", version.ref = "symbiosisSdkVersion" }
+symbiosisCore = { module = "com.symbiosis:core", version.ref = "symbiosisSdkVersion" }
+multiplatformSettings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettingsVersion" }
