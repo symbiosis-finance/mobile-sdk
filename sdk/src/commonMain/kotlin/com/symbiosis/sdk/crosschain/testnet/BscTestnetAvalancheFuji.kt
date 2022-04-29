@@ -1,5 +1,7 @@
-package com.symbiosis.sdk.crosschain
+package com.symbiosis.sdk.crosschain.testnet
 
+import com.symbiosis.sdk.crosschain.DefaultCrossChain
+import com.symbiosis.sdk.crosschain.StablePools
 import com.symbiosis.sdk.networks.AvalancheFuji
 import com.symbiosis.sdk.networks.BscTestnet
 import com.symbiosis.sdk.swap.meta.NerveStablePool
@@ -15,5 +17,6 @@ class BscTestnetAvalancheFuji(
 
     override val fromNetwork = BscTestnet(bscTestnetExecutor)
     override val toNetwork = AvalancheFuji(avalancheFujiExecutor)
-    override val stablePool: NerveStablePool = StablePools.FUJI_USDT_sBUSD_POOL(toNetwork, fromNetwork)
+    override val stablePool: NerveStablePool =
+        StablePools.AVALANCHE_FUJI_USDT_BSC_TESTNET_sBUSD_POOL(toNetwork, fromNetwork)
 }

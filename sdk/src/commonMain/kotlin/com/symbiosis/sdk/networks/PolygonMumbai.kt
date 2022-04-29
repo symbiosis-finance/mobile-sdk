@@ -1,5 +1,6 @@
 package com.symbiosis.sdk.networks
 
+import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.Token
@@ -21,6 +22,7 @@ class PolygonMumbai(override val executor: Web3Executor) : DefaultNetwork() {
     override val bridgeAddressString = "0x823389FfdF5F1BAD10eB52089E7195772A54ccBa"
     override val routerAddressString = "0xca33f6D096BDD7FcB28d708f631cD76E73Ecfc2d"
     override val metaRouterAddressString = "0xd70077A7e64473F2B606fDeE43014d63d3F8dFB2"
+    override val metaRouterGatewayAddressString = "0xF7Bc9b805d94F47b5A7BacF9fb847b1d2D830f60"
 
     val token = Tokens()
     override val tokens: List<Token> = listOf(token.MATIC, token.WMATIC, token.USDT)
@@ -31,27 +33,24 @@ class PolygonMumbai(override val executor: Web3Executor) : DefaultNetwork() {
         DexEndpoint.hardcoded(
             factoryContractAddress = "0x8a628F00710993c1cebbaa02338d2264ee7056C6",
             initCodeHash = "0x85f8ad645fe62917d6939782650649d3d7c4b5f25d81415a9fac4a9f341793ca",
-            liquidityProviderFee = 0.002
+            liquidityProviderFee = 0.003
         )
     )
 
-    inner class Tokens internal constructor(){
-        val WMATIC = DecimalsErc20Token(
-            network = this@PolygonMumbai,
-            tokenAddress = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889",
-            decimals = 18
-        )
+    inner class Tokens internal constructor() {
         val USDT = DecimalsErc20Token(
             network = this@PolygonMumbai,
             tokenAddress = "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
             decimals = 6
         )
-        val MATIC = DecimalsNativeToken(
+        val WMATIC = DecimalsErc20Token(
             network = this@PolygonMumbai,
-            wrapped = WMATIC
+            tokenAddress = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889",
+            decimals = 18
         )
+        val MATIC = DecimalsNativeToken(WMATIC)
 
         private fun DecimalsErc20Token(network: Network, tokenAddress: String, decimals: Int) =
-            com.symbiosis.sdk.currency.DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
+            DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
     }
 }

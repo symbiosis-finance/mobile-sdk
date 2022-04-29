@@ -2,8 +2,8 @@ package com.symbiosis.sdk
 
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.crosschain.AvalancheFujiBscTestnet
-import com.symbiosis.sdk.crosschain.BscTestnetEthRinkeby
+import com.symbiosis.sdk.crosschain.testnet.AvalancheFujiBscTestnet
+import com.symbiosis.sdk.crosschain.testnet.BscTestnetEthRinkeby
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.convertIntegerToReal
 import com.symbiosis.sdk.currency.convertRealToInteger

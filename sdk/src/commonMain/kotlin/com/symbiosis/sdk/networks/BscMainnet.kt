@@ -1,5 +1,3 @@
-@file:Suppress("PropertyName", "MemberVisibilityCanBePrivate")
-
 package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
@@ -12,19 +10,19 @@ import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
-class BscTestnet(override val executor: Web3Executor) : DefaultNetwork() {
+class BscMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     constructor(endpointUrl: String) : this(Web3(endpointUrl))
 
-    override val networkName: String = "BscTestnet"
+    override val networkName = "BscMainnet"
 
-    override val chainIdInt = 0x61
-    override val synthFabricAddressString = "0xC29cff9F2d649240a35F7401cb6B1C5B8227d676"
-    override val portalAddressString = "0x7cD337E485a0ED3e2F508bfCbE3484A746552529"
-    override val synthesizeAddressString = "0x68801662cab0D678E5216CB67DaD350271375024"
-    override val bridgeAddressString = "0xBA7c80bb5d316c4eE55F96F47d1a1477fFD1aFb6"
-    override val routerAddressString = "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
-    override val metaRouterAddressString = "0x51bCcf889989af8afd98C9e386C935A3C0Ff43f0"
-    override val metaRouterGatewayAddressString = "0xE9EF3E03cd8E4641B867F8A58d4311da8dAd49c8"
+    override val chainIdInt = 0x36
+    override val synthFabricAddressString = "0x947a0d452b40013190295a4151A090E1638Fb848"
+    override val portalAddressString = "0xD7F9989bE0d15319d13d6FA5d468211C89F0b147"
+    override val synthesizeAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
+    override val bridgeAddressString = "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0"
+    override val routerAddressString = "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+    override val metaRouterAddressString = "0x8fF99ec3175Edce6b1b809765EDeDECD7e54637e"
+    override val metaRouterGatewayAddressString = "0x6326bce6f1Bed3fE9cBd64081C786122a4c4286E"
 
     val token = Tokens()
     override val tokens: List<Token> = listOf(token.BNB, token.WBNB, token.BUSD, token.CAKE)
@@ -32,9 +30,8 @@ class BscTestnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val nativeCurrency = token.BNB
     override val swapBases: List<Erc20Token> = listOf(token.WBNB, token.CAKE, token.BUSD)
     override val dexEndpoints: List<DexEndpoint> = listOf(
-        // Pancake
         DexEndpoint.hardcoded(
-            factoryContractAddress = "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
+            factoryContractAddress = "0xBCfCcbde45cE874adCB698cC183deBcF17952812",
             initCodeHash = "0xd0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66",
             liquidityProviderFee = 0.002
         )
@@ -42,18 +39,18 @@ class BscTestnet(override val executor: Web3Executor) : DefaultNetwork() {
 
     inner class Tokens internal constructor() {
         val CAKE = DecimalsErc20Token(
-            network = this@BscTestnet,
-            tokenAddress = "0x41b5984f45afb2560a0ed72bb69a98e8b32b3cca",
+            network = this@BscMainnet,
+            tokenAddress = "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
             decimals = 18
         )
         val BUSD = DecimalsErc20Token(
-            network = this@BscTestnet,
-            tokenAddress = "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
+            network = this@BscMainnet,
+            tokenAddress = "0x4fabb145d64652a948d72533023f6e7a623c7c53",
             decimals = 18
         )
         val WBNB = DecimalsErc20Token(
-            network = this@BscTestnet,
-            tokenAddress = "0xae13d989dac2f0debff460ac112a837c89baa7cd",
+            network = this@BscMainnet,
+            tokenAddress = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
             decimals = 18
         )
         val BNB = DecimalsNativeToken(WBNB)

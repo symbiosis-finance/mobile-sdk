@@ -4,6 +4,7 @@ import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.BridgingFeeProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
+import com.symbiosis.sdk.crosschain.CrossChain
 import com.symbiosis.sdk.providers.DefaultBridgingFeeProvider
 import com.symbiosis.sdk.providers.DefaultTTLProvider
 

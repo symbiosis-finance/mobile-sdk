@@ -27,6 +27,7 @@ interface Network {
     val bridgeAddress: ContractAddress
     val routerAddress: ContractAddress
     val metaRouterAddress: ContractAddress
+    val metaRouterGatewayAddress: ContractAddress
 
     val nativeCurrency: DecimalsNativeToken
     val swapBases: List<Erc20Token>

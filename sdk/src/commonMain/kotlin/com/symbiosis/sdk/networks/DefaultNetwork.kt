@@ -35,6 +35,8 @@ abstract class DefaultNetwork : Network {
     final override val routerAddress: ContractAddress get() = ContractAddress(routerAddressString)
     abstract val metaRouterAddressString: String
     override val metaRouterAddress: ContractAddress get() = ContractAddress(metaRouterAddressString)
+    abstract val metaRouterGatewayAddressString: String
+    final override val metaRouterGatewayAddress: ContractAddress get() = ContractAddress(metaRouterGatewayAddressString)
 
     override val nonceController: NonceController by lazy {
         NonceController(executor)

@@ -18,7 +18,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
-class SymbiosisSdkTest {
+class SymbiosisSdkTestnetsTest {
     private lateinit var sdk: ClientsManager
 
     @BeforeTest

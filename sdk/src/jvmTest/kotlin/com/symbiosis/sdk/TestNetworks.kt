@@ -34,7 +34,7 @@ val testMumbai =
 val testAvalanche = AvalancheFuji(endpointUrl = "https://api.avax-test.network/ext/bc/C/rpc")
 val testHeco = HecoTestnet(endpointUrl = "https://http-testnet.hecochain.com")
 
-val testSdk = SymbiosisSdk(
+val testSdk = SymbiosisSdkTestnet(
     avalancheFujiExecutor = testAvalanche.executor,
     bscTestnetExecutor = testBSC.executor,
     ethRinkebyExecutor = testETH.executor,

@@ -1,133 +1,79 @@
-@file:Suppress("MemberVisibilityCanBePrivate")
-
 package com.symbiosis.sdk
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.crosschain.AvalancheFujiBscTestnet
-import com.symbiosis.sdk.crosschain.AvalancheFujiEthRinkeby
-import com.symbiosis.sdk.crosschain.BscTestnetAvalancheFuji
-import com.symbiosis.sdk.crosschain.BscTestnetEthRinkeby
-import com.symbiosis.sdk.crosschain.BscTestnetPolygonMumbai
+import com.symbiosis.sdk.crosschain.CrossChain
 import com.symbiosis.sdk.crosschain.CrossChainClient
-import com.symbiosis.sdk.crosschain.EthRinkebyAvalancheFuji
-import com.symbiosis.sdk.crosschain.EthRinkebyBscTestnet
-import com.symbiosis.sdk.crosschain.EthRinkebyHecoTestnet
-import com.symbiosis.sdk.crosschain.EthRinkebyPolygonMumbai
-import com.symbiosis.sdk.crosschain.HecoTestnetEthRinkeby
-import com.symbiosis.sdk.crosschain.PolygonMumbaiBscTestnet
-import com.symbiosis.sdk.crosschain.PolygonMumbaiEthRinkeby
-import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.NetworkClient
-import com.symbiosis.sdk.networks.AvalancheFuji
-import com.symbiosis.sdk.networks.BscTestnet
-import com.symbiosis.sdk.networks.DefaultNetwork
-import com.symbiosis.sdk.networks.EthRinkeby
-import com.symbiosis.sdk.networks.HecoTestnet
-import com.symbiosis.sdk.networks.PolygonMumbai
-import com.symbiosis.sdk.stuck.StuckRequest
-import dev.icerock.moko.web3.WalletAddress
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
-open class SymbiosisSdk(
+interface SymbiosisSdk : SymbiosisSdkMainnet, SymbiosisSdkTestnet
+
+fun SymbiosisSdk(
+    bscMainnetUrl: String,
+    ethMainnetUrl: String,
+    polygonMainnetUrl: String,
+    bscTestnetUrl: String,
+    ethRinkebyUrl: String,
+    polygonMumbaiUrl: String,
+    avalancheMainnetUrl: String = "https://api.avax.network/ext/bc/C/rpc",
+    bobaMainnetUrl: String = "https://mainnet.boba.network/",
+    avalancheFujiUrl: String = "https://api.avax-test.network/ext/bc/C/rpc",
+    bobaRinkebyUrl: String = "https://rinkeby.boba.network/"
+) = SymbiosisSdk(
+    avalancheMainnetExecutor = Web3(avalancheMainnetUrl),
+    bscMainnetExecutor = Web3(bscMainnetUrl),
+    ethMainnetExecutor = Web3(ethMainnetUrl),
+    polygonMainnetExecutor = Web3(polygonMainnetUrl),
+    bobaMainnetExecutor = Web3(bobaMainnetUrl),
+    avalancheFujiExecutor = Web3(avalancheFujiUrl),
+    bscTestnetExecutor = Web3(bscTestnetUrl),
+    ethRinkebyExecutor = Web3(ethRinkebyUrl),
+    polygonMumbaiExecutor = Web3(polygonMumbaiUrl),
+    bobaRinkebyExecutor = Web3(bobaRinkebyUrl)
+)
+
+fun SymbiosisSdk(
+    avalancheMainnetExecutor: Web3Executor,
+    bscMainnetExecutor: Web3Executor,
+    ethMainnetExecutor: Web3Executor,
+    polygonMainnetExecutor: Web3Executor,
+    bobaMainnetExecutor: Web3Executor,
     avalancheFujiExecutor: Web3Executor,
     bscTestnetExecutor: Web3Executor,
     ethRinkebyExecutor: Web3Executor,
-    hecoTestnetExecutor: Web3Executor,
-    polygonMumbaiExecutor: Web3Executor
-) : ClientsManager() {
-    constructor(
-        bscTestnetUrl: String,
-        ethRinkebyUrl: String,
-        polygonMumbaiUrl: String,
-        avalancheFujiUrl: String = "https://api.avax-test.network/ext/bc/C/rpc",
-        hecoTestnetUrl: String = "https://http-testnet.hecochain.com"
-    ) : this(
-        avalancheFujiExecutor = Web3(avalancheFujiUrl),
-        bscTestnetExecutor = Web3(bscTestnetUrl),
-        ethRinkebyExecutor = Web3(ethRinkebyUrl),
-        hecoTestnetExecutor = Web3(hecoTestnetUrl),
-        polygonMumbaiExecutor = Web3(polygonMumbaiUrl)
+    polygonMumbaiExecutor: Web3Executor,
+    bobaRinkebyExecutor: Web3Executor
+): SymbiosisSdk = createSymbiosisSdk(
+    mainnet = SymbiosisSdkMainnet(
+        avalancheMainnetExecutor, bscMainnetExecutor,
+        ethMainnetExecutor, polygonMainnetExecutor, bobaMainnetExecutor
+    ),
+    testnet = SymbiosisSdkTestnet(
+        avalancheFujiExecutor, bscTestnetExecutor,
+        ethRinkebyExecutor, polygonMumbaiExecutor, bobaRinkebyExecutor
     )
+)
 
-    val avalancheFuji = AvalancheFuji(avalancheFujiExecutor)
-    val bscTestnet = BscTestnet(bscTestnetExecutor)
-    val ethRinkeby = EthRinkeby(ethRinkebyExecutor)
-    val hecoTestnet = HecoTestnet(hecoTestnetExecutor)
-    val polygonMumbai = PolygonMumbai(polygonMumbaiExecutor)
+private fun createSymbiosisSdk(mainnet: SymbiosisSdkMainnet, testnet: SymbiosisSdkTestnet): SymbiosisSdk =
+    object : SymbiosisSdk, SymbiosisSdkMainnet by mainnet, SymbiosisSdkTestnet by testnet {
+        override val allNetworks = mainnet.allNetworks + testnet.allNetworks
+        override val allTokens = mainnet.allTokens + testnet.allTokens
+        override val allClients = mainnet.allClients + testnet.allClients
+        override val allCrossChainClients = mainnet.allCrossChainClients + testnet.allCrossChainClients
 
-    val allNetworks: List<DefaultNetwork> = listOf(
-        avalancheFuji, bscTestnet, ethRinkeby,
-        hecoTestnet, polygonMumbai
-    )
-    val allTokens: List<Token> = allNetworks.flatMap(DefaultNetwork::tokens)
+        // default implementation is always used when calling this function, so
+        // ClientsManager.* methods will have the default implementation
+        override fun getCrossChainClient(crossChain: CrossChain): CrossChainClient =
+            mainnet.getCrossChainClient(crossChain)
 
-    val avalancheFujiClient = getNetworkClient(avalancheFuji)
-    val bscTestnetClient = getNetworkClient(bscTestnet)
-    val ethRinkebyClient = getNetworkClient(ethRinkeby)
-    val hecoTestnetClient = getNetworkClient(hecoTestnet)
-    val polygonMumbaiClient = getNetworkClient(polygonMumbai)
+        override fun getCrossChainClient(firstNetwork: Network, secondNetwork: Network): CrossChainClient? =
+            mainnet.getCrossChainClient(firstNetwork, secondNetwork)
 
-    val allClients: List<NetworkClient> = listOf(
-        avalancheFujiClient, bscTestnetClient, ethRinkebyClient,
-        hecoTestnetClient, polygonMumbaiClient
-    )
+        override fun getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt): CrossChainClient? =
+            mainnet.getCrossChainClient(firstNetworkChainId, secondNetworkChainId)
 
-    val avalancheFujiBscTestnetClient = getCrossChainClient(
-        AvalancheFujiBscTestnet(avalancheFujiExecutor, bscTestnetExecutor)
-    )
-    val avalancheFujiEthRinkebyClient = getCrossChainClient(
-        AvalancheFujiEthRinkeby(avalancheFujiExecutor, ethRinkebyExecutor)
-    )
-    val bscTestnetAvalancheFujiClient = getCrossChainClient(
-        BscTestnetAvalancheFuji(bscTestnetExecutor, avalancheFujiExecutor)
-    )
-    val bscTestnetEthRinkebyClient = getCrossChainClient(
-        BscTestnetEthRinkeby(bscTestnetExecutor, ethRinkebyExecutor)
-    )
-    val bscTestnetPolygonMumbaiClient = getCrossChainClient(
-        BscTestnetPolygonMumbai(bscTestnetExecutor, polygonMumbaiExecutor)
-    )
-    val ethRinkebyAvalancheFujiClient = getCrossChainClient(
-        EthRinkebyAvalancheFuji(ethRinkebyExecutor, avalancheFujiExecutor)
-    )
-    val ethRinkebyBscTestnetClient = getCrossChainClient(
-        EthRinkebyBscTestnet(ethRinkebyExecutor, bscTestnetExecutor)
-    )
-    val ethRinkebyHecoTestnetClient = getCrossChainClient(
-        EthRinkebyHecoTestnet(ethRinkebyExecutor, hecoTestnetExecutor)
-    )
-    val ethRinkebyPolygonMumbaiClient = getCrossChainClient(
-        EthRinkebyPolygonMumbai(ethRinkebyExecutor, polygonMumbaiExecutor)
-    )
-    val hecoTestnetEthRinkebyClient = getCrossChainClient(
-        HecoTestnetEthRinkeby(hecoTestnetExecutor, ethRinkebyExecutor)
-    )
-    val polygonMumbaiBscTestnetClient = getCrossChainClient(
-        PolygonMumbaiBscTestnet(polygonMumbaiExecutor, bscTestnetExecutor)
-    )
-    val polygonMumbaiEthRinkebyClient = getCrossChainClient(
-        PolygonMumbaiEthRinkeby(polygonMumbaiExecutor, ethRinkebyExecutor)
-    )
-
-    val allCrossChainClients: List<CrossChainClient> = listOf(
-        avalancheFujiBscTestnetClient, avalancheFujiEthRinkebyClient,
-        bscTestnetAvalancheFujiClient, bscTestnetEthRinkebyClient, bscTestnetPolygonMumbaiClient,
-        ethRinkebyAvalancheFujiClient, ethRinkebyBscTestnetClient, ethRinkebyHecoTestnetClient,
-        ethRinkebyPolygonMumbaiClient, hecoTestnetEthRinkebyClient,
-        polygonMumbaiBscTestnetClient, polygonMumbaiEthRinkebyClient
-    )
-
-    fun getCrossChainClient(firstNetwork: Network, secondNetwork: Network) =
-        getCrossChainClient(firstNetwork.chainId, secondNetwork.chainId)
-
-    fun getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt) = allCrossChainClients
-        .find { it.crossChain.fromNetwork.chainId == firstNetworkChainId &&
-                it.crossChain.toNetwork.chainId == secondNetworkChainId }
-
-    suspend fun getStuckTransactions(
-        address: WalletAddress,
-        clients: List<NetworkClient> = allClients
-    ): List<StuckRequest> = clients.flatMap { it.getStuckTransactions(address, clients) }
-}
+        override fun getNetworkClient(network: Network): NetworkClient =
+            mainnet.getNetworkClient(network)
+    }

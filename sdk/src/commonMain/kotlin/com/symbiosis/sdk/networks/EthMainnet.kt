@@ -1,5 +1,3 @@
-@file:Suppress("PropertyName")
-
 package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
@@ -11,27 +9,26 @@ import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
-open class EthRinkeby(override val executor: Web3Executor) : DefaultNetwork() {
+class EthMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     constructor(endpointUrl: String) : this(Web3(endpointUrl))
 
-    override val networkName: String = "EthRinkeby"
+    override val networkName = "EthMainnet"
 
-    override val chainIdInt = 0x4
-    override val synthFabricAddressString = "0x9A857D526A9e53697a9Df5fFc40bCCD70E7A0388"
-    override val portalAddressString = "0xc7F1A6768B16De4BB15c146fd5030cD9F50533ab"
-    override val synthesizeAddressString = "0xA9E177ff9c88b1DF688AaB02C599F0c24e895f0f"
-    override val bridgeAddressString = "0x09256eCAdb6ca96D1d7Fd96280cfA38D5F4E0c4C"
-    override val routerAddressString = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
-    override val metaRouterAddressString = "0xaEF8DEfDBca28A3dADb510fc861aa105e51160Eb"
-    override val metaRouterGatewayAddressString = "0x94358460e21C69599B7a207885f91443B3794C7b"
+    override val chainIdInt = 0x1
+    override val synthFabricAddressString = "0x0000000000000000000000000000000000000000"
+    override val portalAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
+    override val synthesizeAddressString = "0x0000000000000000000000000000000000000000"
+    override val bridgeAddressString = "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0"
+    override val routerAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
+    override val metaRouterAddressString = "0x92C5b5B66988E6B8931a8CD3faa418b42003DF2F"
+    override val metaRouterGatewayAddressString = "0x23bcd8398A2BC9aa8d606E47D5Ae0d2f014bEA2e"
 
     val token = Tokens()
     override val tokens: List<Token> = listOf(token.ETH, token.WETH, token.USDC, token.UNI)
 
     override val nativeCurrency = token.ETH
-    override val swapBases = listOf(token.WETH)
+    override val swapBases = listOf(token.WETH, token.UNI, token.USDC)
     override val dexEndpoints = listOf(
-        // UNI
         DexEndpoint.hardcoded(
             factoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
             initCodeHash = "0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f",
@@ -41,18 +38,18 @@ open class EthRinkeby(override val executor: Web3Executor) : DefaultNetwork() {
 
     inner class Tokens internal constructor() {
         val UNI = DecimalsErc20Token(
-            network = this@EthRinkeby,
-            tokenAddress = "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+            network = this@EthMainnet,
+            tokenAddress = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
             decimals = 18
         )
         val USDC = DecimalsErc20Token(
-            network = this@EthRinkeby,
-            tokenAddress = "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+            network = this@EthMainnet,
+            tokenAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             decimals = 6
         )
         val WETH = DecimalsErc20Token(
-            network = this@EthRinkeby,
-            tokenAddress = "0xc778417e063141139fce010982780140aa0cd5ab",
+            network = this@EthMainnet,
+            tokenAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             decimals = 18
         )
         val ETH = DecimalsNativeToken(WETH)
