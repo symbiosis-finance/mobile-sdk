@@ -42,7 +42,7 @@ fun DecimalsErc20Token(network: Network, tokenAddress: ContractAddress, decimals
 }
 
 interface DecimalsNativeToken : DecimalsToken, NativeToken
-fun DecimalsNativeToken(network: Network, wrapped: Erc20Token, decimals: Int = 18) = object : DecimalsNativeToken {
+fun DecimalsNativeToken(wrapped: Erc20Token, network: Network = wrapped.network, decimals: Int = 18) = object : DecimalsNativeToken {
     override val network: Network = network
     override val wrapped: Erc20Token = wrapped
     override val decimals: Int = decimals

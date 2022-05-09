@@ -1,5 +1,7 @@
-package com.symbiosis.sdk.crosschain
+package com.symbiosis.sdk.crosschain.testnet
 
+import com.symbiosis.sdk.crosschain.DefaultCrossChain
+import com.symbiosis.sdk.crosschain.StablePools
 import com.symbiosis.sdk.networks.BscTestnet
 import com.symbiosis.sdk.networks.EthRinkeby
 import com.symbiosis.sdk.swap.meta.NerveStablePool
@@ -15,5 +17,6 @@ class EthRinkebyBscTestnet(
 
     override val fromNetwork = EthRinkeby(ethRinkebyExecutor)
     override val toNetwork = BscTestnet(bscTestnetExecutor)
-    override val stablePool: NerveStablePool = StablePools.BUSD_sUSDC_POOL(toNetwork, fromNetwork)
+    override val stablePool: NerveStablePool =
+        StablePools.BSC_TESTNET_BUSD_ETH_RINKEBY_sUSDC_POOL(toNetwork, fromNetwork)
 }

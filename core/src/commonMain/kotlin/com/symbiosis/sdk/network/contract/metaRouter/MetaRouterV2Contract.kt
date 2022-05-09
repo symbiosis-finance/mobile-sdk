@@ -10,7 +10,6 @@ import com.symbiosis.sdk.network.contract.approveMaxIfNeed
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.TransactionHash
-import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
 import dev.icerock.moko.web3.hex.HexString
 
@@ -19,8 +18,8 @@ import dev.icerock.moko.web3.hex.HexString
  */
 class MetaRouterV2Contract(
     private val metaRouterV2SmartContract: SmartContract,
+    private val metaRouterGatewayAddress: ContractAddress,
     private val nonceController: NonceController,
-    private val executor: Web3Executor,
     private val defaultGasProvider: GasProvider,
     private val tokenContractProvider: (ContractAddress) -> TokenContract
 ) {
@@ -59,7 +58,7 @@ class MetaRouterV2Contract(
         if (firstToken is FirstToken.Erc20) {
             tokenContractProvider(firstToken.address).approveMaxIfNeed(
                 credentials = credentials,
-                spender = metaRouterV2SmartContract.contractAddress,
+                spender = metaRouterGatewayAddress,
                 amount = amount,
                 gasProvider = gasProvider
             )

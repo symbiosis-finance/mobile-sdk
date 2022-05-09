@@ -1,5 +1,7 @@
-package com.symbiosis.sdk.crosschain
+package com.symbiosis.sdk.crosschain.testnet
 
+import com.symbiosis.sdk.crosschain.DefaultCrossChain
+import com.symbiosis.sdk.crosschain.StablePools
 import com.symbiosis.sdk.networks.EthRinkeby
 import com.symbiosis.sdk.networks.PolygonMumbai
 import com.symbiosis.sdk.swap.meta.NerveStablePool
@@ -15,5 +17,6 @@ class EthRinkebyPolygonMumbai(
 
     override val fromNetwork = EthRinkeby(ethRinkebyExecutor)
     override val toNetwork = PolygonMumbai(polygonMumbaiExecutor)
-    override val stablePool: NerveStablePool = StablePools.MUMBAI_USDT_sUSDC_POOL(toNetwork, fromNetwork)
+    override val stablePool: NerveStablePool =
+        StablePools.POLYGON_MUMBAI_USDT_ETH_RINKEBY_sUSDC_POOL(toNetwork, fromNetwork)
 }
