@@ -14,7 +14,7 @@ import com.symbiosis.sdk.dex.DexEndpoint.Companion.hardcoded as DexEndpoint
 open class BobaRinkeby(override val executor: Web3Executor) : DefaultNetwork() {
     constructor(endpointUrl: String) : this(Web3(endpointUrl))
 
-    override val networkName = "BobaRinkeby-EthRinkebyLayerV2"
+    override val networkName = "BobaRinkeby"
 
     override val chainIdInt = 0x1C
     override val synthFabricAddressString = "0x042cF6a0690C9B8607c5B19Cb18807F1D66c9339"

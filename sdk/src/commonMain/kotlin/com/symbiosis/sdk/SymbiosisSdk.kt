@@ -1,6 +1,5 @@
 package com.symbiosis.sdk
 
-import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.crosschain.CrossChain
 import com.symbiosis.sdk.crosschain.CrossChainClient
 import com.symbiosis.sdk.network.Network
@@ -67,12 +66,6 @@ private fun createSymbiosisSdk(mainnet: SymbiosisSdkMainnet, testnet: SymbiosisS
         // ClientsManager.* methods will have the default implementation
         override fun getCrossChainClient(crossChain: CrossChain): CrossChainClient =
             mainnet.getCrossChainClient(crossChain)
-
-        override fun getCrossChainClient(firstNetwork: Network, secondNetwork: Network): CrossChainClient? =
-            mainnet.getCrossChainClient(firstNetwork, secondNetwork)
-
-        override fun getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt): CrossChainClient? =
-            mainnet.getCrossChainClient(firstNetworkChainId, secondNetworkChainId)
 
         override fun getNetworkClient(network: Network): NetworkClient =
             mainnet.getNetworkClient(network)

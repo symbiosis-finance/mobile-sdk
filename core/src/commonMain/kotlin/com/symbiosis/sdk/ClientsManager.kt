@@ -24,13 +24,6 @@ interface ClientsManager {
     val allClients: List<NetworkClient>
     val allCrossChainClients: List<CrossChainClient>
 
-    fun getCrossChainClient(firstNetwork: Network, secondNetwork: Network) =
-        getCrossChainClient(firstNetwork.chainId, secondNetwork.chainId)
-
-    fun getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt) = allCrossChainClients
-        .find { it.crossChain.fromNetwork.chainId == firstNetworkChainId &&
-                it.crossChain.toNetwork.chainId == secondNetworkChainId }
-
     fun getNetworkClient(network: Network) = Companion.getNetworkClient(network)
     fun getCrossChainClient(crossChain: CrossChain) = Companion.getCrossChainClient(crossChain)
 
@@ -46,3 +39,10 @@ fun ClientsManager() = object : ClientsManager {
     override val allClients: List<NetworkClient> = listOf()
     override val allCrossChainClients: List<CrossChainClient> = listOf()
 }
+
+fun ClientsManager.getCrossChainClient(firstNetwork: Network, secondNetwork: Network) =
+    getCrossChainClient(firstNetwork.chainId, secondNetwork.chainId)
+
+fun ClientsManager.getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt) = allCrossChainClients
+    .find { it.crossChain.fromNetwork.chainId == firstNetworkChainId &&
+            it.crossChain.toNetwork.chainId == secondNetworkChainId }

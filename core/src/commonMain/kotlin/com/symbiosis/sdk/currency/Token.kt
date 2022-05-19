@@ -17,12 +17,29 @@ fun Erc20Token(network: Network, tokenAddress: ContractAddress): Erc20Token =
     object : Erc20Token {
         override val network = network
         override val tokenAddress = tokenAddress
+
+        override fun equals(other: Any?): Boolean {
+            return other is Erc20Token &&
+                    other.network.chainId == network.chainId &&
+                    other.tokenAddress.prefixed == tokenAddress.prefixed
+        }
     }
 
 // For custom tokens
 interface Erc20Token : Token {
     val tokenAddress: ContractAddress
 }
+
+fun NativeToken(wrapped: Erc20Token, network: Network = wrapped.network): NativeToken =
+    object : NativeToken {
+        override val wrapped: Erc20Token = wrapped
+        override val network: Network = network
+
+        override fun equals(other: Any?): Boolean {
+            return other is NativeToken &&
+                    other.network.chainId == network.chainId
+        }
+    }
 
 // For eth, bnb, etc
 interface NativeToken : Token {
@@ -39,6 +56,12 @@ fun DecimalsErc20Token(network: Network, tokenAddress: ContractAddress, decimals
     override val network: Network = network
     override val tokenAddress: ContractAddress = tokenAddress
     override val decimals: Int = decimals
+
+    override fun equals(other: Any?): Boolean {
+        return other is Erc20Token &&
+                other.network.chainId == network.chainId &&
+                other.tokenAddress.prefixed == tokenAddress.prefixed
+    }
 }
 
 interface DecimalsNativeToken : DecimalsToken, NativeToken
@@ -46,6 +69,11 @@ fun DecimalsNativeToken(wrapped: Erc20Token, network: Network = wrapped.network,
     override val network: Network = network
     override val wrapped: Erc20Token = wrapped
     override val decimals: Int = decimals
+
+    override fun equals(other: Any?): Boolean {
+        return other is NativeToken &&
+                other.network.chainId == network.chainId
+    }
 }
 
 fun DecimalsToken.convertIntegerToReal(integer: BigInt) =

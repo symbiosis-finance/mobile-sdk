@@ -10,17 +10,38 @@ import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.thisOrWrapped
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.gas.GasConfiguration
-import com.symbiosis.sdk.network.contract.*
-import com.symbiosis.sdk.network.contract.abi.*
+import com.symbiosis.sdk.network.contract.NerveContract
+import com.symbiosis.sdk.network.contract.OutboundRequest
+import com.symbiosis.sdk.network.contract.PoolContract
+import com.symbiosis.sdk.network.contract.PortalContract
+import com.symbiosis.sdk.network.contract.RouterContract
+import com.symbiosis.sdk.network.contract.SynthFabricContract
+import com.symbiosis.sdk.network.contract.SynthesizeContract
+import com.symbiosis.sdk.network.contract.TokenContract
+import com.symbiosis.sdk.network.contract.WrappedContract
+import com.symbiosis.sdk.network.contract.abi.createPoolContractAbi
+import com.symbiosis.sdk.network.contract.abi.createWrappedContractAbi
+import com.symbiosis.sdk.network.contract.abi.fabricContractAbi
+import com.symbiosis.sdk.network.contract.abi.metaRouterV2Contract
+import com.symbiosis.sdk.network.contract.abi.nerveContract
+import com.symbiosis.sdk.network.contract.abi.portalContractAbi
+import com.symbiosis.sdk.network.contract.abi.routerContractAbi
+import com.symbiosis.sdk.network.contract.abi.synthesizeContractAbi
 import com.symbiosis.sdk.network.contract.metaRouter.MetaRouterV2Contract
 import com.symbiosis.sdk.network.wrapper.SwapWrapper
 import com.symbiosis.sdk.stuck.StuckRequest
 import com.symbiosis.sdk.swap.LPTokenAddressGenerator
 import com.symbiosis.sdk.swap.generate
 import com.symbiosis.sdk.swap.meta.NerveStablePool
+import com.symbiosis.sdk.swap.uni.UniLikeSwapCalculator
 import com.symbiosis.sdk.transaction.SignedTransaction
 import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.*
+import dev.icerock.moko.web3.BlockState
+import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.WalletAddress
+import dev.icerock.moko.web3.Web3Executor
+import dev.icerock.moko.web3.Web3RpcRequest
 import dev.icerock.moko.web3.contract.ABIDecoder
 import dev.icerock.moko.web3.contract.SmartContract
 import dev.icerock.moko.web3.contract.createErc20TokenAbi
@@ -117,7 +138,6 @@ class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Netwo
         metaRouterV2SmartContract = metaRouterV2SmartContract,
         metaRouterGatewayAddress = network.metaRouterGatewayAddress,
         nonceController = network.nonceController,
-        executor = network.executor,
         defaultGasProvider = network.gasProvider,
         tokenContractProvider = ::getTokenContract
     )
@@ -137,15 +157,11 @@ class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Netwo
         )
     }
 
-    val swap = SwapWrapper(
-        network = network,
-        executor = network.executor,
-        reservesRequestsFactory = { dex, pair ->
-            getPoolContract(dex, pair).getReservesRequest()
-        },
-        router = router,
-        defaultDexEndpoints = network.dexEndpoints
-    )
+    val uniLikeSwapCalculator: UniLikeSwapCalculator = UniLikeSwapCalculator()
+    val exactInTradeCalculators = listOf(uniLikeSwapCalculator)
+    val exactOutTradeCalculators = listOf(uniLikeSwapCalculator)
+
+    val swap = SwapWrapper(exactInTradeCalculators, exactOutTradeCalculators)
 
     fun getTokenContract(address: ContractAddress) =
         TokenContract(

@@ -6,27 +6,12 @@ plugins {
     id("multiplatform-library-convention")
     id("publication-convention")
     kotlin("plugin.serialization")
-    id("dev.icerock.mobile.multiplatform.cocoapods")
+//    id("dev.icerock.mobile.multiplatform.cocoapods")
     `maven-publish`
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "Symbiosis"
-            url = uri("https://maven.pkg.github.com/symbiosis-finance/mobile-sdk")
-            credentials {
-                username = System.getenv("GITHUB_USERNAME")
-                password = System.getenv("TOKEN")
-            }
-        }
-    }
-}
-
 dependencies {
-
     jvmMainImplementation(libs.web3j)
-
     commonMainImplementation(libs.logback)
 
     commonMainApi(libs.ktorClient)
@@ -40,9 +25,9 @@ dependencies {
     commonMainApi(libs.kotlinTestAnnotations)
 }
 
-cocoaPods {
-    pod("SwiftWeb3Wrapper")
-}
+// cocoaPods {
+//     pod("SwiftWeb3Wrapper")
+// }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"

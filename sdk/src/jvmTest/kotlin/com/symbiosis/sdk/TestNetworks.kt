@@ -1,9 +1,9 @@
 package com.symbiosis.sdk
 
 import com.symbiosis.sdk.networks.AvalancheFuji
+import com.symbiosis.sdk.networks.BobaRinkeby
 import com.symbiosis.sdk.networks.BscTestnet
 import com.symbiosis.sdk.networks.EthRinkeby
-import com.symbiosis.sdk.networks.HecoTestnet
 import com.symbiosis.sdk.networks.PolygonMumbai
 import dev.icerock.moko.web3.Web3
 import io.ktor.client.HttpClient
@@ -32,12 +32,12 @@ val testBSC = BscTestnet(endpointUrl = "https://bsc.getblock.io/testnet/?api_key
 val testMumbai =
     PolygonMumbai(endpointUrl = "https://matic.getblock.io/testnet/?api_key=b5945b69-c6c6-41c7-8541-568cac117dfe")
 val testAvalanche = AvalancheFuji(endpointUrl = "https://api.avax-test.network/ext/bc/C/rpc")
-val testHeco = HecoTestnet(endpointUrl = "https://http-testnet.hecochain.com")
+val testBoba = BobaRinkeby(endpointUrl = "https://rinkeby.boba.network")
 
 val testSdk = SymbiosisSdkTestnet(
     avalancheFujiExecutor = testAvalanche.executor,
     bscTestnetExecutor = testBSC.executor,
     ethRinkebyExecutor = testETH.executor,
-    hecoTestnetExecutor = testHeco.executor,
+    bobaRinkebyExecutor = testBoba.executor,
     polygonMumbaiExecutor = testMumbai.executor
 )

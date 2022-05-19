@@ -3,6 +3,7 @@ package com.symbiosis.sdk.swap
 /**
  * This is the class to distinguish between different cases of native tokens' usage
  */
+// TODO: Get rid of this class
 object TokensType {
     // all objects
     sealed interface CrossChainTokensType

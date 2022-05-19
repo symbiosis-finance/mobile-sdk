@@ -5,38 +5,44 @@ import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.contract.getSyntheticToken
-import com.symbiosis.sdk.swap.CalculatedSwapTrade
-import com.symbiosis.sdk.swap.SwapRoutesGenerator
-import com.symbiosis.sdk.swap.SwapType
+import com.symbiosis.sdk.swap.ExactInSingleNetworkTradeCalculator
+import com.symbiosis.sdk.swap.ExactOutSingleNetworkTradeCalculator
+import com.symbiosis.sdk.swap.UniLikeSwapRoutesGenerator
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Ignore
-import kotlin.test.assertTrue
+import kotlin.test.Test
 
 class SwapTest {
     private val sdk = ClientsManager()
 
+    @Test
+    fun testPaths() {
+        println(UniLikeSwapRoutesGenerator.getRoutes(
+            networkPair = NetworkTokenPair(
+                first = testETH.token.ETH,
+                second = testETH.token.UNI
+            )
+        ))
+    }
+
     //    @Test
-    fun optimizedSwap() = runBlocking {
-        println(SwapRoutesGenerator.getBaseRoutes(network = testETH))
+    fun optimizedUniLikeSwap() = runBlocking {
+        println(UniLikeSwapRoutesGenerator.getBaseRoutes(network = testETH))
 
         val pair = NetworkTokenPair(
             first = testETH.token.UNI,
             second = testETH.token.WETH
         )
         sdk.getNetworkClient(testETH).also { client ->
-            val trade = client.swap.findBestTrade(
-                pair, "4000000000000000000".bi, SwapType.ExactOut
-            ).first
-                ?: error("Swap trade not found")
+            val tradeResult = client.uniLikeSwapCalculator.exactOut(
+                amountOut = "4000000000000000000".bi,
+                tokens = pair
+            )
 
-            trade as? CalculatedSwapTrade.ExactOut.Success
-                ?: error("Insufficient liquidity")
+            if (tradeResult !is ExactOutSingleNetworkTradeCalculator.ExactOutResult.Success)
+                error("Trade not found")
 
-            val txHash = client.swap.execute(
-                credentials = alexCredentials,
-                trade = trade
-            ).prefixed
-            println(txHash)
+            println(tradeResult.trade.execute(alexCredentials, slippageTolerance = "0.07".bn))
         }
     }
 
@@ -47,25 +53,30 @@ class SwapTest {
             val sWBNB = client.synthFabric.getSyntheticToken(testBSC.token.WBNB)
                 ?: error("Synthetic was not found")
 
-            val trade = client.swap.findBestTradeExactIn(
-                networkTokenPair = NetworkTokenPair(
+            val tradeResult = client.uniLikeSwapCalculator.exactIn(
+                tokens = NetworkTokenPair(
                     testETH.token.UNI,
                     sWBNB
                 ),
                 amountIn = value
-            ).first ?: error("Trade was not found")
-
-            client.swap.execute(
-                credentials = alexCredentials,
-                trade = trade
             )
+
+            if (tradeResult !is ExactInSingleNetworkTradeCalculator.ExactInResult.Success)
+                error("Trade not found")
+
+            tradeResult.trade.execute(
+                credentials = alexCredentials,
+                slippageTolerance = "0.07".bn
+            )
+
             client.synthesize.burnSynthTokens(
                 credentials = alexCredentials,
-                amount = trade.amountOut,
+                amount = tradeResult.trade.amountOutEstimated,
                 synthCurrencyAddress = sWBNB.tokenAddress,
                 targetNetwork = testETH,
                 stableBridgingFee = 0.bi
             )
+
             return@runBlocking
         }
     }
@@ -79,24 +90,30 @@ class SwapTest {
                 val firstToken = testBSC.token.CAKE
                 val secondToken = testBSC.token.BUSD
 
-                val trade = client.swap.findBestTradeExactIn(
-                    networkTokenPair = NetworkTokenPair(
+                val tradeResult = client.uniLikeSwapCalculator.exactIn(
+                    tokens = NetworkTokenPair(
                         firstToken,
                         secondToken
                     ),
                     amountIn = value
-                ).first ?: error("Trade was not found")
-                print(trade)
-
-                val hash = client.swap.execute(
-                    credentials = markCredentials,
-                    trade = trade
                 )
+
+                if (tradeResult !is ExactInSingleNetworkTradeCalculator.ExactInResult.Success)
+                    error("Trade not found")
+
+                val trade = tradeResult.trade
+
+                print(tradeResult)
+
+                val hash = trade.execute(
+                    credentials = markCredentials,
+                    slippageTolerance = "0.07".bn
+                )
+
                 print(hash)
 
                 return@runBlocking
             }
-            assertTrue { true }
         }
     }
 }

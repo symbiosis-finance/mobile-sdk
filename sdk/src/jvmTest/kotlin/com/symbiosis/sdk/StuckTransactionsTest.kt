@@ -9,15 +9,15 @@ class StuckTransactionsTest {
     fun getStuckTransactions() {
         runBlocking {
             repeat(3) {
-                val trade = testSdk.hecoTestnetEthRinkebyClient.findBestTradeExactIn(
+                val trade = testSdk.bobaRinkebyEthRinkebyClient.findBestTradeExactIn(
                     to = denWalletAddress,
-                    fromToken = testSdk.hecoTestnet.token.HT,
+                    fromToken = testSdk.bobaRinkeby.token.ETH,
                     targetToken = testSdk.ethRinkeby.token.ETH,
                     amountIn = 1_000_000_000_000_000.bi,
                     bridgingFeeProvider = { _, _, _, _ -> 0.bi }
                 )?.also(::println) as? CalculatedMetaSwapTrade.ExactIn ?: error("Trade not found")
 
-                val tx = testSdk.hecoTestnetEthRinkebyClient.execute(
+                val tx = testSdk.bobaRinkebyEthRinkebyClient.execute(
                     credentials = denCredentials,
                     trade = trade
                 )

@@ -16,7 +16,7 @@ web3jVersion = "4.8.5"
 mokoMvvmVersion = "0.11.0"
 logbackVersion = "1.2.5"
 multiplatformSettingsVersion = "0.8.1"
-symbiosisSdkVersion = "0.5.4"
+symbiosisSdkVersion = "1.0.1-alpha2"
 
 [libraries]
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
@@ -42,3 +42,4 @@ mokoTestCore = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestV
 symbiosisSdk = { module = "com.symbiosis:sdk", version.ref = "symbiosisSdkVersion" }
 symbiosisCore = { module = "com.symbiosis:core", version.ref = "symbiosisSdkVersion" }
 multiplatformSettings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettingsVersion" }
+
