@@ -5,9 +5,9 @@ import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.contract.getSyntheticToken
-import com.symbiosis.sdk.swap.ExactInSingleNetworkTradeCalculator
-import com.symbiosis.sdk.swap.ExactOutSingleNetworkTradeCalculator
-import com.symbiosis.sdk.swap.UniLikeSwapRoutesGenerator
+import com.symbiosis.sdk.swap.Percentage
+import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
+import com.symbiosis.sdk.swap.uni.UniLikeSwapRoutesGenerator
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -17,7 +17,8 @@ class SwapTest {
 
     @Test
     fun testPaths() {
-        println(UniLikeSwapRoutesGenerator.getRoutes(
+        println(
+            UniLikeSwapRoutesGenerator.getRoutes(
             networkPair = NetworkTokenPair(
                 first = testETH.token.ETH,
                 second = testETH.token.UNI
@@ -34,15 +35,15 @@ class SwapTest {
             second = testETH.token.WETH
         )
         sdk.getNetworkClient(testETH).also { client ->
-            val tradeResult = client.uniLikeSwapCalculator.exactOut(
+            val tradeResult = client.uniLike.exactOut(
                 amountOut = "4000000000000000000".bi,
                 tokens = pair
             )
 
-            if (tradeResult !is ExactOutSingleNetworkTradeCalculator.ExactOutResult.Success)
+            if (tradeResult !is UniLikeSwapRepository.ExactOutResult.Success)
                 error("Trade not found")
 
-            println(tradeResult.trade.execute(alexCredentials, slippageTolerance = "0.07".bn))
+            println(tradeResult.trade.execute(alexCredentials, slippageTolerance = Percentage("0.07".bn)))
         }
     }
 
@@ -53,7 +54,7 @@ class SwapTest {
             val sWBNB = client.synthFabric.getSyntheticToken(testBSC.token.WBNB)
                 ?: error("Synthetic was not found")
 
-            val tradeResult = client.uniLikeSwapCalculator.exactIn(
+            val tradeResult = client.uniLike.exactIn(
                 tokens = NetworkTokenPair(
                     testETH.token.UNI,
                     sWBNB
@@ -61,12 +62,12 @@ class SwapTest {
                 amountIn = value
             )
 
-            if (tradeResult !is ExactInSingleNetworkTradeCalculator.ExactInResult.Success)
+            if (tradeResult !is UniLikeSwapRepository.ExactInResult.Success)
                 error("Trade not found")
 
             tradeResult.trade.execute(
                 credentials = alexCredentials,
-                slippageTolerance = "0.07".bn
+                slippageTolerance = Percentage("0.07".bn)
             )
 
             client.synthesize.burnSynthTokens(
@@ -90,7 +91,7 @@ class SwapTest {
                 val firstToken = testBSC.token.CAKE
                 val secondToken = testBSC.token.BUSD
 
-                val tradeResult = client.uniLikeSwapCalculator.exactIn(
+                val tradeResult = client.uniLike.exactIn(
                     tokens = NetworkTokenPair(
                         firstToken,
                         secondToken
@@ -98,7 +99,7 @@ class SwapTest {
                     amountIn = value
                 )
 
-                if (tradeResult !is ExactInSingleNetworkTradeCalculator.ExactInResult.Success)
+                if (tradeResult !is UniLikeSwapRepository.ExactInResult.Success)
                     error("Trade not found")
 
                 val trade = tradeResult.trade
@@ -107,7 +108,7 @@ class SwapTest {
 
                 val hash = trade.execute(
                     credentials = markCredentials,
-                    slippageTolerance = "0.07".bn
+                    slippageTolerance = Percentage("0.07".bn)
                 )
 
                 print(hash)

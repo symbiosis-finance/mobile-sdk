@@ -4,6 +4,7 @@ package com.symbiosis.sdk.network
 
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.ClientsManager
+import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import com.symbiosis.sdk.contract.sortedAddresses
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.NetworkTokenPair
@@ -27,13 +28,13 @@ import com.symbiosis.sdk.network.contract.abi.nerveContract
 import com.symbiosis.sdk.network.contract.abi.portalContractAbi
 import com.symbiosis.sdk.network.contract.abi.routerContractAbi
 import com.symbiosis.sdk.network.contract.abi.synthesizeContractAbi
-import com.symbiosis.sdk.network.contract.metaRouter.MetaRouterV2Contract
-import com.symbiosis.sdk.network.wrapper.SwapWrapper
+import com.symbiosis.sdk.network.contract.metaRouter.MetaRouterContract
 import com.symbiosis.sdk.stuck.StuckRequest
-import com.symbiosis.sdk.swap.LPTokenAddressGenerator
-import com.symbiosis.sdk.swap.generate
-import com.symbiosis.sdk.swap.meta.NerveStablePool
-import com.symbiosis.sdk.swap.uni.UniLikeSwapCalculator
+import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
+import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository
+import com.symbiosis.sdk.swap.uni.LPTokenAddressGenerator
+import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
+import com.symbiosis.sdk.swap.uni.generate
 import com.symbiosis.sdk.transaction.SignedTransaction
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.BlockState
@@ -134,12 +135,12 @@ class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Netwo
         contractAddress = network.metaRouterAddress,
         abiJson = metaRouterV2Contract
     )
-    val metaRouterV2: MetaRouterV2Contract = MetaRouterV2Contract(
+    val metaRouter: MetaRouterContract = MetaRouterContract(
         metaRouterV2SmartContract = metaRouterV2SmartContract,
         metaRouterGatewayAddress = network.metaRouterGatewayAddress,
         nonceController = network.nonceController,
         defaultGasProvider = network.gasProvider,
-        tokenContractProvider = ::getTokenContract
+        chainId = network.chainId
     )
 
     fun getNerveContract(pool: NerveStablePool): NerveContract {
@@ -157,11 +158,9 @@ class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Netwo
         )
     }
 
-    val uniLikeSwapCalculator: UniLikeSwapCalculator = UniLikeSwapCalculator()
-    val exactInTradeCalculators = listOf(uniLikeSwapCalculator)
-    val exactOutTradeCalculators = listOf(uniLikeSwapCalculator)
-
-    val swap = SwapWrapper(exactInTradeCalculators, exactOutTradeCalculators)
+    val uniLike: UniLikeSwapRepository = UniLikeSwapRepository(networkClient = this)
+    val oneInchIfSupported: OneInchSwapRepository? = OneInchSwapRepository(networkClient = this)
+    val swap: SingleNetworkSwapRepository = SingleNetworkSwapRepository(networkClient = this)
 
     fun getTokenContract(address: ContractAddress) =
         TokenContract(
@@ -341,7 +340,6 @@ class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Netwo
                     state = state,
                     fromClient = strategy.fromClient,
                     targetClient = strategy.targetClient,
-                    bridgingFeeProvider = network.bridgingFeeProvider
                 )
             }
     }

@@ -3,7 +3,7 @@
 package com.symbiosis.sdk.crosschain
 
 import com.symbiosis.sdk.networks.*
-import com.symbiosis.sdk.swap.meta.NerveStablePool
+import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import dev.icerock.moko.web3.ContractAddress
 
 object StablePools {

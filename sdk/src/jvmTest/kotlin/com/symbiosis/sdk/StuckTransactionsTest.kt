@@ -1,7 +1,5 @@
 package com.symbiosis.sdk
 
-import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.swap.meta.CalculatedMetaSwapTrade
 import kotlinx.coroutines.runBlocking
 
 class StuckTransactionsTest {
@@ -9,19 +7,19 @@ class StuckTransactionsTest {
     fun getStuckTransactions() {
         runBlocking {
             repeat(3) {
-                val trade = testSdk.bobaRinkebyEthRinkebyClient.findBestTradeExactIn(
-                    to = denWalletAddress,
-                    fromToken = testSdk.bobaRinkeby.token.ETH,
-                    targetToken = testSdk.ethRinkeby.token.ETH,
-                    amountIn = 1_000_000_000_000_000.bi,
-                    bridgingFeeProvider = { _, _, _, _ -> 0.bi }
-                )?.also(::println) as? CalculatedMetaSwapTrade.ExactIn ?: error("Trade not found")
-
-                val tx = testSdk.bobaRinkebyEthRinkebyClient.execute(
-                    credentials = denCredentials,
-                    trade = trade
-                )
-                println(tx.waitForReceipt())
+//                val trade = testSdk.bobaRinkebyEthRinkebyClient.findBestTradeExactIn(
+//                    to = denWalletAddress,
+//                    fromToken = testSdk.bobaRinkeby.token.ETH,
+//                    targetToken = testSdk.ethRinkeby.token.ETH,
+//                    amountIn = 1_000_000_000_000_000.bi,
+//                    bridgingFeeProvider = { _, _, _, _ -> 0.bi }
+//                )?.also(::println) as? CalculatedMetaSwapTrade.ExactIn ?: error("Trade not found")
+//
+//                val tx = testSdk.bobaRinkebyEthRinkebyClient.execute(
+//                    credentials = denCredentials,
+//                    trade = trade
+//                )
+//                println(tx.waitForReceipt())
             }
 
 //            val requests = testSdk.getStuckTransactions(alexWalletAddress)

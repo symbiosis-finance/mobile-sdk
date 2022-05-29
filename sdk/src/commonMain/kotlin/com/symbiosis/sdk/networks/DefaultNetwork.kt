@@ -2,13 +2,11 @@ package com.symbiosis.sdk.networks
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.configuration.BridgingFeeProvider
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
 import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.providers.DefaultBridgingFeeProvider
 import com.symbiosis.sdk.providers.DefaultGasProvider
 import com.symbiosis.sdk.providers.DefaultTTLProvider
 import dev.icerock.moko.web3.ContractAddress
@@ -17,7 +15,6 @@ abstract class DefaultNetwork : Network {
     abstract val tokens: List<Token>
 
     override val gasProvider: GasProvider = DefaultGasProvider
-    override val bridgingFeeProvider: BridgingFeeProvider = DefaultBridgingFeeProvider
     override val swapTTLProvider: SwapTTLProvider = DefaultTTLProvider
 
     abstract val chainIdInt: Int

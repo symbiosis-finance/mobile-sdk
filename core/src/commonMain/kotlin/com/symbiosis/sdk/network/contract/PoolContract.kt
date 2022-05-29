@@ -1,8 +1,8 @@
 package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.swap.Reserves
-import com.symbiosis.sdk.swap.ReservesData
+import com.symbiosis.sdk.swap.uni.Reserves
+import com.symbiosis.sdk.swap.uni.ReservesData
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
 import dev.icerock.moko.web3.requests.executeBatch

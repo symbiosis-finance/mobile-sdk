@@ -62,6 +62,8 @@ fun DecimalsErc20Token(network: Network, tokenAddress: ContractAddress, decimals
                 other.network.chainId == network.chainId &&
                 other.tokenAddress.prefixed == tokenAddress.prefixed
     }
+
+    override fun toString(): String = "$tokenAddress[${network.networkName}]"
 }
 
 interface DecimalsNativeToken : DecimalsToken, NativeToken
@@ -74,6 +76,8 @@ fun DecimalsNativeToken(wrapped: Erc20Token, network: Network = wrapped.network,
         return other is NativeToken &&
                 other.network.chainId == network.chainId
     }
+
+    override fun toString(): String = "Native[${network.networkName}]"
 }
 
 fun DecimalsToken.convertIntegerToReal(integer: BigInt) =

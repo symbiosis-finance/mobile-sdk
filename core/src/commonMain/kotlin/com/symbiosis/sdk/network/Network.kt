@@ -1,7 +1,6 @@
 package com.symbiosis.sdk.network
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.configuration.BridgingFeeProvider
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
 import com.symbiosis.sdk.currency.DecimalsNativeToken
@@ -34,7 +33,6 @@ interface Network {
     val dexEndpoints: List<DexEndpoint>
 
     val gasProvider: GasProvider
-    val bridgingFeeProvider: BridgingFeeProvider
     val swapTTLProvider: SwapTTLProvider
 
     val executor: Web3Executor

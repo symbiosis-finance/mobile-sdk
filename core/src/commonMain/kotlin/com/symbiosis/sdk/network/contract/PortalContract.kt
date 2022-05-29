@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
@@ -72,16 +70,17 @@ class PortalContract internal constructor(
         stableBridgingFee: BigInt,
         amount: BigInt,
         rtoken: ContractAddress,
-        chain2address: WalletAddress,
+        chain2address: EthereumAddress,
         receiveSide: ContractAddress,
         oppositeBridge: ContractAddress,
-        fromAddress: WalletAddress,
+        fromAddress: EthereumAddress,
         chainId: BigInt,
         swapTokens: List<ContractAddress>,
         secondDexRouter: ContractAddress,
         secondSwapCalldata: HexString,
         finalDexRouter: ContractAddress,
-        finalSwapCalldata: HexString?
+        finalSwapCalldata: HexString?,
+        finalOffset: BigInt
     ): HexString = wrapped.encodeMethod(
         method = "metaSynthesize",
         params = listOf(
@@ -99,6 +98,7 @@ class PortalContract internal constructor(
                 secondSwapCalldata.byteArray,
                 finalDexRouter.bigInt,
                 finalSwapCalldata?.byteArray ?: byteArrayOf(),
+                finalOffset,
                 chain2address.bigInt
             )
         )
@@ -107,21 +107,22 @@ class PortalContract internal constructor(
     fun getMetaUnsynthesizeCalldata(
         token: ContractAddress,
         amount: BigInt,
-        to: WalletAddress,
+        to: EthereumAddress,
         synthesisRequestsCount: BigInt,
         finalNetwork: Network,
         finalSwapCalldata: HexString?,
-        finalRouterAddress: ContractAddress
+        finalOffset: BigInt
     ): HexString = wrapped.encodeMethod(
         method = "metaUnsynthesize",
         params = listOf(
-            0.bi, // bridging fee
+            1.bi, // bridging fee
             getExternalId(synthesisRequestsCount, finalNetwork, to).byteArray, // tx id
             to.bigInt, // toAddress
             amount,
             token.bigInt,
-            finalRouterAddress.bigInt,
-            finalSwapCalldata?.byteArray ?: byteArrayOf()
+            finalNetwork.routerAddress.bigInt,
+            finalSwapCalldata?.byteArray ?: byteArrayOf(),
+            finalOffset
         )
     )
 

@@ -2,7 +2,7 @@
 
 package com.symbiosis.sdk
 
-import com.symbiosis.sdk.crosschain.CrossChainClient
+import com.symbiosis.sdk.swap.crosschain.CrossChainClient
 import com.symbiosis.sdk.crosschain.testnet.*
 import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.network.Network

@@ -16,6 +16,7 @@ dependencies {
 
     commonMainApi(libs.ktorClient)
     commonMainApi(libs.ktorClientLogging)
+    commonMainImplementation(libs.ktorClientContentNegotiation)
     commonMainApi(libs.ktorClientJson)
     commonMainApi(libs.kotlinxSerialization)
     commonMainApi(libs.coroutines)

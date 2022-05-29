@@ -10,20 +10,16 @@ fun NetworkTokenPair(first: Token, second: Token): NetworkTokenPair =
 private data class _NetworkTokenPair(
     override val first: Token,
     override val second: Token
-) : NetworkTokenPair {
+) : NetworkTokenPair, TokenPair by TokenPair(first, second) {
     init {
         require(first.network.chainId == second.network.chainId)
-        require(first != second)
     }
 }
 
 /**
  * Currencies in this pair should be from one network
  */
-interface NetworkTokenPair {
-    val first: Token
-    val second: Token
-
+interface NetworkTokenPair : TokenPair {
     val nativeTokensCount get() = listOf(first, second).count { it is NativeToken }
     val network: Network get() = first.network
 
@@ -45,6 +41,8 @@ interface NetworkTokenPair {
     interface Erc20Only : NetworkTokenPair {
         override val first: Erc20Token
         override val second: Erc20Token
+
+        override fun asList(): List<Erc20Token> = listOf(first, second)
     }
 }
 
@@ -55,4 +53,6 @@ infix fun Erc20Token.networkPairWith(other: Erc20Token) =
 private data class _Erc20NetworkTokenPair(
     override val first: Erc20Token,
     override val second: Erc20Token
-) : NetworkTokenPair.Erc20Only, NetworkTokenPair by NetworkTokenPair(first, second)
+) : NetworkTokenPair.Erc20Only, NetworkTokenPair by NetworkTokenPair(first, second) {
+    override fun asList(): List<Erc20Token> = listOf(first, second)
+}

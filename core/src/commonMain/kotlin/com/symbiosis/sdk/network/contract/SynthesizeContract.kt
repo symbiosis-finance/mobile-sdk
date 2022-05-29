@@ -8,7 +8,6 @@ import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.contract.WriteRequest
 import com.symbiosis.sdk.contract.write
 import com.symbiosis.sdk.contract.writeRequest
-import com.symbiosis.sdk.currency.AddressZero
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.stuck.StuckRequest
@@ -72,11 +71,12 @@ class SynthesizeContract internal constructor(
     fun getMetaBurnSynthTokenCalldata(
         stableBridgingFee: BigInt,
         amount: BigInt,
-        fromAddress: WalletAddress,
+        fromAddress: EthereumAddress,
         finalDexRouter: ContractAddress,
         sToken: ContractAddress,
-        swapCallData: HexString?,
-        chain2Address: WalletAddress,
+        finalCallData: HexString?,
+        finalOffset: BigInt?,
+        chain2Address: EthereumAddress,
         receiveSide: ContractAddress,
         oppositeBridge: ContractAddress,
         chainId: BigInt
@@ -89,7 +89,8 @@ class SynthesizeContract internal constructor(
                 fromAddress.bigInt,
                 finalDexRouter.bigInt,
                 sToken.bigInt,
-                swapCallData?.byteArray ?: byteArrayOf(),
+                finalCallData?.byteArray ?: byteArrayOf(),
+                finalOffset ?: 0.bi,
                 chain2Address.bigInt,
                 receiveSide.bigInt,
                 oppositeBridge.bigInt,
@@ -100,36 +101,32 @@ class SynthesizeContract internal constructor(
     )
 
     fun getMetaMintSyntheticTokenCalldata(
-        to: WalletAddress,
+        to: EthereumAddress,
         portalRequestsCount: BigInt,
         finalNetwork: Network,
         finalSwapCallData: HexString?,
-        stableSwapRoute: List<ContractAddress>,
+        finalSwapOffset: BigInt,
+        swapTokens: List<ContractAddress>,
         stableSwapCallData: HexString,
         stablePoolAddress: ContractAddress,
         firstSwapAmountOut: BigInt,
         firstStableToken: ContractAddress,
-        finalRouterAddress: ContractAddress
     ): HexString = wrapped.encodeMethod(
         method = "metaMintSyntheticToken",
         params = listOf(
             listOf(
-                0.bi, // bridging fee
+                1.bi, // bridging fee
                 firstSwapAmountOut, // amount
                 getExternalId(portalRequestsCount, finalNetwork, to).byteArray, // externalId
                 firstStableToken.bigInt, // rtoken
                 network.chainId, // chainId
                 to.bigInt,
-                stableSwapRoute.map(ContractAddress::bigInt).let { list ->
-                    when (finalSwapCallData) {
-                        null -> list
-                        else -> list + AddressZero.bigInt
-                    }
-                }, // swap tokens
+                swapTokens.map(ContractAddress::bigInt), // swap tokens
                 stablePoolAddress.bigInt, // second dex router
                 stableSwapCallData.byteArray, // second swap call data
-                finalRouterAddress.bigInt,
-                finalSwapCallData?.byteArray ?: byteArrayOf()
+                finalNetwork.routerAddress.bigInt,
+                finalSwapCallData?.byteArray ?: byteArrayOf(),
+                finalSwapOffset
             )
         )
     )

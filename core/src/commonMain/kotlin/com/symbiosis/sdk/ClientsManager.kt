@@ -1,9 +1,9 @@
 package com.symbiosis.sdk
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.crosschain.CrossChain
-import com.symbiosis.sdk.crosschain.CrossChainClient
-import com.symbiosis.sdk.crosschain.RawUsageOfCrossChainConstructor
+import com.symbiosis.sdk.swap.crosschain.CrossChain
+import com.symbiosis.sdk.swap.crosschain.CrossChainClient
+import com.symbiosis.sdk.swap.crosschain.RawUsageOfCrossChainConstructor
 import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.NetworkClient

@@ -1,7 +1,7 @@
 package com.symbiosis.sdk
 
-import com.symbiosis.sdk.crosschain.CrossChain
-import com.symbiosis.sdk.crosschain.CrossChainClient
+import com.symbiosis.sdk.swap.crosschain.CrossChain
+import com.symbiosis.sdk.swap.crosschain.CrossChainClient
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.NetworkClient
 import dev.icerock.moko.web3.Web3
