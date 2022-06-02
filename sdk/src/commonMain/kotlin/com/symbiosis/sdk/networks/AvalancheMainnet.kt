@@ -21,8 +21,8 @@ class AvalancheMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val synthesizeAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
     override val bridgeAddressString = "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0"
     override val routerAddressString = "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"
-    override val metaRouterAddressString = "0x49d3Fc00f3ACf80FABCb42D7681667B20F60889A"
-    override val metaRouterGatewayAddressString = "0x8A3B5FD29E7172D13B71c3a939B8901e8400b78F"
+    override val metaRouterAddressString = "0xE5E68630B5B759e6C701B70892AA8324b71e6e20"
+    override val metaRouterGatewayAddressString = "0x25821A21C2E3455967229cADCA9b6fdd4A80a40b"
 
     val token = Tokens()
     override val tokens: List<Token> = listOf(token.AVAX, token.WAVAX, token.USDC)

@@ -41,3 +41,9 @@ val testSdk = SymbiosisSdkTestnet(
     bobaRinkebyExecutor = testBoba.executor,
     polygonMumbaiExecutor = testMumbai.executor
 )
+
+val mainnetSdk = SymbiosisSdkMainnet(
+    ethMainnetUrl = "https://rpc.symbiosis.finance/1",
+    bscMainnetUrl = "https://rpc.symbiosis.finance/56",
+    polygonMainnetUrl = "https://rpc.symbiosis.finance/137"
+)

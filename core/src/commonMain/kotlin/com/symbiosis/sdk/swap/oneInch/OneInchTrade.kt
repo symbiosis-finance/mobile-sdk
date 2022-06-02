@@ -1,6 +1,7 @@
 package com.symbiosis.sdk.swap.oneInch
 
 import com.soywiz.kbignum.BigInt
+import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.gas.GasConfiguration
 import com.symbiosis.sdk.internal.kbignum.UINT256_MAX
@@ -26,9 +27,25 @@ data class OneInchTrade(
     val gasPrice: BigInt,
     val gasLimit: BigInt,
     val slippageTolerance: Percentage,
-    val fromAddress: EthereumAddress
+    val fromAddress: EthereumAddress,
+    val priceImpact: Percentage
 ) {
+
+    private val signature = callData.withoutPrefix.take(n = 8)
+
+    // https://github.com/symbiosis-finance/js-sdk/blob/f1d6b1df614fcc801d5cda967dbf00e4e0d3cf57/src/crosschain/oneInchTrade.ts#L120
+    val callDataOffset = when (signature) {
+        "b0431182", "d0a3b665" -> 100.bi
+        "7c025200"             -> 260.bi
+        "e449022e"             ->  36.bi
+        "2e95b6c8", "bc80f1a8" ->  68.bi
+        "9994dd15"             -> 132.bi
+        "baba5255"             -> 292.bi
+        else -> error("This one signature ($signature) for 1inch is unknown for us at the moment")
+    }
+
     private var spenderCache: ContractAddress? = null
+
     suspend fun approveSpender(): ContractAddress {
         if (spenderCache == null)
             spenderCache = oneInchClient.approveSpender()  // synchronization is not bottleneck

@@ -2,7 +2,6 @@ package com.symbiosis.sdk.currency
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.BigNum
-import kotlin.jvm.JvmInline
 
 @JvmInline
 value class TokenAmount private constructor(val amount: BigNum) {
@@ -19,5 +18,5 @@ value class TokenAmount private constructor(val amount: BigNum) {
     operator fun times(other: TokenAmount) = TokenAmount(amount = amount * other.amount)
 }
 
-fun DecimalsToken.amount(raw: BigInt) = TokenAmount(raw, token = this)
+fun DecimalsToken.amountRaw(raw: BigInt) = TokenAmount(raw, token = this)
 fun DecimalsToken.amount(amount: BigNum) = TokenAmount(amount, token = this)

@@ -12,7 +12,7 @@ sealed interface StableSwapTradeAdapter {
     val amountIn: BigInt
     val amountOutEstimated: BigInt
     val priceImpact: Percentage
-    val tokens: StableSwapTokenPair
+    val tokens: StableSwapTokenPairAdapter
     val routerAddress: ContractAddress
     val route: NetworkTokenPair.Erc20Only
     val synthToken: Erc20Token
@@ -29,7 +29,7 @@ sealed interface StableSwapTradeAdapter {
         override val amountIn: BigInt = underlying.amountIn
         override val amountOutEstimated: BigInt = underlying.amountOutEstimated
         override val priceImpact: Percentage = underlying.priceImpact
-        override val tokens: StableSwapTokenPair = underlying.tokens.asStableSwap
+        override val tokens: StableSwapTokenPairAdapter = underlying.tokens.asStableSwap
         override suspend fun callData(deadline: BigInt?): HexString = underlying
             .callData(deadline = deadline ?: defaultDeadlineProvider())
         override val routerAddress: ContractAddress = underlying.crossChain.stablePool.address

@@ -17,7 +17,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
-import io.ktor.http.takeFrom
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -25,8 +24,9 @@ import kotlinx.serialization.json.Json
 fun OneInchHttpClient(network: Network): OneInchHttpClient =
     OneInchHttpClient(baseUrl = "https://api.1inch.io/v4.0/${network.chainId}")
 
-class OneInchHttpClient(private val baseUrl: URLBuilder) {
-    constructor(baseUrl: String) : this(URLBuilder(baseUrl))
+class OneInchHttpClient(private val baseUrl: io.ktor.http.Url) {
+
+    constructor(baseUrl: String) : this(URLBuilder(baseUrl).build())
 
     private val httpClient = HttpClient {
         install(ContentNegotiation) {
@@ -47,8 +47,8 @@ class OneInchHttpClient(private val baseUrl: URLBuilder) {
     )
 
     suspend fun approveSpender(): ContractAddress {
-        val response = httpClient.get {
-            url.takeFrom(baseUrl.appendPathSegments("approve", "spender"))
+        val response = httpClient.get(baseUrl) {
+            url.appendPathSegments("approve", "spender")
         }.body<ApproveSpenderResponse>()
 
         return response.address
@@ -74,7 +74,7 @@ class OneInchHttpClient(private val baseUrl: URLBuilder) {
         val value: BigInt,
         @Serializable(with = BigIntSerializer.StringPrimitive::class)
         val gasPrice: BigInt,
-        @Serializable(with = BigIntSerializer.StringPrimitive::class)
+        @Serializable(with = BigIntSerializer.LongPrimitive::class)
         val gas: BigInt
     )
 
@@ -103,14 +103,17 @@ class OneInchHttpClient(private val baseUrl: URLBuilder) {
         require(slippageTolerance > 0 && slippageTolerance < 50)
 
         try {
-            val response = httpClient.get {
-                url.takeFrom(baseUrl.appendPathSegments("swap"))
+            val response = httpClient.get(baseUrl) {
+                url.appendPathSegments("swap")
 
                 parameter("fromTokenAddress", fromTokenAddress.prefixed)
                 parameter("toTokenAddress", toTokenAddress.prefixed)
                 parameter("amount", "$amount")
                 parameter("fromAddress", fromAddress.prefixed)
                 parameter("slippage", "${slippageTolerance.intPercentage}")
+                parameter("disableEstimate", "true")
+                parameter("allowPartialFill", "false")
+                parameter("usePatching", "true")
                 parameter("destReceiver", destReceiver.prefixed)
             }.body<SwapResponse>()
 
@@ -130,7 +133,8 @@ class OneInchHttpClient(private val baseUrl: URLBuilder) {
                 // greater than your balance
                 "Not enough balance" -> error("Not enough balance")
                 "Not enough allowance" -> error("Not enough allowance")
-                else -> error("Unknown error")
+                // when trade not found 400 this occurs
+                else -> return SwapResult.InsufficientLiquidity
             }
         }
     }
@@ -141,7 +145,7 @@ class OneInchHttpClient(private val baseUrl: URLBuilder) {
         val name: String,
         @Serializable(with = BigIntSerializer.LongPrimitive::class)
         val decimals: BigInt,
-        val logoUrl: String,
+        val logoUrl: String? = null,
         val address: ContractAddress
     )
 }

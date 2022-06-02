@@ -4,7 +4,6 @@ package com.symbiosis.sdk.network
 
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.ClientsManager
-import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import com.symbiosis.sdk.contract.sortedAddresses
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.NetworkTokenPair
@@ -12,6 +11,7 @@ import com.symbiosis.sdk.currency.thisOrWrapped
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.gas.GasConfiguration
 import com.symbiosis.sdk.network.contract.NerveContract
+import com.symbiosis.sdk.network.contract.OracleContract
 import com.symbiosis.sdk.network.contract.OutboundRequest
 import com.symbiosis.sdk.network.contract.PoolContract
 import com.symbiosis.sdk.network.contract.PortalContract
@@ -25,11 +25,13 @@ import com.symbiosis.sdk.network.contract.abi.createWrappedContractAbi
 import com.symbiosis.sdk.network.contract.abi.fabricContractAbi
 import com.symbiosis.sdk.network.contract.abi.metaRouterV2Contract
 import com.symbiosis.sdk.network.contract.abi.nerveContract
+import com.symbiosis.sdk.network.contract.abi.oracleContract
 import com.symbiosis.sdk.network.contract.abi.portalContractAbi
 import com.symbiosis.sdk.network.contract.abi.routerContractAbi
 import com.symbiosis.sdk.network.contract.abi.synthesizeContractAbi
 import com.symbiosis.sdk.network.contract.metaRouter.MetaRouterContract
 import com.symbiosis.sdk.stuck.StuckRequest
+import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository
 import com.symbiosis.sdk.swap.uni.LPTokenAddressGenerator
@@ -157,6 +159,19 @@ class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Netwo
             defaultGasProvider = network.gasProvider
         )
     }
+
+    private fun oneInchOracleContract(address: ContractAddress): SmartContract =
+        SmartContract(
+            executor = this,
+            contractAddress = address,
+            abiJson = oracleContract
+        )
+
+    fun oneInchOracle(address: ContractAddress): OracleContract =
+        OracleContract(
+            executor = this,
+            wrapped = oneInchOracleContract(address)
+        )
 
     val uniLike: UniLikeSwapRepository = UniLikeSwapRepository(networkClient = this)
     val oneInchIfSupported: OneInchSwapRepository? = OneInchSwapRepository(networkClient = this)

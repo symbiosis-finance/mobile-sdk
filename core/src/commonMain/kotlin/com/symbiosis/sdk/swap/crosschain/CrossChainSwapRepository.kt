@@ -3,8 +3,6 @@ package com.symbiosis.sdk.swap.crosschain
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.NetworkTokenPair
-import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
 import dev.icerock.moko.web3.ContractAddress
@@ -20,7 +18,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
 
     suspend fun findBestTradeExactIn(
         amountIn: BigInt,
-        tokens: TokenPair,
+        tokens: CrossChainTokenPair,
         slippageTolerance: Percentage,
         from: EthereumAddress,
         recipient: EthereumAddress = from,
@@ -67,6 +65,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
         val crossChainTrade = CrossChainSwapTrade(
             amountIn = amountIn,
             amountOutEstimated = outputTrade.amountOutEstimated,
+            amountOutMin = outputTrade.amountOutMin,
             inputTrade, stableTrade, outputTrade,
             bridgingFee = bridgingFee,
             slippageTolerance = slippageTolerance,
@@ -86,10 +85,10 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
     }
 
     interface Adapter {
-        fun parsePair(pair: TokenPair): TokenPairAdapter
+        fun parsePair(pair: CrossChainTokenPair): TokenPairAdapter
 
         fun createExecutor(
-            tokens: TokenPair,
+            tokens: CrossChainTokenPair,
             inputTrade: SingleNetworkSwapTradeAdapter,
             stableTrade: StableSwapTradeAdapter,
             outputTrade: SingleNetworkSwapTradeAdapter,
@@ -105,14 +104,14 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
 
         suspend fun inputTrade(
             amountIn: BigInt,
-            tokens: NetworkTokenPair,
+            tokens: SingleNetworkTokenPairAdapter,
             slippageTolerance: Percentage,
         ): ExactInResult
 
         suspend fun inputTrade(
             amountIn: BigInt,
             firstTokenAddress: ContractAddress?,
-            tokens: NetworkTokenPair?,
+            tokens: SingleNetworkTokenPairAdapter?,
             slippageTolerance: Percentage
         ): ExactInResult = when (tokens) {
             null -> ExactInResult.Success(
@@ -129,7 +128,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
         suspend fun outputTrade(
             amountIn: BigInt,
             bridgingFee: BigInt,
-            tokens: NetworkTokenPair,
+            tokens: SingleNetworkTokenPairAdapter,
             slippageTolerance: Percentage,
             recipient: EthereumAddress
         ): ExactInResult
@@ -138,7 +137,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
             amountIn: BigInt,
             bridgingFee: BigInt,
             firstTokenAddress: ContractAddress?,
-            tokens: NetworkTokenPair?,
+            tokens: SingleNetworkTokenPairAdapter?,
             slippageTolerance: Percentage,
             recipient: EthereumAddress
         ): ExactInResult = when (tokens) {
@@ -149,7 +148,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
         }
 
         suspend fun getBridgingFee(
-            tokens: TokenPair,
+            tokens: CrossChainTokenPair,
             inputTrade: SingleNetworkSwapTradeAdapter,
             stableTrade: StableSwapTradeAdapter,
             outputTrade: SingleNetworkSwapTradeAdapter,

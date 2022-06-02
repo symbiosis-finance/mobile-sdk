@@ -24,6 +24,7 @@ sealed interface SingleNetworkTrade {
     val value: BigInt
     val tokens: NetworkTokenPair
     val callData: HexString
+    val callDataOffset: BigInt
 
     suspend fun recalculateExactIn(amountIn: BigInt): ExactIn
 
@@ -44,6 +45,7 @@ sealed interface SingleNetworkTrade {
         private val slippageTolerance: Percentage,
         private val recipient: EthereumAddress
     ) {
+        val callDataOffset = underlying.callDataOffset
         val fee = underlying.fee
         val priceImpact = underlying.priceImpact
 
@@ -113,7 +115,7 @@ sealed interface SingleNetworkTrade {
                 .toBigInt()
 
         // https://github.com/symbiosis-finance/js-sdk/blob/8fa705c582aef82c97ff5b37b802dfd1ba829b18/src/crosschain/oneInchTrade.ts#L124
-        override val priceImpact: Percentage get() = TODO()
+        override val priceImpact: Percentage = underlying.priceImpact
         override val fee = 0.bi
 
         override val recipient = underlying.recipient
@@ -129,6 +131,6 @@ sealed interface SingleNetworkTrade {
                 OneInch(underlying, oneInchSwapRepository, network)
             }
 
-        val callDataOffset: BigInt get() = TODO()
+        override val callDataOffset: BigInt = underlying.callDataOffset
     }
 }

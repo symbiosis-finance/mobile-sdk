@@ -3,8 +3,9 @@ package com.symbiosis.sdk.swap.uni
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.NetworkTokenPair
+import dev.icerock.moko.web3.ContractAddress
 
-data class UniLikePool(val pair: NetworkTokenPair.Erc20Only, val reserves: ReservesData) {
+data class UniLikePool(val pair: NetworkTokenPair.Erc20Only, val reserves: ReservesData, val address: ContractAddress) {
     fun outputAmountWithoutFee(amountIn: BigInt, hasImpact: Boolean): BigInt {
         val newReserves = when (hasImpact) {
             true -> reserves.copy(reserve1 = reserves.reserve1 + amountIn)
@@ -32,7 +33,7 @@ data class UniLikePool(val pair: NetworkTokenPair.Erc20Only, val reserves: Reser
         return InputAmountResult.Success(amountIn)
     }
 
-    override fun toString(): String = "UniLikePool[${pair.first} -> ${pair.second}]($reserves)"
+    override fun toString(): String = "UniLikePool(address=$address, route=${pair.first} -> ${pair.second}, reserves=$reserves)"
 }
 
 fun List<UniLikePool>.amountOutWithoutFee(amountIn: BigInt, hasImpact: Boolean) =

@@ -19,9 +19,9 @@ class EthMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val portalAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
     override val synthesizeAddressString = "0x0000000000000000000000000000000000000000"
     override val bridgeAddressString = "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0"
-    override val routerAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
-    override val metaRouterAddressString = "0x92C5b5B66988E6B8931a8CD3faa418b42003DF2F"
-    override val metaRouterGatewayAddressString = "0x23bcd8398A2BC9aa8d606E47D5Ae0d2f014bEA2e"
+    override val routerAddressString = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+    override val metaRouterAddressString = "0xB9E13785127BFfCc3dc970A55F6c7bF0844a3C15"
+    override val metaRouterGatewayAddressString = "0x03B7551EB0162c838a10c2437b60D1f5455b9554"
 
     val token = Tokens()
     override val tokens: List<Token> = listOf(token.ETH, token.WETH, token.USDC, token.UNI)

@@ -1,7 +1,6 @@
 package com.symbiosis.sdk.swap.singleNetwork
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository.ExactInResult
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository.ExactOutResult
@@ -13,7 +12,7 @@ internal class ComposedExactInAdapter(
 ) : SingleNetworkSwapRepository.ExactInAdapter {
     override suspend fun exactIn(
         amountIn: BigInt,
-        tokens: NetworkTokenPair,
+        tokens: SingleNetworkTokenPair,
         slippageTolerance: Percentage,
         from: EthereumAddress,
         recipient: EthereumAddress
@@ -44,7 +43,7 @@ internal class ComposedExactOutAdapter(
 ) : SingleNetworkSwapRepository.ExactOutAdapter {
     override suspend fun exactOut(
         amountOut: BigInt,
-        tokens: NetworkTokenPair,
+        tokens: SingleNetworkTokenPair,
         slippageTolerance: Percentage,
         from: EthereumAddress,
         recipient: EthereumAddress

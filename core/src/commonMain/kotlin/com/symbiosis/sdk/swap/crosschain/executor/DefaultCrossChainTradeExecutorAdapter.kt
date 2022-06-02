@@ -8,6 +8,7 @@ import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.TransactionHash
 import dev.icerock.moko.web3.hex.HexString
 
 class DefaultCrossChainTradeExecutorAdapter(
@@ -21,8 +22,8 @@ class DefaultCrossChainTradeExecutorAdapter(
         credentials: Credentials,
         deadline: BigInt?,
         gasProvider: GasProvider?
-    ) {
-        ClientsManager
+    ): TransactionHash {
+        return ClientsManager
             .getNetworkClient(crossChain.fromNetwork)
             .metaRouter
             .metaRoute(

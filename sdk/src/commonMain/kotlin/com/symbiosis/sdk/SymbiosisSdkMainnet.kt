@@ -1,11 +1,31 @@
 package com.symbiosis.sdk
 
-import com.symbiosis.sdk.swap.crosschain.CrossChainClient
-import com.symbiosis.sdk.crosschain.mainnet.*
+import com.symbiosis.sdk.crosschain.mainnet.AvalancheMainnetBscMainnet
+import com.symbiosis.sdk.crosschain.mainnet.AvalancheMainnetEthMainnet
+import com.symbiosis.sdk.crosschain.mainnet.AvalancheMainnetPolygonMainnet
+import com.symbiosis.sdk.crosschain.mainnet.BobaMainnetBscMainnet
+import com.symbiosis.sdk.crosschain.mainnet.BobaMainnetEthMainnet
+import com.symbiosis.sdk.crosschain.mainnet.BscMainnetAvalancheMainnet
+import com.symbiosis.sdk.crosschain.mainnet.BscMainnetBobaMainnet
+import com.symbiosis.sdk.crosschain.mainnet.BscMainnetEthMainnet
+import com.symbiosis.sdk.crosschain.mainnet.BscMainnetPolygonMainnet
+import com.symbiosis.sdk.crosschain.mainnet.EthMainnetAvalancheMainnet
+import com.symbiosis.sdk.crosschain.mainnet.EthMainnetBobaMainnet
+import com.symbiosis.sdk.crosschain.mainnet.EthMainnetBscMainnet
+import com.symbiosis.sdk.crosschain.mainnet.EthMainnetPolygonMainnet
+import com.symbiosis.sdk.crosschain.mainnet.PolygonMainnetAvalancheMainnet
+import com.symbiosis.sdk.crosschain.mainnet.PolygonMainnetBscMainnet
+import com.symbiosis.sdk.crosschain.mainnet.PolygonMainnetEthMainnet
 import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.NetworkClient
-import com.symbiosis.sdk.networks.*
+import com.symbiosis.sdk.networks.AvalancheMainnet
+import com.symbiosis.sdk.networks.BobaMainnet
+import com.symbiosis.sdk.networks.BscMainnet
+import com.symbiosis.sdk.networks.DefaultNetwork
+import com.symbiosis.sdk.networks.EthMainnet
+import com.symbiosis.sdk.networks.PolygonMainnet
+import com.symbiosis.sdk.swap.crosschain.CrossChainClient
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
@@ -50,7 +70,7 @@ interface SymbiosisSdkMainnet : ClientsManager {
 fun SymbiosisSdkMainnet(
     bscMainnetUrl: String,
     ethMainnetUrl: String,
-    polygonMainnetUrl: String,
+    polygonMainnetUrl: String = "https://polygon-rpc.com",
     avalancheMainnetUrl: String = "https://api.avax.network/ext/bc/C/rpc",
     bobaMainnetUrl: String = "https://mainnet.boba.network/"
 ) = SymbiosisSdkMainnet(

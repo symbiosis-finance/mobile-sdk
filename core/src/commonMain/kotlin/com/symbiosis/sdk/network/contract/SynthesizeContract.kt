@@ -74,7 +74,7 @@ class SynthesizeContract internal constructor(
         fromAddress: EthereumAddress,
         finalDexRouter: ContractAddress,
         sToken: ContractAddress,
-        finalCallData: HexString?,
+        finalSwapCallData: HexString?,
         finalOffset: BigInt?,
         chain2Address: EthereumAddress,
         receiveSide: ContractAddress,
@@ -89,7 +89,7 @@ class SynthesizeContract internal constructor(
                 fromAddress.bigInt,
                 finalDexRouter.bigInt,
                 sToken.bigInt,
-                finalCallData?.byteArray ?: byteArrayOf(),
+                finalSwapCallData?.byteArray ?: byteArrayOf(),
                 finalOffset ?: 0.bi,
                 chain2Address.bigInt,
                 receiveSide.bigInt,
@@ -104,6 +104,7 @@ class SynthesizeContract internal constructor(
         to: EthereumAddress,
         portalRequestsCount: BigInt,
         finalNetwork: Network,
+        finalDexRouter: ContractAddress,
         finalSwapCallData: HexString?,
         finalSwapOffset: BigInt,
         swapTokens: List<ContractAddress>,
@@ -124,7 +125,7 @@ class SynthesizeContract internal constructor(
                 swapTokens.map(ContractAddress::bigInt), // swap tokens
                 stablePoolAddress.bigInt, // second dex router
                 stableSwapCallData.byteArray, // second swap call data
-                finalNetwork.routerAddress.bigInt,
+                finalDexRouter.bigInt,
                 finalSwapCallData?.byteArray ?: byteArrayOf(),
                 finalSwapOffset
             )

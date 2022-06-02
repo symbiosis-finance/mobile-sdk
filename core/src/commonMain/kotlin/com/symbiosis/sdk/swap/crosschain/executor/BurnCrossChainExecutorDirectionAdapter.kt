@@ -2,10 +2,10 @@ package com.symbiosis.sdk.swap.crosschain.executor
 
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.ClientsManager
-import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.currency.AddressZero
 import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.TokenPair
+import com.symbiosis.sdk.swap.crosschain.CrossChain
+import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import dev.icerock.moko.web3.ContractAddress
@@ -16,7 +16,7 @@ class BurnCrossChainExecutorDirectionAdapter(
     private val inputTrade: SingleNetworkSwapTradeAdapter,
     private val stableTrade: StableSwapTradeAdapter,
     private val outputTrade: SingleNetworkSwapTradeAdapter,
-    private val tokens: TokenPair,
+    private val tokens: CrossChainTokenPair,
     private val crossChain: CrossChain,
     private val bridgingFee: BigInt,
     private val fromAddress: EthereumAddress,
@@ -43,7 +43,7 @@ class BurnCrossChainExecutorDirectionAdapter(
                 stableBridgingFee = bridgingFee,
                 amount = stableTrade.amountOutEstimated,
                 fromAddress = fromAddress,
-                finalCallData = outputTrade.callData,
+                finalSwapCallData = outputTrade.callData,
                 finalOffset = outputTrade.callDataOffset,
                 finalDexRouter = outputTrade.routerAddress,
                 sToken = stableTrade.synthToken.tokenAddress,

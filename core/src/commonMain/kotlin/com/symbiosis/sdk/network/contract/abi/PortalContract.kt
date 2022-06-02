@@ -47,6 +47,25 @@ private const val ABI = """
         "anonymous": false,
         "inputs": [
             {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "requestId",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "clientId",
+                "type": "bytes32"
+            }
+        ],
+        "name": "ClientIdLog",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": true,
                 "internalType": "address",
                 "name": "previousOwner",
@@ -60,6 +79,19 @@ private const val ABI = """
             }
         ],
         "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "Paused",
         "type": "event"
     },
     {
@@ -123,6 +155,57 @@ private const val ABI = """
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "address",
+                "name": "metaRouter",
+                "type": "address"
+            }
+        ],
+        "name": "SetMetaRouter",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "threshold",
+                "type": "uint256"
+            }
+        ],
+        "name": "SetTokenThreshold",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "activate",
+                "type": "bool"
+            }
+        ],
+        "name": "SetWhitelistToken",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
                 "internalType": "bytes32",
                 "name": "id",
                 "type": "bytes32"
@@ -165,6 +248,19 @@ private const val ABI = """
             }
         ],
         "name": "SynthesizeRequest",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "Unpaused",
         "type": "event"
     },
     {
@@ -342,6 +438,11 @@ private const val ABI = """
                         "internalType": "address",
                         "name": "revertableAddress",
                         "type": "address"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "clientID",
+                        "type": "bytes32"
                     }
                 ],
                 "internalType": "struct MetaRouteStructs.MetaSynthesizeTransaction",
@@ -526,6 +627,11 @@ private const val ABI = """
                 "internalType": "uint256",
                 "name": "_chainId",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_clientID",
+                "type": "bytes32"
             }
         ],
         "name": "revertBurnRequest",
@@ -641,6 +747,11 @@ private const val ABI = """
                 "internalType": "uint256",
                 "name": "_chainID",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_clientID",
+                "type": "bytes32"
             }
         ],
         "name": "synthesize",
@@ -685,6 +796,11 @@ private const val ABI = """
                 "internalType": "uint256",
                 "name": "_chainID",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_clientID",
+                "type": "bytes32"
             }
         ],
         "name": "synthesizeNative",
@@ -701,49 +817,61 @@ private const val ABI = """
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_stableBridgingFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes",
-                "name": "_approvalData",
-                "type": "bytes"
-            },
-            {
-                "internalType": "address",
-                "name": "_token",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_amount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_chain2address",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_receiveSide",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_oppositeBridge",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_revertableAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_chainID",
-                "type": "uint256"
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "stableBridgingFee",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "approvalData",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "chain2address",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "receiveSide",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "oppositeBridge",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "revertableAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "chainID",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "clientID",
+                        "type": "bytes32"
+                    }
+                ],
+                "internalType": "struct Portal.SynthesizeWithPermitTransaction",
+                "name": "_syntWithPermitTx",
+                "type": "tuple"
             }
         ],
         "name": "synthesizeWithPermit",

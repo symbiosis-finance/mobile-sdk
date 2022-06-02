@@ -7,8 +7,8 @@ import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.currency.TokenAmount
-import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.currency.amount
+import com.symbiosis.sdk.currency.amountRaw
 import com.symbiosis.sdk.currency.convertRealToInteger
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.fromToken
@@ -96,8 +96,8 @@ class CrossChainClient @RawUsageOfCrossChainConstructor constructor(val crossCha
         when (val result = getAllowedRawRangeForInput(fromToken as Token, slippageTolerance)) {
             is AllowedRangeResult.Success ->
                 DecimalsAllowedRangeResult.Success(
-                    minAmount = fromToken.amount(result.minAmount),
-                    maxAmount = fromToken.amount(result.maxAmount)
+                    minAmount = fromToken.amountRaw(result.minAmount),
+                    maxAmount = fromToken.amountRaw(result.maxAmount)
                 )
             AllowedRangeResult.TradeNotFound ->
                 DecimalsAllowedRangeResult.TradeNotFound
@@ -113,18 +113,18 @@ class CrossChainClient @RawUsageOfCrossChainConstructor constructor(val crossCha
     @Throws(Throwable::class)
     suspend fun findBestTradeExactIn(
         from: WalletAddress,
-        tokens: TokenPair,
+        tokens: CrossChainTokenPair,
         amountIn: BigInt,
         slippageTolerance: Percentage = Percentage(0.07.bn),
         recipient: EthereumAddress = from
     ): CrossChainSwapRepository.Result {
         require(slippageTolerance <= 50 && slippageTolerance >= 0) { "Tolerance should be in [0;1) range but was $slippageTolerance" }
 
-        require(tokens.first.network.chainId == crossChain.fromNetwork.chainId) {
-            "fromToken is from invalid network (${tokens.first.network.networkName}, but required ${crossChain.fromNetwork.networkName})"
+        require(tokens.first.asToken.network.chainId == crossChain.fromNetwork.chainId) {
+            "fromToken is from invalid network (${tokens.first.asToken.network.networkName}, but required ${crossChain.fromNetwork.networkName})"
         }
-        require(tokens.second.network.chainId == crossChain.toNetwork.chainId) {
-            "targetToken is from invalid network (${tokens.second.network.networkName}, but required ${crossChain.toNetwork.networkName})"
+        require(tokens.second.asToken.network.chainId == crossChain.toNetwork.chainId) {
+            "targetToken is from invalid network (${tokens.second.asToken.network.networkName}, but required ${crossChain.toNetwork.networkName})"
         }
 
         return repository.findBestTradeExactIn(amountIn, tokens, slippageTolerance, from, recipient)

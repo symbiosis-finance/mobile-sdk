@@ -31,6 +31,8 @@ sealed interface UniLikeTrade {
     val path: List<Erc20Token> get() = route.pools.map { pool -> pool.pair.first } +
             route.tokens.second.thisOrWrapped
 
+    val callDataOffset: BigInt
+
     fun recalculateExactIn(amountIn: BigInt): ExactIn =
         route.exactIn(amountIn)
 
@@ -69,6 +71,13 @@ sealed interface UniLikeTrade {
 
         fun amountOutMin(slippageTolerance: Percentage): BigInt =
             (amountOutEstimated.toBigNum() * (1.bn - slippageTolerance.fractionalValue)).toBigInt()
+
+        // https://github.com/symbiosis-finance/js-sdk/blob/cef348e5ca7263a369f0f8f6cfcc9255021993e1/src/router.ts#L87-L113
+        override val callDataOffset: BigInt =
+            when (tokens.first) {
+                is NativeToken -> 0
+                is Erc20Token -> 36
+            }.bi
 
         override suspend fun callData(
             slippageTolerance: Percentage,
@@ -132,6 +141,13 @@ sealed interface UniLikeTrade {
         val amountOut: BigInt,
         val amountInEstimated: BigInt
     ) : UniLikeTrade {
+
+        // https://github.com/symbiosis-finance/js-sdk/blob/cef348e5ca7263a369f0f8f6cfcc9255021993e1/src/router.ts#L114-L135
+        override val callDataOffset: BigInt =
+            when (tokens.first) {
+                is NativeToken -> 0
+                is Erc20Token -> 68
+            }.bi
 
         fun value(slippageTolerance: Percentage) = when (tokens.first) {
             is Erc20Token -> 0.bi

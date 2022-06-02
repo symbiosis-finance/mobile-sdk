@@ -58,6 +58,25 @@ private const val ABI = """
         "anonymous": false,
         "inputs": [
             {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "requestId",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "clientId",
+                "type": "bytes32"
+            }
+        ],
+        "name": "ClientIdLog",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": true,
                 "internalType": "address",
                 "name": "previousOwner",
@@ -71,6 +90,19 @@ private const val ABI = """
             }
         ],
         "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "Paused",
         "type": "event"
     },
     {
@@ -133,6 +165,51 @@ private const val ABI = """
         "anonymous": false,
         "inputs": [
             {
+                "indexed": false,
+                "internalType": "address",
+                "name": "fabric",
+                "type": "address"
+            }
+        ],
+        "name": "SetFabric",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "metaRouter",
+                "type": "address"
+            }
+        ],
+        "name": "SetMetaRouter",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "threshold",
+                "type": "uint256"
+            }
+        ],
+        "name": "SetTokenThreshold",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": true,
                 "internalType": "bytes32",
                 "name": "id",
@@ -164,6 +241,19 @@ private const val ABI = """
             }
         ],
         "name": "SynthesizeCompleted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "Unpaused",
         "type": "event"
     },
     {
@@ -220,6 +310,11 @@ private const val ABI = """
                 "internalType": "uint256",
                 "name": "_chainID",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_clientID",
+                "type": "bytes32"
             }
         ],
         "name": "burnSyntheticToken",
@@ -351,6 +446,11 @@ private const val ABI = """
                         "internalType": "uint256",
                         "name": "chainID",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "clientID",
+                        "type": "bytes32"
                     }
                 ],
                 "internalType": "struct MetaRouteStructs.MetaBurnTransaction",
@@ -636,6 +736,11 @@ private const val ABI = """
                 "internalType": "uint256",
                 "name": "_chainID",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_clientID",
+                "type": "bytes32"
             }
         ],
         "name": "revertSynthesizeRequest",

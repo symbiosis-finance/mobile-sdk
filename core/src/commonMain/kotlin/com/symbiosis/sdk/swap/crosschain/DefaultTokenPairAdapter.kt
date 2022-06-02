@@ -1,27 +1,24 @@
 package com.symbiosis.sdk.swap.crosschain
 
-import com.symbiosis.sdk.currency.NetworkTokenPair
-import com.symbiosis.sdk.currency.TokenPair
-
 class DefaultTokenPairAdapter(
-    val tokens: TokenPair,
+    val tokens: CrossChainTokenPair,
     val crossChain: CrossChain
 ) : TokenPairAdapter {
-    override val inputPair: NetworkTokenPair? =
+    override val inputPair: SingleNetworkTokenPairAdapter? =
         when (tokens.first == crossChain.fromToken) {
             true -> null
-            false -> NetworkTokenPair(tokens.first, crossChain.fromToken)
+            false -> SingleNetworkTokenPairAdapter(tokens.first, crossChain.fromToken)
         }
 
-    override val stablePair: StableSwapTokenPair =
-        StableSwapTokenPair(
+    override val stablePair: StableSwapTokenPairAdapter =
+        StableSwapTokenPairAdapter(
             first = crossChain.fromToken,
             second = crossChain.targetToken
         )
 
-    override val outputPair: NetworkTokenPair? =
+    override val outputPair: SingleNetworkTokenPairAdapter? =
         when (tokens.second == crossChain.targetToken) {
             true -> null
-            false -> NetworkTokenPair(crossChain.targetToken, tokens.second)
+            false -> SingleNetworkTokenPairAdapter(crossChain.targetToken, tokens.second)
         }
 }

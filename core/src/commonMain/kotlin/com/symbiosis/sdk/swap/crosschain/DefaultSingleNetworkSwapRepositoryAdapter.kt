@@ -1,7 +1,6 @@
 package com.symbiosis.sdk.swap.crosschain
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository.Adapter.ExactInResult
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository
@@ -12,14 +11,14 @@ class DefaultSingleNetworkSwapRepositoryAdapter(
 ) : SingleNetworkSwapRepositoryAdapter {
     override suspend fun exactIn(
         amountIn: BigInt,
-        tokens: NetworkTokenPair,
+        tokens: SingleNetworkTokenPairAdapter,
         slippageTolerance: Percentage,
         from: EthereumAddress,
         recipient: EthereumAddress
     ): ExactInResult {
         val trade = when (
             val result = singleNetworkSwapRepository.exactIn(
-                amountIn, tokens, slippageTolerance,
+                amountIn, tokens.asSingleNetworkTokenPair, slippageTolerance,
                 from, recipient
             )
         ) {

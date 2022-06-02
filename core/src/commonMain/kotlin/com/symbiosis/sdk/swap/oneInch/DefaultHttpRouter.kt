@@ -3,10 +3,16 @@ package com.symbiosis.sdk.swap.oneInch
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
+import com.symbiosis.sdk.swap.oneInch.priceImpact.OneInchPriceImpactRepository
 import dev.icerock.moko.web3.EthereumAddress
 
-class DefaultHttpRouter(private val networkClient: NetworkClient) : OneInchSwapRepository.Router {
+class DefaultHttpRouter(
+    private val networkClient: NetworkClient,
+    private val network: OneInchSwapRepository.Network
+) : OneInchSwapRepository.Router {
     private val oneInchClient = OneInchHttpClient(networkClient.network)
+
+    private val priceImpactRepository = OneInchPriceImpactRepository(networkClient, network)
 
     override suspend fun findBestTrade(
         tokens: OneInchTokenPair,
@@ -34,6 +40,9 @@ class DefaultHttpRouter(private val networkClient: NetworkClient) : OneInchSwapR
                 error("All checks disabled, so unreachable")
         }
 
+        val priceImpact: Percentage = priceImpactRepository
+            .priceImpact(tokens, amountIn, swapResponse.toTokenAmount)
+
         val trade = OneInchTrade(
             client = networkClient,
             oneInchClient = oneInchClient,
@@ -47,7 +56,8 @@ class DefaultHttpRouter(private val networkClient: NetworkClient) : OneInchSwapR
             gasLimit = swapResponse.tx.gas,
             slippageTolerance = slippageTolerance,
             recipient = recipient,
-            fromAddress = fromAddress
+            fromAddress = fromAddress,
+            priceImpact = priceImpact
         )
 
         return OneInchSwapRepository.ExactInResult.Success(trade)

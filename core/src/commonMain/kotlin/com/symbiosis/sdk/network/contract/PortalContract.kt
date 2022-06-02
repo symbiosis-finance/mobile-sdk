@@ -109,6 +109,7 @@ class PortalContract internal constructor(
         amount: BigInt,
         to: EthereumAddress,
         synthesisRequestsCount: BigInt,
+        finalDexAddress: ContractAddress,
         finalNetwork: Network,
         finalSwapCalldata: HexString?,
         finalOffset: BigInt
@@ -120,7 +121,7 @@ class PortalContract internal constructor(
             to.bigInt, // toAddress
             amount,
             token.bigInt,
-            finalNetwork.routerAddress.bigInt,
+            finalDexAddress.bigInt,
             finalSwapCalldata?.byteArray ?: byteArrayOf(),
             finalOffset
         )

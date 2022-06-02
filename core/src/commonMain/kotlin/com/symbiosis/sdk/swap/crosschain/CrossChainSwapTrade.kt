@@ -11,6 +11,7 @@ import dev.icerock.moko.web3.EthereumAddress
 data class CrossChainSwapTrade(
     val amountIn: BigInt,
     val amountOutEstimated: BigInt,
+    val amountOutMin: BigInt,
     val inputTrade: SingleNetworkSwapTradeAdapter,
     val stableTrade: StableSwapTradeAdapter,
     val outputTrade: SingleNetworkSwapTradeAdapter,
@@ -19,13 +20,13 @@ data class CrossChainSwapTrade(
     private val bridgingFee: BigInt,
     private val executor: CrossChainTradeExecutorAdapter
 ) {
+    // todo: add currency to the fee
     data class TransactionFee(
         val inputTrade: BigInt,
         val bridgingFee: BigInt,
         val outputTrade: BigInt
-    ) {
-        val total: BigInt = inputTrade + bridgingFee + outputTrade
-    }
+    )
+
     data class PriceImpact(
         val inputTade: Percentage,
         val stableTrade: Percentage,

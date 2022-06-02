@@ -15,7 +15,7 @@ interface CrossChain {
     val maxStableTokensAmountPerTrade: BigNum
 
     val hasPoolOnFirstNetwork: Boolean get() = fromNetwork.chainId == stablePool.fromNetwork.chainId
-    val hasPoolOnSecondNetwork: Boolean get() = toNetwork.chainId == stablePool.targetNetwork.chainId
+    val hasPoolOnSecondNetwork: Boolean get() = toNetwork.chainId == stablePool.fromNetwork.chainId
 }
 
 

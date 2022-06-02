@@ -38,11 +38,7 @@ sealed interface SingleNetworkSwapTradeAdapter {
         override val callData: HexString = underlying.callData
         override val amountOutMin: BigInt = underlying.amountOutMin
         override val routerAddress: ContractAddress = underlying.routerAddress
-        override val callDataOffset: BigInt =
-            when (underlying) {
-                is SingleNetworkTrade.UniLike.ExactIn -> 36.bi
-                is SingleNetworkTrade.OneInch -> underlying.callDataOffset
-            }
+        override val callDataOffset: BigInt = underlying.callDataOffset
         override val firstTokenAddress: ContractAddress? = (underlying.tokens.first as? Erc20Token)
             ?.tokenAddress
     }

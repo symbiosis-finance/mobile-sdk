@@ -21,8 +21,8 @@ class PolygonMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val synthesizeAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
     override val bridgeAddressString = "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0"
     override val routerAddressString = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"
-    override val metaRouterAddressString = "0xd2B5945829D8254C40f63f476C9F02CF5762F8DF"
-    override val metaRouterGatewayAddressString = "0x5ee04643fe2D63f364F77B38C41F15A54930f5C1"
+    override val metaRouterAddressString = "0x733D33FA01424F83E9C095af3Ece80Ed6fa565F1"
+    override val metaRouterGatewayAddressString = "0xF3273BD35e4Ad4fcd49DabDee33582b41Cbb9d77"
 
     val token = Tokens()
     override val tokens: List<Token> = listOf(token.MATIC, token.WMATIC, token.USDC)
@@ -40,8 +40,13 @@ class PolygonMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     inner class Tokens internal constructor() {
         val USDC = DecimalsErc20Token(
             network = this@PolygonMainnet,
-            tokenAddress = "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc",
+            tokenAddress = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
             decimals = 6
+        )
+        val BNB = DecimalsErc20Token(
+            network = this@PolygonMainnet,
+            tokenAddress = "0x3BA4c387f786bFEE076A58914F5Bd38d668B42c3",
+            decimals = 18
         )
         val WMATIC = DecimalsErc20Token(
             network = this@PolygonMainnet,

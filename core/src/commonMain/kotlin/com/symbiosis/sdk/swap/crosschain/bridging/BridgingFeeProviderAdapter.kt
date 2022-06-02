@@ -1,8 +1,8 @@
 package com.symbiosis.sdk.swap.crosschain.bridging
 
 import com.symbiosis.sdk.ClientsManager
-import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.crosschain.CrossChain
+import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.fromToken
@@ -25,7 +25,7 @@ internal class BurnBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBridg
     override val receiveSide: ContractAddress = outputNetwork.portalAddress
 
     override suspend fun callData(
-        tokens: TokenPair,
+        tokens: CrossChainTokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
@@ -39,6 +39,7 @@ internal class BurnBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBridg
                 to = recipient,
                 synthesisRequestsCount = inputNetworkClient.synthesize.requestsCount(),
                 finalNetwork = outputNetwork,
+                finalDexAddress = outputTrade.routerAddress,
                 finalSwapCalldata = outputTrade.callData,
                 finalOffset = outputTrade.callDataOffset
             )
@@ -48,7 +49,7 @@ internal class SynthBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBrid
     override val receiveSide: ContractAddress = outputNetwork.synthesizeAddress
 
     override suspend fun callData(
-        tokens: TokenPair,
+        tokens: CrossChainTokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
@@ -59,9 +60,10 @@ internal class SynthBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBrid
             to = recipient,
             portalRequestsCount = inputNetworkClient.portal.requestsCount(),
             finalNetwork = outputNetwork,
+            finalDexRouter = outputTrade.routerAddress,
             finalSwapCallData = outputTrade.callData,
             finalSwapOffset = outputTrade.callDataOffset,
-            swapTokens = getSynthSwapTokens(stableTrade, outputTrade, tokens.second),
+            swapTokens = getSynthSwapTokens(stableTrade, outputTrade, tokens.second.asToken),
             stableSwapCallData = stableTrade.callData(deadline = null),
             stablePoolAddress = crossChain.stablePool.address,
             firstSwapAmountOut = inputTrade.amountOutEstimated,

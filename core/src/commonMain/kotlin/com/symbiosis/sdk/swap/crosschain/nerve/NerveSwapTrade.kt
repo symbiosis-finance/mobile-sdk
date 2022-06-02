@@ -5,7 +5,7 @@ import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.currency.amount
+import com.symbiosis.sdk.currency.amountRaw
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.wallet.Credentials
@@ -22,8 +22,8 @@ data class NerveSwapTrade(
     val priceImpact: Percentage
 
     init {
-        val amountInAsReal = tokens.first.amount(raw = amountIn).amount
-        val amountOutAsReal = tokens.second.amount(raw = amountOutEstimated).amount
+        val amountInAsReal = tokens.first.amountRaw(raw = amountIn).amount
+        val amountOutAsReal = tokens.second.amountRaw(raw = amountOutEstimated).amount
 
         val difference = amountInAsReal - amountOutAsReal
 

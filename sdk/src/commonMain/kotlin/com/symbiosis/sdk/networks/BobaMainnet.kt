@@ -22,8 +22,8 @@ open class BobaMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val synthesizeAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
     override val bridgeAddressString = "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0"
     override val routerAddressString = "0x17C83E2B96ACfb5190d63F5E46d93c107eC0b514"
-    override val metaRouterAddressString = "0xc2299c4a45b7e44fFC23e6ba7aAC4AeFF0DDbccC"
-    override val metaRouterGatewayAddressString = "0xcB9ec7Bfa69c400F97fD667Bf3D8C61359cf50c2"
+    override val metaRouterAddressString = "0xd2B5945829D8254C40f63f476C9F02CF5762F8DF"
+    override val metaRouterGatewayAddressString = "0x5ee04643fe2D63f364F77B38C41F15A54930f5C1"
 
     val token = Tokens()
     override val tokens: List<Token> = listOf(token.USDC, token.ETH, token.WETH)

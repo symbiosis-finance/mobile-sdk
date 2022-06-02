@@ -18,12 +18,12 @@ class BscTestnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val networkName: String = "BscTestnet"
 
     override val chainIdInt = 0x61
-    override val synthFabricAddressString = "0xC29cff9F2d649240a35F7401cb6B1C5B8227d676"
-    override val portalAddressString = "0x7cD337E485a0ED3e2F508bfCbE3484A746552529"
-    override val synthesizeAddressString = "0x68801662cab0D678E5216CB67DaD350271375024"
-    override val bridgeAddressString = "0xBA7c80bb5d316c4eE55F96F47d1a1477fFD1aFb6"
+    override val synthFabricAddressString = "0xdBfb647247E4e402437f717FB154a990a6f5372d"
+    override val portalAddressString = "0x1EE47a7DF64a8A23FA47458d9d7b148559b728ac"
+    override val synthesizeAddressString = "0xF0f4F93CE9A0Ee6e9ad9406e0fea81843164fD74"
+    override val bridgeAddressString = "0x67e2696fb65641902AA26DC9bABf76cE134CA377"
     override val routerAddressString = "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
-    override val metaRouterAddressString = "0x51bCcf889989af8afd98C9e386C935A3C0Ff43f0"
+    override val metaRouterAddressString = "0x8eF37F8FF0E4916017697A525d34f481CAa15090"
     override val metaRouterGatewayAddressString = "0xE9EF3E03cd8E4641B867F8A58d4311da8dAd49c8"
 
     val token = Tokens()

@@ -2,8 +2,6 @@ package com.symbiosis.sdk.swap.crosschain
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.currency.NetworkTokenPair
-import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository.Adapter.ExactInResult
 import com.symbiosis.sdk.swap.crosschain.bridging.BridgingFeeProvider
@@ -20,11 +18,11 @@ class DefaultCrossChainAdapter(
     private val inputNetwork = crossChain.fromNetwork
     private val outputNetwork = crossChain.toNetwork
 
-    override fun parsePair(pair: TokenPair): TokenPairAdapter {
-        require(pair.first.network.chainId == crossChain.fromNetwork.chainId) {
+    override fun parsePair(pair: CrossChainTokenPair): TokenPairAdapter {
+        require(pair.first.asToken.network.chainId == crossChain.fromNetwork.chainId) {
             "Invalid crossChain selected"
         }
-        require(pair.second.network.chainId == crossChain.toNetwork.chainId) {
+        require(pair.second.asToken.network.chainId == crossChain.toNetwork.chainId) {
             "Invalid crossChain selected"
         }
 
@@ -32,7 +30,7 @@ class DefaultCrossChainAdapter(
     }
 
     override fun createExecutor(
-        tokens: TokenPair,
+        tokens: CrossChainTokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
@@ -46,7 +44,7 @@ class DefaultCrossChainAdapter(
 
     override suspend fun inputTrade(
         amountIn: BigInt,
-        tokens: NetworkTokenPair,
+        tokens: SingleNetworkTokenPairAdapter,
         slippageTolerance: Percentage
     ): ExactInResult = inputSingleNetworkSwap.exactIn(
         amountIn = amountIn,
@@ -68,7 +66,7 @@ class DefaultCrossChainAdapter(
     override suspend fun outputTrade(
         amountIn: BigInt,
         bridgingFee: BigInt,
-        tokens: NetworkTokenPair,
+        tokens: SingleNetworkTokenPairAdapter,
         slippageTolerance: Percentage,
         recipient: EthereumAddress
     ): ExactInResult {
@@ -85,7 +83,7 @@ class DefaultCrossChainAdapter(
     }
 
     override suspend fun getBridgingFee(
-        tokens: TokenPair,
+        tokens: CrossChainTokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,

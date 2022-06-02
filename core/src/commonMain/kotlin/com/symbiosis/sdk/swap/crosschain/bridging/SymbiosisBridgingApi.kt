@@ -26,7 +26,7 @@ object SymbiosisBridgingApi {
     }
     private val client = HttpClient {
         install(Logging) {
-            level = LogLevel.NONE
+            level = LogLevel.ALL
         }
         install(DefaultRequest) {
             contentType(ContentType.Application.Json)
@@ -64,7 +64,7 @@ object SymbiosisBridgingApi {
         callData: HexString
     ): BigInt = try {
         client
-            .post(urlString = "https://api.dev.symbiosis.finance/calculations/v1/swap/price") {
+            .post(urlString = "https://api.symbiosis.finance/calculations/v1/swap/price") {
                 setBody(
                     body = GetBridgingFeeBody(
                         chainIdFrom = chainFromId,

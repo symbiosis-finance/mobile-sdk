@@ -9,7 +9,5 @@ class OneInchTokenPair(val first: OneInchToken, val second: OneInchToken) {
     }
 }
 
-val NetworkTokenPair.asOneInchPair get() = OneInchTokenPair(first.asOneInchToken, second.asOneInchToken)
-
 fun OneInchTokenPair.asNetworkPair(network: Network) =
-    NetworkTokenPair(first.asToken(network), second.asToken(network))
+    NetworkTokenPair(first.asToken(network).asToken, second.asToken(network).asToken)

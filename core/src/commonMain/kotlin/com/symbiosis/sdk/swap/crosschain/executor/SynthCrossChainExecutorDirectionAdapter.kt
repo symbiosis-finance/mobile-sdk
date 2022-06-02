@@ -4,8 +4,8 @@ import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.ClientsManager
 import com.symbiosis.sdk.currency.AddressZero
 import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.crosschain.CrossChain
+import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.getSynthSwapTokens
@@ -14,7 +14,7 @@ import dev.icerock.moko.web3.EthereumAddress
 import dev.icerock.moko.web3.hex.HexString
 
 class SynthCrossChainExecutorDirectionAdapter(
-    private val tokens: TokenPair,
+    private val tokens: CrossChainTokenPair,
     private val inputTrade: SingleNetworkSwapTradeAdapter,
     private val stableTrade: StableSwapTradeAdapter,
     private val outputTrade: SingleNetworkSwapTradeAdapter,
@@ -29,20 +29,20 @@ class SynthCrossChainExecutorDirectionAdapter(
     override val approvedTokens: List<ContractAddress> =
         listOf(
             (tokens.first as? Erc20Token)?.tokenAddress ?: AddressZero,
-            stableTrade.synthToken.tokenAddress
+            stableTrade.tokens.first.tokenAddress
         )
 
     override val relayRecipient: ContractAddress =
         crossChain.fromNetwork.portalAddress
 
-    val swapTokens: List<ContractAddress> = getSynthSwapTokens(stableTrade, outputTrade, tokens.second)
+    val swapTokens: List<ContractAddress> = getSynthSwapTokens(stableTrade, outputTrade, tokens.second.asToken)
 
     override suspend fun otherSideCallData(deadline: BigInt?): HexString =
         ClientsManager.getNetworkClient(crossChain.fromNetwork)
             .portal
             .getMetaSynthesizeCalldata(
                 stableBridgingFee = bridgingFee,
-                amount = inputTrade.amountIn,
+                amount = inputTrade.amountOutMin,
                 rtoken = inputTrade.firstTokenAddress ?: stableTrade.tokens.first.tokenAddress,
                 chain2address = recipient,
                 receiveSide = crossChain.toNetwork.synthesizeAddress,

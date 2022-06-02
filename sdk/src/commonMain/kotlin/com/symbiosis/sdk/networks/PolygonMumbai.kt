@@ -16,12 +16,12 @@ class PolygonMumbai(override val executor: Web3Executor) : DefaultNetwork() {
     override val networkName: String = "PolygonMumbai"
 
     override val chainIdInt = 0x13881
-    override val synthFabricAddressString = "0x014aA1eD19b4B94430Ba664B44C130A7084b5bFa"
-    override val portalAddressString = "0x24017eEB483fD95339B66d8e4be74eFFeE67E2cB"
-    override val synthesizeAddressString = "0x12723824603df3cF4F55feB298aD0D00E1BFEf48"
-    override val bridgeAddressString = "0x823389FfdF5F1BAD10eB52089E7195772A54ccBa"
+    override val synthFabricAddressString = "0xe0A0CEb6f3e740C4fc4A1eb38e4135440470175A"
+    override val portalAddressString = "0xfF0a032e793bAf78C4153CD96135013D6A468b39"
+    override val synthesizeAddressString = "0xEE0F117Db9ED4d1A4421cdCa7d32a1F878eF4F7C"
+    override val bridgeAddressString = "0xEdCAeb1D346396B3e4E861e4A6F0B72b9850fCC5"
     override val routerAddressString = "0xca33f6D096BDD7FcB28d708f631cD76E73Ecfc2d"
-    override val metaRouterAddressString = "0xd70077A7e64473F2B606fDeE43014d63d3F8dFB2"
+    override val metaRouterAddressString = "0xBD52F6fF61ce247798602B8F794a2DC31a8aB5F9"
     override val metaRouterGatewayAddressString = "0xF7Bc9b805d94F47b5A7BacF9fb847b1d2D830f60"
 
     val token = Tokens()
