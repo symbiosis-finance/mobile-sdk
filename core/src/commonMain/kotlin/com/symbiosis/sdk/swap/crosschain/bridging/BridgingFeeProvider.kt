@@ -1,6 +1,6 @@
 package com.symbiosis.sdk.swap.crosschain.bridging
 
-import com.soywiz.kbignum.BigInt
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
@@ -13,5 +13,5 @@ interface BridgingFeeProvider {
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
         recipient: EthereumAddress
-    ): BigInt
+    ): TokenAmount
 }

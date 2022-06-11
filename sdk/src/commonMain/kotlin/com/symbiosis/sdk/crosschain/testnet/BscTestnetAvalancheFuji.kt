@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class BscTestnetAvalancheFuji(
     bscTestnetExecutor: Web3Executor,
     avalancheFujiExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : TestnetCrossChain() {
     constructor(bscTestnetUrl: String, avalancheFujiUrl: String) :
             this(Web3(bscTestnetUrl), Web3(avalancheFujiUrl))
 

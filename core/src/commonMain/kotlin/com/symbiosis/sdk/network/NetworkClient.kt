@@ -32,10 +32,7 @@ import com.symbiosis.sdk.network.contract.abi.synthesizeContractAbi
 import com.symbiosis.sdk.network.contract.metaRouter.MetaRouterContract
 import com.symbiosis.sdk.stuck.StuckRequest
 import com.symbiosis.sdk.swap.crosschain.NerveStablePool
-import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
-import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository
 import com.symbiosis.sdk.swap.uni.LPTokenAddressGenerator
-import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
 import com.symbiosis.sdk.swap.uni.generate
 import com.symbiosis.sdk.transaction.SignedTransaction
 import com.symbiosis.sdk.wallet.Credentials
@@ -54,13 +51,6 @@ import dev.icerock.moko.web3.requests.executeBatch
 import dev.icerock.moko.web3.requests.getBlockNumber
 import kotlinx.serialization.json.Json
 
-@RequiresOptIn(
-    message = "Please, consider to use ClientsManager.getNetworkClient instead of the raw constructor, because " +
-            "it's signature may be changed in the future.",
-    level = RequiresOptIn.Level.WARNING
-)
-annotation class RawUsageOfNetworkConstructor
-
 /**
  * This is a single-network client that responds for
  * executing contracts and web3-requests.
@@ -72,7 +62,7 @@ annotation class RawUsageOfNetworkConstructor
  * To get more information about contracts, use jump-to-definition and
  * check for kdoc
  */
-class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Network) :
+class NetworkClient constructor(val network: Network) :
     Web3Executor by network.executor {
 
     // ----------------------- //
@@ -172,10 +162,6 @@ class NetworkClient @RawUsageOfNetworkConstructor constructor(val network: Netwo
             executor = this,
             wrapped = oneInchOracleContract(address)
         )
-
-    val uniLike: UniLikeSwapRepository = UniLikeSwapRepository(networkClient = this)
-    val oneInchIfSupported: OneInchSwapRepository? = OneInchSwapRepository(networkClient = this)
-    val swap: SingleNetworkSwapRepository = SingleNetworkSwapRepository(networkClient = this)
 
     fun getTokenContract(address: ContractAddress) =
         TokenContract(
@@ -379,3 +365,5 @@ private fun LogEvent.synthInternalId() = ABIDecoder
 private fun LogEvent.burnInternalId() = ABIDecoder
     .decodeLogEvent(synthesizeContractAbi, event = this)
     .let { (internalId) -> Hex32String(internalId as ByteArray) }
+
+val Network.networkClient get() = NetworkClient(network = this)

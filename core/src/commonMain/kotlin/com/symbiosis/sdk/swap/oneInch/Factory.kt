@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.symbiosis.sdk.swap.oneInch
 
 import com.symbiosis.sdk.network.NetworkClient

@@ -1,23 +1,23 @@
 package com.symbiosis.sdk.swap.uni
 
-import com.symbiosis.sdk.swap.uni.Web3UniLikeSwapRoutes.Route
-import com.symbiosis.sdk.currency.Erc20Token
+import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
+import com.symbiosis.sdk.swap.uni.Web3UniLikeSwapRoutes.Route
 
-typealias SwapRoute = List<Erc20Token>
+typealias SwapRoute = List<DecimalsErc20Token>
 
 object UniLikeSwapRoutesGenerator {
     fun getBaseRoutes(network: Network, maxHops: Int = 3): List<SwapRoute> {
         require(maxHops > 0)
 
-        if (maxHops == 1) return network.swapBases.map { listOf(it) }
+        if (maxHops == 1) return network.uniSwapBases.map { listOf(it) }
 
         val previousRoutes = getBaseRoutes(network, maxHops = maxHops - 1)
 
         val nextRoutes = previousRoutes.flatMap { previousRoute ->
-            network.swapBases
+            network.uniSwapBases
                 .filter { currency -> currency !in previousRoute }
                 .map { currency -> previousRoute + currency }
                 .filter { route -> route !in previousRoutes }

@@ -3,6 +3,7 @@ package com.symbiosis.sdk.network
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
+import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.dex.DexEndpoint
@@ -29,7 +30,7 @@ interface Network {
     val metaRouterGatewayAddress: ContractAddress
 
     val nativeCurrency: DecimalsNativeToken
-    val swapBases: List<Erc20Token>
+    val uniSwapBases: List<DecimalsErc20Token>
     val dexEndpoints: List<DexEndpoint>
 
     val gasProvider: GasProvider

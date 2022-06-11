@@ -2,12 +2,29 @@
 
 package com.symbiosis.sdk
 
-import com.symbiosis.sdk.swap.crosschain.CrossChainClient
-import com.symbiosis.sdk.crosschain.testnet.*
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.crosschain.testnet.AvalancheFujiBscTestnet
+import com.symbiosis.sdk.crosschain.testnet.AvalancheFujiEthRinkeby
+import com.symbiosis.sdk.crosschain.testnet.BobaRinkebyBscTestnet
+import com.symbiosis.sdk.crosschain.testnet.BobaRinkebyEthRinkeby
+import com.symbiosis.sdk.crosschain.testnet.BscTestnetAvalancheFuji
+import com.symbiosis.sdk.crosschain.testnet.BscTestnetBobaRinkeby
+import com.symbiosis.sdk.crosschain.testnet.BscTestnetEthRinkeby
+import com.symbiosis.sdk.crosschain.testnet.BscTestnetPolygonMumbai
+import com.symbiosis.sdk.crosschain.testnet.EthRinkebyAvalancheFuji
+import com.symbiosis.sdk.crosschain.testnet.EthRinkebyBobaRinkeby
+import com.symbiosis.sdk.crosschain.testnet.EthRinkebyBscTestnet
+import com.symbiosis.sdk.crosschain.testnet.EthRinkebyPolygonMumbai
+import com.symbiosis.sdk.crosschain.testnet.PolygonMumbaiBscTestnet
+import com.symbiosis.sdk.crosschain.testnet.PolygonMumbaiEthRinkeby
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.network.NetworkClient
-import com.symbiosis.sdk.networks.*
+import com.symbiosis.sdk.networks.AvalancheFuji
+import com.symbiosis.sdk.networks.BobaRinkeby
+import com.symbiosis.sdk.networks.BscTestnet
+import com.symbiosis.sdk.networks.DefaultNetwork
+import com.symbiosis.sdk.networks.EthRinkeby
+import com.symbiosis.sdk.networks.PolygonMumbai
+import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
@@ -19,32 +36,32 @@ interface SymbiosisSdkTestnet : ClientsManager {
     val bobaRinkeby: BobaRinkeby
 
     override val allNetworks: List<Network>
-    override val allTokens: List<Token>
+    override val allTokens: List<DecimalsToken>
 
-    val avalancheFujiClient: NetworkClient
-    val bscTestnetClient: NetworkClient
-    val ethRinkebyClient: NetworkClient
-    val polygonMumbaiClient: NetworkClient
-    val bobaRinkebyClient: NetworkClient
+    val avalancheFujiClient: SymbiosisNetworkClient
+    val bscTestnetClient: SymbiosisNetworkClient
+    val ethRinkebyClient: SymbiosisNetworkClient
+    val polygonMumbaiClient: SymbiosisNetworkClient
+    val bobaRinkebyClient: SymbiosisNetworkClient
 
-    override val allClients: List<NetworkClient>
+    override val allClients: List<SymbiosisNetworkClient>
 
-    val avalancheFujiBscTestnetClient: CrossChainClient
-    val avalancheFujiEthRinkebyClient: CrossChainClient
-    val bscTestnetAvalancheFujiClient: CrossChainClient
-    val bscTestnetEthRinkebyClient: CrossChainClient
-    val bscTestnetPolygonMumbaiClient: CrossChainClient
-    val bscTestnetBobaRinkebyClient: CrossChainClient
-    val ethRinkebyAvalancheFujiClient: CrossChainClient
-    val ethRinkebyBscTestnetClient: CrossChainClient
-    val ethRinkebyPolygonMumbaiClient: CrossChainClient
-    val ethRinkebyBobaRinkebyClient: CrossChainClient
-    val polygonMumbaiBscTestnetClient: CrossChainClient
-    val polygonMumbaiEthRinkebyClient: CrossChainClient
-    val bobaRinkebyEthRinkebyClient: CrossChainClient
-    val bobaRinkebyBscTestnetClient: CrossChainClient
+    val avalancheFujiBscTestnetClient: SymbiosisCrossChainClient
+    val avalancheFujiEthRinkebyClient: SymbiosisCrossChainClient
+    val bscTestnetAvalancheFujiClient: SymbiosisCrossChainClient
+    val bscTestnetEthRinkebyClient: SymbiosisCrossChainClient
+    val bscTestnetPolygonMumbaiClient: SymbiosisCrossChainClient
+    val bscTestnetBobaRinkebyClient: SymbiosisCrossChainClient
+    val ethRinkebyAvalancheFujiClient: SymbiosisCrossChainClient
+    val ethRinkebyBscTestnetClient: SymbiosisCrossChainClient
+    val ethRinkebyPolygonMumbaiClient: SymbiosisCrossChainClient
+    val ethRinkebyBobaRinkebyClient: SymbiosisCrossChainClient
+    val polygonMumbaiBscTestnetClient: SymbiosisCrossChainClient
+    val polygonMumbaiEthRinkebyClient: SymbiosisCrossChainClient
+    val bobaRinkebyEthRinkebyClient: SymbiosisCrossChainClient
+    val bobaRinkebyBscTestnetClient: SymbiosisCrossChainClient
 
-    override val allCrossChainClients: List<CrossChainClient>
+    override val allCrossChainClients: List<SymbiosisCrossChainClient>
 }
 
 fun SymbiosisSdkTestnet(
@@ -79,50 +96,50 @@ fun SymbiosisSdkTestnet(
         ethRinkeby, polygonMumbai,
         bobaRinkeby
     )
-    override val allTokens: List<Token> = allNetworks.flatMap(DefaultNetwork::tokens)
+    override val allTokens: List<DecimalsToken> = allNetworks.flatMap(DefaultNetwork::tokens)
 
-    override val avalancheFujiClient = getNetworkClient(avalancheFuji)
-    override val bscTestnetClient = getNetworkClient(bscTestnet)
-    override val ethRinkebyClient = getNetworkClient(ethRinkeby)
-    override val polygonMumbaiClient = getNetworkClient(polygonMumbai)
-    override val bobaRinkebyClient = getNetworkClient(bobaRinkeby)
+    override val avalancheFujiClient = avalancheFuji.symbiosisClient
+    override val bscTestnetClient = bscTestnet.symbiosisClient
+    override val ethRinkebyClient = ethRinkeby.symbiosisClient
+    override val polygonMumbaiClient = polygonMumbai.symbiosisClient
+    override val bobaRinkebyClient = bobaRinkeby.symbiosisClient
 
-    override val allClients: List<NetworkClient> = listOf(
+    override val allClients: List<SymbiosisNetworkClient> = listOf(
         avalancheFujiClient, bscTestnetClient,
         ethRinkebyClient, polygonMumbaiClient,
         bobaRinkebyClient
     )
 
     override val avalancheFujiBscTestnetClient =
-        getCrossChainClient(AvalancheFujiBscTestnet(avalancheFujiExecutor, bscTestnetExecutor))
+        SymbiosisCrossChainClient(AvalancheFujiBscTestnet(avalancheFujiExecutor, bscTestnetExecutor))
     override val avalancheFujiEthRinkebyClient =
-        getCrossChainClient(AvalancheFujiEthRinkeby(avalancheFujiExecutor, ethRinkebyExecutor))
+        SymbiosisCrossChainClient(AvalancheFujiEthRinkeby(avalancheFujiExecutor, ethRinkebyExecutor))
     override val bscTestnetAvalancheFujiClient =
-        getCrossChainClient(BscTestnetAvalancheFuji(bscTestnetExecutor, avalancheFujiExecutor))
+        SymbiosisCrossChainClient(BscTestnetAvalancheFuji(bscTestnetExecutor, avalancheFujiExecutor))
     override val bscTestnetEthRinkebyClient =
-        getCrossChainClient(BscTestnetEthRinkeby(bscTestnetExecutor, ethRinkebyExecutor))
+        SymbiosisCrossChainClient(BscTestnetEthRinkeby(bscTestnetExecutor, ethRinkebyExecutor))
     override val bscTestnetPolygonMumbaiClient =
-        getCrossChainClient(BscTestnetPolygonMumbai(bscTestnetExecutor, polygonMumbaiExecutor))
+        SymbiosisCrossChainClient(BscTestnetPolygonMumbai(bscTestnetExecutor, polygonMumbaiExecutor))
     override val bscTestnetBobaRinkebyClient =
-        getCrossChainClient(BscTestnetBobaRinkeby(bscTestnetExecutor, bobaRinkebyExecutor))
+        SymbiosisCrossChainClient(BscTestnetBobaRinkeby(bscTestnetExecutor, bobaRinkebyExecutor))
     override val ethRinkebyAvalancheFujiClient =
-        getCrossChainClient(EthRinkebyAvalancheFuji(ethRinkebyExecutor, avalancheFujiExecutor))
+        SymbiosisCrossChainClient(EthRinkebyAvalancheFuji(ethRinkebyExecutor, avalancheFujiExecutor))
     override val ethRinkebyBscTestnetClient =
-        getCrossChainClient(EthRinkebyBscTestnet(ethRinkebyExecutor, bscTestnetExecutor))
+        SymbiosisCrossChainClient(EthRinkebyBscTestnet(ethRinkebyExecutor, bscTestnetExecutor))
     override val ethRinkebyPolygonMumbaiClient =
-        getCrossChainClient(EthRinkebyPolygonMumbai(ethRinkebyExecutor, polygonMumbaiExecutor))
+        SymbiosisCrossChainClient(EthRinkebyPolygonMumbai(ethRinkebyExecutor, polygonMumbaiExecutor))
     override val ethRinkebyBobaRinkebyClient =
-        getCrossChainClient(EthRinkebyBobaRinkeby(ethRinkebyExecutor, bobaRinkebyExecutor))
+        SymbiosisCrossChainClient(EthRinkebyBobaRinkeby(ethRinkebyExecutor, bobaRinkebyExecutor))
     override val polygonMumbaiBscTestnetClient =
-        getCrossChainClient(PolygonMumbaiBscTestnet(polygonMumbaiExecutor, bscTestnetExecutor))
+        SymbiosisCrossChainClient(PolygonMumbaiBscTestnet(polygonMumbaiExecutor, bscTestnetExecutor))
     override val polygonMumbaiEthRinkebyClient =
-        getCrossChainClient(PolygonMumbaiEthRinkeby(polygonMumbaiExecutor, ethRinkebyExecutor))
+        SymbiosisCrossChainClient(PolygonMumbaiEthRinkeby(polygonMumbaiExecutor, ethRinkebyExecutor))
     override val bobaRinkebyEthRinkebyClient =
-        getCrossChainClient(BobaRinkebyEthRinkeby(bobaRinkebyExecutor, ethRinkebyExecutor))
+        SymbiosisCrossChainClient(BobaRinkebyEthRinkeby(bobaRinkebyExecutor, ethRinkebyExecutor))
     override val bobaRinkebyBscTestnetClient =
-        getCrossChainClient(BobaRinkebyBscTestnet(bobaRinkebyExecutor, bscTestnetExecutor))
+        SymbiosisCrossChainClient(BobaRinkebyBscTestnet(bobaRinkebyExecutor, bscTestnetExecutor))
 
-    override val allCrossChainClients: List<CrossChainClient> = listOf(
+    override val allCrossChainClients: List<SymbiosisCrossChainClient> = listOf(
         avalancheFujiBscTestnetClient, avalancheFujiEthRinkebyClient,
         bscTestnetAvalancheFujiClient, bscTestnetEthRinkebyClient,
         bscTestnetPolygonMumbaiClient, ethRinkebyAvalancheFujiClient,

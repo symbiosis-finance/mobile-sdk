@@ -2,8 +2,8 @@ package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -25,10 +25,10 @@ class AvalancheMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val metaRouterGatewayAddressString = "0x25821A21C2E3455967229cADCA9b6fdd4A80a40b"
 
     val token = Tokens()
-    override val tokens: List<Token> = listOf(token.AVAX, token.WAVAX, token.USDC)
+    override val tokens: List<DecimalsToken> = listOf(token.AVAX, token.WAVAX, token.USDC)
 
     override val nativeCurrency = token.AVAX
-    override val swapBases: List<Erc20Token> = listOf(token.USDC, token.WAVAX)
+    override val uniSwapBases: List<DecimalsErc20Token> = listOf(token.USDC, token.WAVAX)
 
     override val dexEndpoints: List<DexEndpoint> = listOf(
         DexEndpoint.hardcoded(

@@ -1,7 +1,9 @@
 package com.symbiosis.sdk.swap.crosschain.bridging
 
 import com.soywiz.kbignum.BigInt
-import com.soywiz.kbignum.bi
+import com.soywiz.kbignum.bn
+import com.symbiosis.sdk.currency.DecimalsToken
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.serializer.BigIntSerializer
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.hex.HexString
@@ -54,17 +56,21 @@ object SymbiosisBridgingApi {
     @Serializable
     private data class GetBridgingFeeResult(
         @Serializable(with = BigIntSerializer.LongPrimitive::class)
-        val price: BigInt
+        val price: BigInt,
+        @SerialName("price_in_usd")
+        val priceInUsd: Double
     )
 
     suspend fun getBridgingFee(
+        advisorUrl: String,
         chainFromId: BigInt,
         chainToId: BigInt,
         receiveSide: ContractAddress,
-        callData: HexString
-    ): BigInt = try {
-        client
-            .post(urlString = "https://api.symbiosis.finance/calculations/v1/swap/price") {
+        callData: HexString,
+        feeToken: DecimalsToken
+    ): TokenAmount = try {
+        val body = client
+            .post(advisorUrl) {
                 setBody(
                     body = GetBridgingFeeBody(
                         chainIdFrom = chainFromId,
@@ -73,10 +79,12 @@ object SymbiosisBridgingApi {
                         callData = callData
                     )
                 )
-            }.body<GetBridgingFeeResult>().price
+            }.body<GetBridgingFeeResult>()
+
+        TokenAmount(raw = body.price, feeToken)
     } catch (t: Throwable) {
         println("Error while accessing default Symbiosis provider, using 0 bridging fee.")
         println(t.stackTraceToString())
-        0.bi
+        TokenAmount(0.bn, feeToken)
     }
 }

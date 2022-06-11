@@ -2,8 +2,8 @@ package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -26,10 +26,10 @@ open class BobaMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val metaRouterGatewayAddressString = "0x5ee04643fe2D63f364F77B38C41F15A54930f5C1"
 
     val token = Tokens()
-    override val tokens: List<Token> = listOf(token.USDC, token.ETH, token.WETH)
+    override val tokens: List<DecimalsToken> = listOf(token.USDC, token.ETH, token.WETH)
 
     override val nativeCurrency: DecimalsNativeToken = token.ETH
-    override val swapBases: List<Erc20Token> = listOf(token.WETH, token.USDC)
+    override val uniSwapBases: List<DecimalsErc20Token> = listOf(token.WETH, token.USDC)
     override val dexEndpoints: List<DexEndpoint> = listOf(
         DexEndpoint(
             factoryContractAddress = "0x7DDaF116889D655D1c486bEB95017a8211265d29",

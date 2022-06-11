@@ -16,16 +16,15 @@ import com.symbiosis.sdk.crosschain.mainnet.EthMainnetPolygonMainnet
 import com.symbiosis.sdk.crosschain.mainnet.PolygonMainnetAvalancheMainnet
 import com.symbiosis.sdk.crosschain.mainnet.PolygonMainnetBscMainnet
 import com.symbiosis.sdk.crosschain.mainnet.PolygonMainnetEthMainnet
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.networks.AvalancheMainnet
 import com.symbiosis.sdk.networks.BobaMainnet
 import com.symbiosis.sdk.networks.BscMainnet
 import com.symbiosis.sdk.networks.DefaultNetwork
 import com.symbiosis.sdk.networks.EthMainnet
 import com.symbiosis.sdk.networks.PolygonMainnet
-import com.symbiosis.sdk.swap.crosschain.CrossChainClient
+import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
@@ -37,34 +36,34 @@ interface SymbiosisSdkMainnet : ClientsManager {
     val bobaMainnet: BobaMainnet
 
     override val allNetworks: List<Network>
-    override val allTokens: List<Token>
+    override val allTokens: List<DecimalsToken>
 
-    val avalancheMainnetClient: NetworkClient
-    val bscMainnetClient: NetworkClient
-    val ethMainnetClient: NetworkClient
-    val polygonMainnetClient: NetworkClient
-    val bobaMainnetClient: NetworkClient
+    val avalancheMainnetClient: SymbiosisNetworkClient
+    val bscMainnetClient: SymbiosisNetworkClient
+    val ethMainnetClient: SymbiosisNetworkClient
+    val polygonMainnetClient: SymbiosisNetworkClient
+    val bobaMainnetClient: SymbiosisNetworkClient
 
-    override val allClients: List<NetworkClient>
+    override val allClients: List<SymbiosisNetworkClient>
 
-    val avalancheMainnetEthMainnetClient: CrossChainClient
-    val avalancheMainnetBscMainnetClient: CrossChainClient
-    val avalancheMainnetPolygonMainnetClient: CrossChainClient
-    val ethMainnetAvalancheMainnetClient: CrossChainClient
-    val ethMainnetBscMainnetClient: CrossChainClient
-    val ethMainnetBobaMainnetClient: CrossChainClient
-    val ethMainnetPolygonMainnetClient: CrossChainClient
-    val bscMainnetAvalancheMainnetClient: CrossChainClient
-    val bscMainnetPolygonMainnetClient: CrossChainClient
-    val bscMainnetBobaMainnetClient: CrossChainClient
-    val bscMainnetEthMainnetClient: CrossChainClient
-    val bobaMainnetBscMainnetClient: CrossChainClient
-    val bobaMainnetEthMainnetClient: CrossChainClient
-    val polygonMainnetAvalancheMainnetClient: CrossChainClient
-    val polygonMainnetEthMainnetClient: CrossChainClient
-    val polygonMainnetBscMainnetClient: CrossChainClient
+    val avalancheMainnetEthMainnetClient: SymbiosisCrossChainClient
+    val avalancheMainnetBscMainnetClient: SymbiosisCrossChainClient
+    val avalancheMainnetPolygonMainnetClient: SymbiosisCrossChainClient
+    val ethMainnetAvalancheMainnetClient: SymbiosisCrossChainClient
+    val ethMainnetBscMainnetClient: SymbiosisCrossChainClient
+    val ethMainnetBobaMainnetClient: SymbiosisCrossChainClient
+    val ethMainnetPolygonMainnetClient: SymbiosisCrossChainClient
+    val bscMainnetAvalancheMainnetClient: SymbiosisCrossChainClient
+    val bscMainnetPolygonMainnetClient: SymbiosisCrossChainClient
+    val bscMainnetBobaMainnetClient: SymbiosisCrossChainClient
+    val bscMainnetEthMainnetClient: SymbiosisCrossChainClient
+    val bobaMainnetBscMainnetClient: SymbiosisCrossChainClient
+    val bobaMainnetEthMainnetClient: SymbiosisCrossChainClient
+    val polygonMainnetAvalancheMainnetClient: SymbiosisCrossChainClient
+    val polygonMainnetEthMainnetClient: SymbiosisCrossChainClient
+    val polygonMainnetBscMainnetClient: SymbiosisCrossChainClient
 
-    override val allCrossChainClients: List<CrossChainClient>
+    override val allCrossChainClients: List<SymbiosisCrossChainClient>
 }
 
 fun SymbiosisSdkMainnet(
@@ -96,54 +95,54 @@ fun SymbiosisSdkMainnet(
 
     override val allNetworks: List<DefaultNetwork> =
         listOf(avalancheMainnet, bscMainnet, ethMainnet, polygonMainnet, bobaMainnet)
-    override val allTokens: List<Token> = allNetworks.flatMap(DefaultNetwork::tokens)
+    override val allTokens: List<DecimalsToken> = allNetworks.flatMap(DefaultNetwork::tokens)
 
-    override val avalancheMainnetClient: NetworkClient = getNetworkClient(avalancheMainnet)
-    override val bscMainnetClient: NetworkClient = getNetworkClient(bscMainnet)
-    override val ethMainnetClient: NetworkClient = getNetworkClient(ethMainnet)
-    override val polygonMainnetClient: NetworkClient = getNetworkClient(polygonMainnet)
-    override val bobaMainnetClient: NetworkClient = getNetworkClient(bobaMainnet)
+    override val avalancheMainnetClient = avalancheMainnet.symbiosisClient
+    override val bscMainnetClient: SymbiosisNetworkClient = bscMainnet.symbiosisClient
+    override val ethMainnetClient: SymbiosisNetworkClient = ethMainnet.symbiosisClient
+    override val polygonMainnetClient: SymbiosisNetworkClient = polygonMainnet.symbiosisClient
+    override val bobaMainnetClient: SymbiosisNetworkClient = bobaMainnet.symbiosisClient
 
-    override val allClients: List<NetworkClient> = listOf(
+    override val allClients: List<SymbiosisNetworkClient> = listOf(
         avalancheMainnetClient, bscMainnetClient,
         ethMainnetClient, polygonMainnetClient,
         bobaMainnetClient
     )
 
     override val avalancheMainnetEthMainnetClient =
-        getCrossChainClient(AvalancheMainnetEthMainnet(avalancheMainnetExecutor, ethMainnetExecutor))
+        SymbiosisCrossChainClient(AvalancheMainnetEthMainnet(avalancheMainnetExecutor, ethMainnetExecutor))
     override val avalancheMainnetBscMainnetClient =
-        getCrossChainClient(AvalancheMainnetBscMainnet(avalancheMainnetExecutor, bscMainnetExecutor))
+        SymbiosisCrossChainClient(AvalancheMainnetBscMainnet(avalancheMainnetExecutor, bscMainnetExecutor))
     override val avalancheMainnetPolygonMainnetClient =
-        getCrossChainClient(AvalancheMainnetPolygonMainnet(avalancheMainnetExecutor, polygonMainnetExecutor))
+        SymbiosisCrossChainClient(AvalancheMainnetPolygonMainnet(avalancheMainnetExecutor, polygonMainnetExecutor))
     override val ethMainnetAvalancheMainnetClient =
-        getCrossChainClient(EthMainnetAvalancheMainnet(ethMainnetExecutor, avalancheMainnetExecutor))
+        SymbiosisCrossChainClient(EthMainnetAvalancheMainnet(ethMainnetExecutor, avalancheMainnetExecutor))
     override val ethMainnetBscMainnetClient =
-        getCrossChainClient(EthMainnetBscMainnet(ethMainnetExecutor, bscMainnetExecutor))
+        SymbiosisCrossChainClient(EthMainnetBscMainnet(ethMainnetExecutor, bscMainnetExecutor))
     override val ethMainnetBobaMainnetClient =
-        getCrossChainClient(EthMainnetBobaMainnet(ethMainnetExecutor, bobaMainnetExecutor))
+        SymbiosisCrossChainClient(EthMainnetBobaMainnet(ethMainnetExecutor, bobaMainnetExecutor))
     override val ethMainnetPolygonMainnetClient =
-        getCrossChainClient(EthMainnetPolygonMainnet(ethMainnetExecutor, polygonMainnetExecutor))
+        SymbiosisCrossChainClient(EthMainnetPolygonMainnet(ethMainnetExecutor, polygonMainnetExecutor))
     override val bscMainnetAvalancheMainnetClient =
-        getCrossChainClient(BscMainnetAvalancheMainnet(bscMainnetExecutor, avalancheMainnetExecutor))
+        SymbiosisCrossChainClient(BscMainnetAvalancheMainnet(bscMainnetExecutor, avalancheMainnetExecutor))
     override val bscMainnetPolygonMainnetClient =
-        getCrossChainClient(BscMainnetPolygonMainnet(bscMainnetExecutor, polygonMainnetExecutor))
+        SymbiosisCrossChainClient(BscMainnetPolygonMainnet(bscMainnetExecutor, polygonMainnetExecutor))
     override val bscMainnetBobaMainnetClient =
-        getCrossChainClient(BscMainnetBobaMainnet(bscMainnetExecutor, bobaMainnetExecutor))
+        SymbiosisCrossChainClient(BscMainnetBobaMainnet(bscMainnetExecutor, bobaMainnetExecutor))
     override val bscMainnetEthMainnetClient =
-        getCrossChainClient(BscMainnetEthMainnet(bscMainnetExecutor, ethMainnetExecutor))
+        SymbiosisCrossChainClient(BscMainnetEthMainnet(bscMainnetExecutor, ethMainnetExecutor))
     override val bobaMainnetBscMainnetClient =
-        getCrossChainClient(BobaMainnetBscMainnet(bobaMainnetExecutor, bscMainnetExecutor))
+        SymbiosisCrossChainClient(BobaMainnetBscMainnet(bobaMainnetExecutor, bscMainnetExecutor))
     override val bobaMainnetEthMainnetClient =
-        getCrossChainClient(BobaMainnetEthMainnet(bobaMainnetExecutor, ethMainnetExecutor))
+        SymbiosisCrossChainClient(BobaMainnetEthMainnet(bobaMainnetExecutor, ethMainnetExecutor))
     override val polygonMainnetAvalancheMainnetClient =
-        getCrossChainClient(PolygonMainnetAvalancheMainnet(polygonMainnetExecutor, avalancheMainnetExecutor))
+        SymbiosisCrossChainClient(PolygonMainnetAvalancheMainnet(polygonMainnetExecutor, avalancheMainnetExecutor))
     override val polygonMainnetEthMainnetClient =
-        getCrossChainClient(PolygonMainnetEthMainnet(polygonMainnetExecutor, ethMainnetExecutor))
+        SymbiosisCrossChainClient(PolygonMainnetEthMainnet(polygonMainnetExecutor, ethMainnetExecutor))
     override val polygonMainnetBscMainnetClient =
-        getCrossChainClient(PolygonMainnetBscMainnet(polygonMainnetExecutor, bscMainnetExecutor))
+        SymbiosisCrossChainClient(PolygonMainnetBscMainnet(polygonMainnetExecutor, bscMainnetExecutor))
 
-    override val allCrossChainClients: List<CrossChainClient> = listOf(
+    override val allCrossChainClients: List<SymbiosisCrossChainClient> = listOf(
         avalancheMainnetBscMainnetClient, avalancheMainnetEthMainnetClient,
         avalancheMainnetPolygonMainnetClient, ethMainnetAvalancheMainnetClient,
         ethMainnetBscMainnetClient, ethMainnetBobaMainnetClient,

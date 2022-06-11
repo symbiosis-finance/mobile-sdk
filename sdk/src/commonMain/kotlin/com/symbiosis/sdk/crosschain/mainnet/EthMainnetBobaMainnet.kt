@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class EthMainnetBobaMainnet(
     ethMainnetExecutor: Web3Executor,
     bobaMainnetExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : MainnetCrossChain() {
     constructor(ethMainnetUrl: String, bobaMainnetUrl: String) :
             this(Web3(ethMainnetUrl), Web3(bobaMainnetUrl))
 

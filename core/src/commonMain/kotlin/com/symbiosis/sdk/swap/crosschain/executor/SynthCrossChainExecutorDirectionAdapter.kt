@@ -1,9 +1,9 @@
 package com.symbiosis.sdk.swap.crosschain.executor
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.ClientsManager
 import com.symbiosis.sdk.currency.AddressZero
 import com.symbiosis.sdk.currency.Erc20Token
+import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
@@ -35,10 +35,11 @@ class SynthCrossChainExecutorDirectionAdapter(
     override val relayRecipient: ContractAddress =
         crossChain.fromNetwork.portalAddress
 
-    val swapTokens: List<ContractAddress> = getSynthSwapTokens(stableTrade, outputTrade, tokens.second.asToken)
+    val swapTokens: List<ContractAddress> = getSynthSwapTokens(stableTrade, outputTrade, tokens.second)
 
     override suspend fun otherSideCallData(deadline: BigInt?): HexString =
-        ClientsManager.getNetworkClient(crossChain.fromNetwork)
+        crossChain.fromNetwork
+            .networkClient
             .portal
             .getMetaSynthesizeCalldata(
                 stableBridgingFee = bridgingFee,

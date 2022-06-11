@@ -1,20 +1,20 @@
 package com.symbiosis.sdk.currency
 
-fun TokenPair(first: Token, second: Token): TokenPair = _TokenPair(first, second)
+fun TokenPair(first: DecimalsToken, second: DecimalsToken): TokenPair = _TokenPair(first, second)
 
 @Suppress("ClassName")
-private data class _TokenPair(override val first: Token, override val second: Token): TokenPair {
+private data class _TokenPair(override val first: DecimalsToken, override val second: DecimalsToken): TokenPair {
     init {
         require(first != second)
     }
 }
 
 interface TokenPair {
-    val first: Token
-    val second: Token
+    val first: DecimalsToken
+    val second: DecimalsToken
 
     fun asNetworkTokenPair(): NetworkTokenPair? =
-        when (first.network.chainId == second.network.chainId) {
+        when (first.asToken.network.chainId == second.asToken.network.chainId) {
             true -> NetworkTokenPair(first, second)
             false -> null
         }

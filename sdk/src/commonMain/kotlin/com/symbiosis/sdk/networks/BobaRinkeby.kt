@@ -2,8 +2,7 @@ package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
-import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -22,14 +21,14 @@ open class BobaRinkeby(override val executor: Web3Executor) : DefaultNetwork() {
     override val synthesizeAddressString = "0x97E82de1102C8Bd7687FFce4C51303D985fcc26e"
     override val bridgeAddressString = "0x9F7804105549F31098dCa61A22Bcb0671B78224C"
     override val routerAddressString = "0x4df04E20cCd9a8B82634754fcB041e86c5FF085A"
-    override val metaRouterAddressString = "0x12a957e285c9D678E72CB529510008D9f1daf3d3"
-    override val metaRouterGatewayAddressString = "0xA7Cf8A05F87D3654DeC089cD9542a6d28a3BC149"
+    override val metaRouterAddressString = "0x7d8B7b5f663E93D7F8970d0A61081Af03c63bB86"
+    override val metaRouterGatewayAddressString = "0x24a3C8C385405E6673e69EAda362b8e82771BD77"
 
     val token = Tokens()
 
-    override val tokens: List<Token> = listOf(token.ETH, token.WETH, token.USDC)
+    override val tokens: List<DecimalsToken> = listOf(token.ETH, token.WETH, token.USDC)
     override val nativeCurrency: DecimalsNativeToken = token.ETH
-    override val swapBases: List<Erc20Token> = listOf(token.USDC, token.WETH)
+    override val uniSwapBases: List<DecimalsErc20Token> = listOf(token.USDC, token.WETH)
     override val dexEndpoints: List<DexEndpoint> = listOf(
         DexEndpoint(
             factoryContractAddress = "0xab740666e226cb5b6b451eb943b0257a7cb3ce0a",

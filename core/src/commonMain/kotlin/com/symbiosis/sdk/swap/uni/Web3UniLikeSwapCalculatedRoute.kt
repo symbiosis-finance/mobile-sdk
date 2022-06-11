@@ -4,6 +4,7 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.NetworkTokenPair
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
@@ -31,7 +32,7 @@ class Web3UniLikeSwapCalculatedRoute(
 
         return UniLikeTrade.ExactIn(
             networkClient = networkClient,
-            fee = tradeFee,
+            fee = TokenAmount(tradeFee, tokens.first),
             priceImpact = Percentage(priceImpact),
             amountIn = amountIn,
             amountOutEstimated = amountOut,
@@ -63,7 +64,7 @@ class Web3UniLikeSwapCalculatedRoute(
         return CalculatedRoute.ExactOutResult.Success(
             trade = UniLikeTrade.ExactOut(
                 networkClient = networkClient,
-                fee = tradeFee,
+                fee = TokenAmount(tradeFee, tokens.first),
                 priceImpact = Percentage(priceImpact),
                 amountOut = amountOut,
                 amountInEstimated = amountIn,

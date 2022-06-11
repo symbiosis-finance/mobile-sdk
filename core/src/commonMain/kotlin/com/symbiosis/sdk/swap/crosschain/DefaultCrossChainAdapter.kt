@@ -1,7 +1,9 @@
 package com.symbiosis.sdk.swap.crosschain
 
 import com.soywiz.kbignum.BigInt
+import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bi
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository.Adapter.ExactInResult
 import com.symbiosis.sdk.swap.crosschain.bridging.BridgingFeeProvider
@@ -17,6 +19,9 @@ class DefaultCrossChainAdapter(
 ) : CrossChainSwapRepository.Adapter {
     private val inputNetwork = crossChain.fromNetwork
     private val outputNetwork = crossChain.toNetwork
+
+    override val minStableTokenInDollars: BigNum = crossChain.minStableTokensAmountPerTrade
+    override val maxStableTokenInDollars: BigNum = crossChain.maxStableTokensAmountPerTrade
 
     override fun parsePair(pair: CrossChainTokenPair): TokenPairAdapter {
         require(pair.first.asToken.network.chainId == crossChain.fromNetwork.chainId) {
@@ -88,5 +93,5 @@ class DefaultCrossChainAdapter(
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
         recipient: EthereumAddress
-    ): BigInt = bridgingFeeProvider.getBridgingFee(tokens, inputTrade, stableTrade, outputTrade, recipient)
+    ): TokenAmount = bridgingFeeProvider.getBridgingFee(tokens, inputTrade, stableTrade, outputTrade, recipient)
 }

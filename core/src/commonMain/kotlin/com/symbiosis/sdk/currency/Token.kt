@@ -1,16 +1,15 @@
 package com.symbiosis.sdk.currency
 
-import com.soywiz.kbignum.BigInt
-import com.soywiz.kbignum.BigNum
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
 
 sealed interface Token {
     val network: Network
 }
-val Token.thisOrWrapped: Erc20Token get() = when (this) {
-    is Erc20Token -> this
-    is NativeToken -> wrapped
+
+val DecimalsToken.thisOrWrapped: DecimalsErc20Token get() = when (this) {
+    is DecimalsErc20Token -> this
+    is DecimalsNativeToken -> DecimalsErc20Token(wrapped.network, wrapped.tokenAddress, decimals)
 }
 
 fun Erc20Token(network: Network, tokenAddress: ContractAddress): Erc20Token =
@@ -29,6 +28,9 @@ fun Erc20Token(network: Network, tokenAddress: ContractAddress): Erc20Token =
 interface Erc20Token : Token {
     val tokenAddress: ContractAddress
 }
+
+fun Erc20Token.asDecimalsToken(decimals: Int): DecimalsErc20Token =
+    DecimalsErc20Token(network, tokenAddress, decimals)
 
 fun NativeToken(wrapped: Erc20Token, network: Network = wrapped.network): NativeToken =
     object : NativeToken {
@@ -68,7 +70,7 @@ fun DecimalsErc20Token(network: Network, tokenAddress: ContractAddress, decimals
                 other.tokenAddress.prefixed == tokenAddress.prefixed
     }
 
-    override fun toString(): String = "$tokenAddress[${network.networkName}]"
+    override fun toString(): String = "$tokenAddress [${network.networkName}]"
 }
 
 interface DecimalsNativeToken : DecimalsToken, NativeToken
@@ -84,8 +86,3 @@ fun DecimalsNativeToken(wrapped: Erc20Token, network: Network = wrapped.network,
 
     override fun toString(): String = "Native[${network.networkName}]"
 }
-
-fun DecimalsToken.convertIntegerToReal(integer: BigInt) =
-    TokenAmount(integer, decimals).amount
-fun DecimalsToken.convertRealToInteger(real: BigNum) =
-    TokenAmount(real, decimals).raw

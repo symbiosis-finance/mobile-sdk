@@ -26,7 +26,9 @@ data class NerveStablePool(
     suspend fun getPoolRoute(client: SynthFabricContract): NetworkTokenPair.Erc20Only =
         NetworkTokenPair.Erc20Only(
             first = fromToken,
-            second = getTargetTokenSynth(client)
+            second = getTargetTokenSynth(client).let { token ->
+                DecimalsErc20Token(token.network, token.tokenAddress, targetToken.decimals)
+            }
         )
 }
 

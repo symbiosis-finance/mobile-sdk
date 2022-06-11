@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class EthMainnetPolygonMainnet(
     ethMainnetExecutor: Web3Executor,
     polygonMainnetExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : MainnetCrossChain() {
     constructor(ethMainnetUrl: String, polygonMainnetUrl: String) :
             this(Web3(ethMainnetUrl), Web3(polygonMainnetUrl))
 

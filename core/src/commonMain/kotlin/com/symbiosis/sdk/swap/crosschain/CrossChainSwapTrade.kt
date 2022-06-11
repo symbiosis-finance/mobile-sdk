@@ -3,6 +3,7 @@ package com.symbiosis.sdk.swap.crosschain
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.GasProvider
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
 import com.symbiosis.sdk.wallet.Credentials
@@ -17,14 +18,13 @@ data class CrossChainSwapTrade(
     val outputTrade: SingleNetworkSwapTradeAdapter,
     val slippageTolerance: Percentage,
     val recipient: EthereumAddress,
-    private val bridgingFee: BigInt,
+    private val bridgingFee: TokenAmount,
     private val executor: CrossChainTradeExecutorAdapter
 ) {
-    // todo: add currency to the fee
     data class TransactionFee(
-        val inputTrade: BigInt,
-        val bridgingFee: BigInt,
-        val outputTrade: BigInt
+        val inputTrade: TokenAmount,
+        val bridgingFee: TokenAmount,
+        val outputTrade: TokenAmount
     )
 
     data class PriceImpact(

@@ -5,6 +5,9 @@ import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.AddressZero
 import com.symbiosis.sdk.currency.Erc20Token
+import com.symbiosis.sdk.currency.NativeToken
+import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTrade
 import dev.icerock.moko.web3.ContractAddress
@@ -15,7 +18,7 @@ sealed interface SingleNetworkSwapTradeAdapter {
     val amountOutEstimated: BigInt
     val amountOutMin: BigInt
     val priceImpact: Percentage
-    val fee: BigInt
+    val fee: TokenAmount
     val callData: HexString?
     val routerAddress: ContractAddress
 
@@ -34,7 +37,7 @@ sealed interface SingleNetworkSwapTradeAdapter {
         override val amountIn: BigInt = underlying.amountIn
         override val amountOutEstimated: BigInt = underlying.amountOutEstimated
         override val priceImpact: Percentage = underlying.priceImpact
-        override val fee: BigInt = underlying.fee
+        override val fee: TokenAmount = underlying.fee
         override val callData: HexString = underlying.callData
         override val amountOutMin: BigInt = underlying.amountOutMin
         override val routerAddress: ContractAddress = underlying.routerAddress
@@ -45,11 +48,16 @@ sealed interface SingleNetworkSwapTradeAdapter {
 
     data class Empty(
         override val amountIn: BigInt,
-        override val firstTokenAddress: ContractAddress?,
+        val firstToken: Token,
     ) : SingleNetworkSwapTradeAdapter {
+        override val firstTokenAddress: ContractAddress? =
+            when (firstToken) {
+                is Erc20Token -> firstToken.tokenAddress
+                is NativeToken -> null
+            }
         override val amountOutEstimated = amountIn
         override val priceImpact = Percentage(0.bn)
-        override val fee = 0.bi
+        override val fee = TokenAmount(0.bi, firstToken.network.nativeCurrency)
         override val callData: HexString? = null
         override val amountOutMin: BigInt = amountIn
         override val routerAddress: ContractAddress = AddressZero

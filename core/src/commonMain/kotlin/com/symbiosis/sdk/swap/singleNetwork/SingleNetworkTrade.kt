@@ -1,9 +1,9 @@
 package com.symbiosis.sdk.swap.singleNetwork
 
 import com.soywiz.kbignum.BigInt
-import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.NetworkTokenPair
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
@@ -11,14 +11,16 @@ import com.symbiosis.sdk.swap.oneInch.OneInchTrade
 import com.symbiosis.sdk.swap.oneInch.asNetworkPair
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
 import com.symbiosis.sdk.swap.uni.UniLikeTrade
+import com.symbiosis.sdk.transaction.Web3Transaction
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.EthereumAddress
 import dev.icerock.moko.web3.hex.HexString
+import com.symbiosis.sdk.wallet.Credentials
 
 sealed interface SingleNetworkTrade {
     val slippageTolerance: Percentage
     val priceImpact: Percentage
-    val fee: BigInt
+    val fee: TokenAmount
     val recipient: EthereumAddress
     val routerAddress: ContractAddress
     val value: BigInt
@@ -27,6 +29,8 @@ sealed interface SingleNetworkTrade {
     val callDataOffset: BigInt
 
     suspend fun recalculateExactIn(amountIn: BigInt): ExactIn
+
+    suspend fun execute(credentials: Credentials): Web3Transaction
 
     sealed interface ExactIn : SingleNetworkTrade {
         val amountIn: BigInt
@@ -70,6 +74,10 @@ sealed interface SingleNetworkTrade {
                 trade = ExactOut(trade, slippageTolerance, callData, recipient)
             )
         }
+
+        suspend fun execute(credentials: Credentials) = underlying.execute(
+            credentials, slippageTolerance, recipient = recipient
+        )
 
         data class ExactIn(
             val underlying: UniLikeTrade.ExactIn,
@@ -116,7 +124,7 @@ sealed interface SingleNetworkTrade {
 
         // https://github.com/symbiosis-finance/js-sdk/blob/8fa705c582aef82c97ff5b37b802dfd1ba829b18/src/crosschain/oneInchTrade.ts#L124
         override val priceImpact: Percentage = underlying.priceImpact
-        override val fee = 0.bi
+        override val fee = TokenAmount(0.bn, network.nativeCurrency)
 
         override val recipient = underlying.recipient
         override val routerAddress = underlying.to
@@ -132,5 +140,8 @@ sealed interface SingleNetworkTrade {
             }
 
         override val callDataOffset: BigInt = underlying.callDataOffset
+
+        override suspend fun execute(credentials: Credentials): Web3Transaction =
+            underlying.execute(credentials)
     }
 }

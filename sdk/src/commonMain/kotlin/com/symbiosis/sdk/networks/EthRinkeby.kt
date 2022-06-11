@@ -4,7 +4,7 @@ package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -17,19 +17,19 @@ open class EthRinkeby(override val executor: Web3Executor) : DefaultNetwork() {
     override val networkName: String = "EthRinkeby"
 
     override val chainIdInt = 0x4
-    override val synthFabricAddressString = "0xB5ec93b32320Adb12Eef81cB97B68a3C69f8bc4E"
-    override val portalAddressString = "0x68801662cab0D678E5216CB67DaD350271375024"
-    override val synthesizeAddressString = "0xBA7c80bb5d316c4eE55F96F47d1a1477fFD1aFb6"
-    override val bridgeAddressString = "0x38b07a83b691bB221d0710B0eA6Ebd7494E106D3"
+    override val synthFabricAddressString = "0x9A857D526A9e53697a9Df5fFc40bCCD70E7A0388"
+    override val portalAddressString = "0xc7F1A6768B16De4BB15c146fd5030cD9F50533ab"
+    override val synthesizeAddressString = "0xA9E177ff9c88b1DF688AaB02C599F0c24e895f0f"
+    override val bridgeAddressString = "0x09256eCAdb6ca96D1d7Fd96280cfA38D5F4E0c4C"
     override val routerAddressString = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
-    override val metaRouterAddressString = "0x7f04Fca5e687bCB42987F800CcFa3Abe56DC871B"
-    override val metaRouterGatewayAddressString = "0x94358460e21C69599B7a207885f91443B3794C7b"
+    override val metaRouterAddressString = "0x420063Aa9DC201038bacAbe4F1A987b293eED3C0"
+    override val metaRouterGatewayAddressString = "0xeb4edB23fd2e80920112372a2f54549b64a6d203"
 
     val token = Tokens()
-    override val tokens: List<Token> = listOf(token.ETH, token.WETH, token.USDC, token.UNI)
+    override val tokens: List<DecimalsToken> = listOf(token.ETH, token.WETH, token.USDC, token.UNI)
 
     override val nativeCurrency = token.ETH
-    override val swapBases = listOf(token.WETH)
+    override val uniSwapBases = listOf(token.WETH)
     override val dexEndpoints = listOf(
         // UNI
         DexEndpoint.hardcoded(

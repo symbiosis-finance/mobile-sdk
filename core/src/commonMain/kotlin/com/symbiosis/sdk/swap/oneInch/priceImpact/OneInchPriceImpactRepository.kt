@@ -3,7 +3,7 @@ package com.symbiosis.sdk.swap.oneInch.priceImpact
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.currency.TokenAmountConverter
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.oneInch.OneInchTokenPair
 
@@ -20,12 +20,12 @@ class OneInchPriceImpactRepository(private val adapter: Adapter) {
             .getRateRequests(tokens)
             .fetch()
 
-        val amountOutNoImpact = TokenAmount(amountIn, tokens.first.decimals)
+        val amountOutNoImpact = TokenAmountConverter(amountIn, tokens.first.decimals)
             .amount
             // conversion required, so we will have more precise calculations
             .convertToScale(otherScale = 18) * inputTokenToEth / outputTokenToEth
 
-        val amountOutBigNum = TokenAmount(amountOut, tokens.second.decimals).amount
+        val amountOutBigNum = TokenAmountConverter(amountOut, tokens.second.decimals).amount
 
         return Percentage(fractionalValue = 1.bn - amountOutBigNum.div(amountOutNoImpact, precision = 4))
     }

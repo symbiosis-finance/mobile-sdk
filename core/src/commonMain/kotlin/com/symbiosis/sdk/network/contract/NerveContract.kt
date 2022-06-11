@@ -5,7 +5,7 @@ import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.contract.write
-import com.symbiosis.sdk.swap.crosschain.CrossChainClient
+import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.wallet.Credentials
@@ -94,7 +94,7 @@ class NerveContract(
 
     /**
      * Method that provides token index on stable pools according to metaRouter direction
-     * @see CrossChainClient.findBestTradeExactIn
+     * @see SymbiosisCrossChainClient.findBestTradeExactIn
      */
     fun getTokenIndex(
         nerveStablePool: NerveStablePool,

@@ -2,8 +2,7 @@ package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
-import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -16,19 +15,19 @@ class PolygonMumbai(override val executor: Web3Executor) : DefaultNetwork() {
     override val networkName: String = "PolygonMumbai"
 
     override val chainIdInt = 0x13881
-    override val synthFabricAddressString = "0xe0A0CEb6f3e740C4fc4A1eb38e4135440470175A"
-    override val portalAddressString = "0xfF0a032e793bAf78C4153CD96135013D6A468b39"
-    override val synthesizeAddressString = "0xEE0F117Db9ED4d1A4421cdCa7d32a1F878eF4F7C"
-    override val bridgeAddressString = "0xEdCAeb1D346396B3e4E861e4A6F0B72b9850fCC5"
+    override val synthFabricAddressString = "0x014aA1eD19b4B94430Ba664B44C130A7084b5bFa"
+    override val portalAddressString = "0x24017eEB483fD95339B66d8e4be74eFFeE67E2cB"
+    override val synthesizeAddressString = "0x12723824603df3cF4F55feB298aD0D00E1BFEf48"
+    override val bridgeAddressString = "0x823389FfdF5F1BAD10eB52089E7195772A54ccBa"
     override val routerAddressString = "0xca33f6D096BDD7FcB28d708f631cD76E73Ecfc2d"
-    override val metaRouterAddressString = "0xBD52F6fF61ce247798602B8F794a2DC31a8aB5F9"
-    override val metaRouterGatewayAddressString = "0xF7Bc9b805d94F47b5A7BacF9fb847b1d2D830f60"
+    override val metaRouterAddressString = "0x7591e9807f2557835EC1c0A4188800A4550d23cB"
+    override val metaRouterGatewayAddressString = "0x996662AF968E3d798c879129Ec941da3a1CFe3e1"
 
     val token = Tokens()
-    override val tokens: List<Token> = listOf(token.MATIC, token.WMATIC, token.USDT)
+    override val tokens: List<DecimalsToken> = listOf(token.MATIC, token.WMATIC, token.USDT)
     
     override val nativeCurrency: DecimalsNativeToken = token.MATIC
-    override val swapBases: List<Erc20Token> = listOf(token.WMATIC)
+    override val uniSwapBases: List<DecimalsErc20Token> = listOf(token.WMATIC)
     override val dexEndpoints: List<DexEndpoint> = listOf(
         DexEndpoint.hardcoded(
             factoryContractAddress = "0x8a628F00710993c1cebbaa02338d2264ee7056C6",

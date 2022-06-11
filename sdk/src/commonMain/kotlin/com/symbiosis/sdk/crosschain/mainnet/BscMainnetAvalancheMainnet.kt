@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class BscMainnetAvalancheMainnet(
     bscMainnetExecutor: Web3Executor,
     avalancheMainnetExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : MainnetCrossChain() {
     constructor(bscMainnetUrl: String, avalancheMainnetUrl: String) :
             this(Web3(bscMainnetUrl), Web3(avalancheMainnetUrl))
 

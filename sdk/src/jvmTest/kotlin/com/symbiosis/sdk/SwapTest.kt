@@ -3,7 +3,8 @@ package com.symbiosis.sdk
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.NetworkTokenPair
-import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.currency.TokenAmountConverter
+import com.symbiosis.sdk.currency.asDecimalsToken
 import com.symbiosis.sdk.network.contract.getSyntheticToken
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
@@ -13,7 +14,6 @@ import kotlin.test.Ignore
 import kotlin.test.Test
 
 class SwapTest {
-    private val sdk = ClientsManager()
 
     @Test
     fun testPaths() {
@@ -34,7 +34,7 @@ class SwapTest {
             first = testETH.token.UNI,
             second = testETH.token.WETH
         )
-        sdk.getNetworkClient(testETH).also { client ->
+        testETH.symbiosisClient.also { client ->
             val tradeResult = client.uniLike.exactOut(
                 amountOut = "4000000000000000000".bi,
                 tokens = pair
@@ -49,15 +49,15 @@ class SwapTest {
 
 //        @Test
     fun swapDemo() = runBlocking {
-        val value = TokenAmount(1.bn, decimals = 18).raw
-        sdk.getNetworkClient(testETH).also { client ->
-            val sWBNB = client.synthFabric.getSyntheticToken(testBSC.token.WBNB)
+        val value = TokenAmountConverter(1.bn, decimals = 18).raw
+        testETH.symbiosisClient.also { client ->
+            val sWBNB = client.networkClient.synthFabric.getSyntheticToken(testBSC.token.WBNB)
                 ?: error("Synthetic was not found")
 
             val tradeResult = client.uniLike.exactIn(
                 tokens = NetworkTokenPair(
                     testETH.token.UNI,
-                    sWBNB
+                    sWBNB.asDecimalsToken(testBSC.token.WBNB.decimals)
                 ),
                 amountIn = value
             )
@@ -70,7 +70,7 @@ class SwapTest {
                 slippageTolerance = Percentage("0.07".bn)
             )
 
-            client.synthesize.burnSynthTokens(
+            client.networkClient.synthesize.burnSynthTokens(
                 credentials = alexCredentials,
                 amount = tradeResult.trade.amountOutEstimated,
                 synthCurrencyAddress = sWBNB.tokenAddress,
@@ -86,8 +86,8 @@ class SwapTest {
     //@Test
     fun `Swap Demo Ios`() {
         runBlocking {
-            val value = TokenAmount(1.bn, decimals = 18).raw
-            sdk.getNetworkClient(testBSC).also { client ->
+            val value = TokenAmountConverter(1.bn, decimals = 18).raw
+            testBSC.symbiosisClient.also { client ->
                 val firstToken = testBSC.token.CAKE
                 val secondToken = testBSC.token.BUSD
 

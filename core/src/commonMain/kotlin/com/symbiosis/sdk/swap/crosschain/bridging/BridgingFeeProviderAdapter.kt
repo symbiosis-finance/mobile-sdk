@@ -1,6 +1,6 @@
 package com.symbiosis.sdk.swap.crosschain.bridging
 
-import com.symbiosis.sdk.ClientsManager
+import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
@@ -15,10 +15,10 @@ internal abstract class AbsBridgingFeeProviderAdapter(
     protected val crossChain: CrossChain
 ): DefaultBridgingFeeProvider.Adapter {
     protected val inputNetwork = crossChain.fromNetwork
-    protected val inputNetworkClient = ClientsManager.getNetworkClient(inputNetwork)
+    protected val inputNetworkClient = inputNetwork.networkClient
 
     protected val outputNetwork = crossChain.toNetwork
-    protected val outputNetworkClient = ClientsManager.getNetworkClient(outputNetwork)
+    protected val outputNetworkClient = outputNetwork.networkClient
 }
 
 internal class BurnBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBridgingFeeProviderAdapter(crossChain) {
@@ -63,7 +63,7 @@ internal class SynthBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBrid
             finalDexRouter = outputTrade.routerAddress,
             finalSwapCallData = outputTrade.callData,
             finalSwapOffset = outputTrade.callDataOffset,
-            swapTokens = getSynthSwapTokens(stableTrade, outputTrade, tokens.second.asToken),
+            swapTokens = getSynthSwapTokens(stableTrade, outputTrade, tokens.second),
             stableSwapCallData = stableTrade.callData(deadline = null),
             stablePoolAddress = crossChain.stablePool.address,
             firstSwapAmountOut = inputTrade.amountOutEstimated,

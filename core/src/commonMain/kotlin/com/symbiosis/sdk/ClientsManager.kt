@@ -1,13 +1,10 @@
 package com.symbiosis.sdk
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.swap.crosschain.CrossChainClient
-import com.symbiosis.sdk.swap.crosschain.RawUsageOfCrossChainConstructor
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.NetworkClient
-import com.symbiosis.sdk.network.RawUsageOfNetworkConstructor
+import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
 
 /**
  * This is a parent class for every network client,
@@ -17,28 +14,14 @@ import com.symbiosis.sdk.network.RawUsageOfNetworkConstructor
  *
  * @see NetworkClient
  */
-@OptIn(RawUsageOfNetworkConstructor::class, RawUsageOfCrossChainConstructor::class)
 interface ClientsManager {
     val allNetworks: List<Network>
-    val allTokens: List<Token>
-    val allClients: List<NetworkClient>
-    val allCrossChainClients: List<CrossChainClient>
-
-    fun getNetworkClient(network: Network) = Companion.getNetworkClient(network)
-    fun getCrossChainClient(crossChain: CrossChain) = Companion.getCrossChainClient(crossChain)
-
-    companion object {
-        fun getNetworkClient(network: Network) = NetworkClient(network)
-        fun getCrossChainClient(crossChain: CrossChain) = CrossChainClient(crossChain)
-    }
+    val allTokens: List<DecimalsToken>
+    val allClients: List<SymbiosisNetworkClient>
+    val allCrossChainClients: List<SymbiosisCrossChainClient>
 }
 
-fun ClientsManager() = object : ClientsManager {
-    override val allNetworks: List<Network> = listOf()
-    override val allTokens: List<Token> = listOf()
-    override val allClients: List<NetworkClient> = listOf()
-    override val allCrossChainClients: List<CrossChainClient> = listOf()
-}
+fun ClientsManager.findBestTrade(amountInt: BigInt): Unit = TODO()
 
 fun ClientsManager.getCrossChainClient(firstNetwork: Network, secondNetwork: Network) =
     getCrossChainClient(firstNetwork.chainId, secondNetwork.chainId)

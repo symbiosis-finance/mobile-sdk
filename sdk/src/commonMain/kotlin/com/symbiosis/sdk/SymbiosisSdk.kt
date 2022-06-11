@@ -1,9 +1,5 @@
 package com.symbiosis.sdk
 
-import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.swap.crosschain.CrossChainClient
-import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.network.NetworkClient
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
@@ -61,12 +57,4 @@ private fun createSymbiosisSdk(mainnet: SymbiosisSdkMainnet, testnet: SymbiosisS
         override val allTokens = mainnet.allTokens + testnet.allTokens
         override val allClients = mainnet.allClients + testnet.allClients
         override val allCrossChainClients = mainnet.allCrossChainClients + testnet.allCrossChainClients
-
-        // default implementation is always used when calling this function, so
-        // ClientsManager.* methods will have the default implementation
-        override fun getCrossChainClient(crossChain: CrossChain): CrossChainClient =
-            mainnet.getCrossChainClient(crossChain)
-
-        override fun getNetworkClient(network: Network): NetworkClient =
-            mainnet.getNetworkClient(network)
     }

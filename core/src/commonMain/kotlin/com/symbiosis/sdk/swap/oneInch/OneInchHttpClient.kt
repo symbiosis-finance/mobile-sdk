@@ -122,7 +122,7 @@ class OneInchHttpClient(private val baseUrl: io.ktor.http.Url) {
             val response = exception.response.body<ErrorResponse>()
 
             return when (response.error) {
-                "Insufficient liquidity" -> SwapResult.InsufficientLiquidity
+                "insufficient liquidity" -> SwapResult.InsufficientLiquidity
                 "Cannot estimate" -> SwapResult.InsufficientLiquidity
                 "You may not have enough ETH balance for gas fee" -> SwapResult.NotEnoughEthForGas
                 "FromTokenAddress cannot be equals to toTokenAddress" ->

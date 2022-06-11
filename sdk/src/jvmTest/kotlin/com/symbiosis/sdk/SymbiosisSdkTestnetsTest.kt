@@ -2,10 +2,13 @@ package com.symbiosis.sdk
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
+import com.symbiosis.sdk.currency.DecimalsErc20Token
+import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.thisOrWrapped
 import com.symbiosis.sdk.network.contract.getRealTokenAddress
 import com.symbiosis.sdk.network.contract.getSyntheticToken
 import com.symbiosis.sdk.network.getTokenContract
+import com.symbiosis.sdk.network.networkClient
 import dev.icerock.moko.web3.BlockState
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.crypto.KeccakParameter
@@ -19,24 +22,18 @@ import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 class SymbiosisSdkTestnetsTest {
-    private lateinit var sdk: ClientsManager
-
-    @BeforeTest
-    fun createBlockchain() {
-        sdk = ClientsManager()
-    }
 
     //    @Test
     fun getEthereumBalance() {
         runBlocking {
-            println(sdk.getNetworkClient(testETH).getNativeBalance(denWalletAddress))
+            println(testETH.networkClient.getNativeBalance(denWalletAddress))
         }
     }
 
     //    @Test
     fun getBscBalance() {
         runBlocking {
-            println(sdk.getNetworkClient(testBSC).getNativeBalance(denWalletAddress))
+            println(testBSC.networkClient.getNativeBalance(denWalletAddress))
         }
     }
 
@@ -47,9 +44,11 @@ class SymbiosisSdkTestnetsTest {
     fun synthAndRealPairResolving() {
         runBlocking {
             val sourceToken = testETH.tokens
-                .random().thisOrWrapped
+                .filterIsInstance<DecimalsErc20Token>()
+                .random()
+                .thisOrWrapped
 
-            sdk.getNetworkClient(testBSC).also { client ->
+            testBSC.networkClient.also { client ->
                 val synthRepresentation = client.synthFabric
                     .getSyntheticToken(sourceToken)
                     ?.also { println("Synthetic representation found: ${it.tokenAddress}") }
@@ -79,7 +78,7 @@ class SymbiosisSdkTestnetsTest {
         // https://rinkeby.etherscan.io/address/0xc3DB2b1531b07d75DA09Ca408780639Cc05B0640
         val bscSynthCakeTokenAddress = ContractAddress("0xc3DB2b1531b07d75DA09Ca408780639Cc05B0640")
         runBlocking {
-            val result = sdk.getNetworkClient(testBSC).synthFabric.getRealTokenAddress(
+            val result = testBSC.networkClient.synthFabric.getRealTokenAddress(
                 synthAddress = bscSynthCakeTokenAddress,
             )
             println(result)
@@ -89,8 +88,8 @@ class SymbiosisSdkTestnetsTest {
     //    @Test
     fun synthAlp888() = runBlocking {
         val currency = testETH.token.UNI
-        val networkClient = sdk.getNetworkClient(testETH)
-        val synthNetworkClient = sdk.getNetworkClient(testBSC)
+        val networkClient = testETH.networkClient
+        val synthNetworkClient = testBSC.networkClient
 
         val synthCurrency = synthNetworkClient.synthFabric.getSyntheticToken(currency)?.also { token ->
             println("Synthetic token found ${token.tokenAddress.prefixed}")
@@ -144,8 +143,8 @@ class SymbiosisSdkTestnetsTest {
     fun unSynthAlp888() = runBlocking {
         val synthAmount = 100_000_000_000_000.bi
         val currency = testETH.token.UNI
-        sdk.getNetworkClient(testBSC).also { client ->
-            val synthCurrency = sdk.getNetworkClient(testBSC).synthFabric.getSyntheticToken(currency)
+        testBSC.networkClient.also { client ->
+            val synthCurrency = testBSC.networkClient.synthFabric.getSyntheticToken(currency)
                 ?: error("Synth currency for $currency not found")
             val synthToken = client.getTokenContract(synthCurrency)
 
@@ -169,7 +168,7 @@ class SymbiosisSdkTestnetsTest {
 
     //    @Test
     fun wrappedTest() = runBlocking {
-        sdk.getNetworkClient(testETH)
+        testETH.networkClient
             .getWrappedTokenContract(ContractAddress("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"))
             .wrap(amount = 1_000_000.bi, credentials = alexCredentials)
         return@runBlocking
@@ -177,7 +176,7 @@ class SymbiosisSdkTestnetsTest {
 
     //@Test
     fun eventsTest() = runBlocking {
-        sdk.getNetworkClient(testETH).also { client ->
+        testETH.networkClient.also { client ->
             client.newLogsShortPolling(
                 address = client.synthFabric.address.also(::println),
                 topics = listOf(

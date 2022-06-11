@@ -1,6 +1,6 @@
 package com.symbiosis.sdk.swap.crosschain.bridging
 
-import com.soywiz.kbignum.BigInt
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
@@ -18,14 +18,20 @@ class DefaultBridgingFeeProvider(private val adapterFactory: Adapter.Factory) : 
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
         recipient: EthereumAddress
-    ): BigInt {
+    ): TokenAmount {
         val crossChain = when (stableTrade) {
             is StableSwapTradeAdapter.Default -> stableTrade.underlying.crossChain
+        }
+
+        val feeToken = when (crossChain.hasPoolOnFirstNetwork) {
+            true -> stableTrade.synthToken
+            false -> stableTrade.tokens.first
         }
 
         val adapter = adapterFactory.create(crossChain)
 
         return api.getBridgingFee(
+            advisorUrl = crossChain.advisorUrl,
             chainFromId = crossChain.fromNetwork.chainId,
             chainToId = crossChain.toNetwork.chainId,
             receiveSide = adapter.receiveSide,
@@ -35,7 +41,8 @@ class DefaultBridgingFeeProvider(private val adapterFactory: Adapter.Factory) : 
                 stableTrade,
                 outputTrade,
                 recipient
-            )
+            ),
+            feeToken = feeToken
         )
     }
 

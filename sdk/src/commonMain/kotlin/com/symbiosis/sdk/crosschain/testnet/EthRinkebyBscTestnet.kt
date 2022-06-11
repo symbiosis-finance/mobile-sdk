@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class EthRinkebyBscTestnet(
     ethRinkebyExecutor: Web3Executor,
     bscTestnetExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : TestnetCrossChain() {
     constructor(ethRinkebyUrl: String, bscTestnetUrl: String) :
             this(Web3(ethRinkebyUrl), Web3(bscTestnetUrl))
 

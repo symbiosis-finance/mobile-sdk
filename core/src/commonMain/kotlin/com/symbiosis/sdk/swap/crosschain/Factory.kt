@@ -1,14 +1,14 @@
 package com.symbiosis.sdk.swap.crosschain
 
-import com.symbiosis.sdk.ClientsManager
 import com.symbiosis.sdk.swap.crosschain.bridging.DefaultBridgingFeeProvider
 import com.symbiosis.sdk.swap.crosschain.nerve.NerveSwapRepository
+import com.symbiosis.sdk.symbiosisClient
 
 fun CrossChainSwapRepository(
     crossChain: CrossChain
 ): CrossChainSwapRepository {
-    val inputNetworkClient = ClientsManager.getNetworkClient(crossChain.fromNetwork)
-    val outputNetworkClient = ClientsManager.getNetworkClient(crossChain.toNetwork)
+    val inputNetworkClient = crossChain.fromNetwork.symbiosisClient
+    val outputNetworkClient = crossChain.toNetwork.symbiosisClient
 
     val inputSingleNetworkSwap = DefaultSingleNetworkSwapRepositoryAdapter(inputNetworkClient.swap)
 

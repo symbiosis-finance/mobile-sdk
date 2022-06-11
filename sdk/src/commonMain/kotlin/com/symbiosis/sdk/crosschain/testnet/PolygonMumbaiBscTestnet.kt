@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class PolygonMumbaiBscTestnet(
     polygonMumbaiExecutor: Web3Executor,
     bscTestnetExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : TestnetCrossChain() {
     constructor(polygonMumbaiUrl: String, bscTestnetUrl: String) :
             this(Web3(polygonMumbaiUrl), Web3(bscTestnetUrl))
 

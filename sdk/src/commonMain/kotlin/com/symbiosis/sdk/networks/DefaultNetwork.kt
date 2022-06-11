@@ -4,7 +4,7 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.providers.DefaultGasProvider
@@ -12,7 +12,7 @@ import com.symbiosis.sdk.providers.DefaultTTLProvider
 import dev.icerock.moko.web3.ContractAddress
 
 abstract class DefaultNetwork : Network {
-    abstract val tokens: List<Token>
+    abstract val tokens: List<DecimalsToken>
 
     override val gasProvider: GasProvider = DefaultGasProvider
     override val swapTTLProvider: SwapTTLProvider = DefaultTTLProvider

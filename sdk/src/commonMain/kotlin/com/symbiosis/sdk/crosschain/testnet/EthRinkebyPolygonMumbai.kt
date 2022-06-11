@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class EthRinkebyPolygonMumbai(
     ethRinkebyExecutor: Web3Executor,
     polygonMumbaiExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : TestnetCrossChain() {
     constructor(ethRinkebyUrl: String, polygonMumbaiUrl: String) :
             this(Web3(ethRinkebyUrl), Web3(polygonMumbaiUrl))
 

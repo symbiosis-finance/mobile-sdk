@@ -6,5 +6,5 @@ import dev.icerock.moko.web3.WalletAddress
 
 suspend fun ClientsManager.getStuckTransactions(
     address: WalletAddress,
-    clients: List<NetworkClient> = allClients
+    clients: List<NetworkClient> = allClients.map { it.networkClient }
 ): List<StuckRequest> = clients.flatMap { it.getStuckTransactions(address, clients) }

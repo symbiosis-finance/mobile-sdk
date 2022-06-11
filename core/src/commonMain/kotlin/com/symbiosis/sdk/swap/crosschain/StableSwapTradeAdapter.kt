@@ -1,7 +1,7 @@
 package com.symbiosis.sdk.swap.crosschain
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.currency.Erc20Token
+import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.nerve.NerveSwapTrade
@@ -15,14 +15,14 @@ sealed interface StableSwapTradeAdapter {
     val tokens: StableSwapTokenPairAdapter
     val routerAddress: ContractAddress
     val route: NetworkTokenPair.Erc20Only
-    val synthToken: Erc20Token
+    val synthToken: DecimalsErc20Token
 
 
     suspend fun callData(deadline: BigInt?): HexString
 
     data class Default(
         val underlying: NerveSwapTrade,
-        override val synthToken: Erc20Token,
+        override val synthToken: DecimalsErc20Token,
         override val route: NetworkTokenPair.Erc20Only,
         private val defaultDeadlineProvider: suspend () -> BigInt
     ) : StableSwapTradeAdapter {

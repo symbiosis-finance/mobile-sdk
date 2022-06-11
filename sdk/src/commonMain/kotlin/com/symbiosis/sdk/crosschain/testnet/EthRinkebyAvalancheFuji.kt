@@ -11,7 +11,7 @@ import dev.icerock.moko.web3.Web3Executor
 class EthRinkebyAvalancheFuji(
     ethRinkebyExecutor: Web3Executor,
     avalancheFujiExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : TestnetCrossChain() {
     constructor(ethRinkebyUrl: String, avalancheFujiUrl: String) :
             this(Web3(ethRinkebyUrl), Web3(avalancheFujiUrl))
 

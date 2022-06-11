@@ -2,31 +2,21 @@ package com.symbiosis.sdk.swap.crosschain
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.ClientsManager
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.NetworkTokenPair
-import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.amount
 import com.symbiosis.sdk.currency.amountRaw
-import com.symbiosis.sdk.currency.convertRealToInteger
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.fromToken
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
+import com.symbiosis.sdk.symbiosisClient
 import dev.icerock.moko.web3.EthereumAddress
 import dev.icerock.moko.web3.WalletAddress
 
-@RequiresOptIn(
-    message = "Please, consider to use ClientsManager.getCrossChainClient instead of the raw constructor, because " +
-            "it's signature may be changed in the future.",
-    level = RequiresOptIn.Level.WARNING
-)
-annotation class RawUsageOfCrossChainConstructor
-
-class CrossChainClient @RawUsageOfCrossChainConstructor constructor(val crossChain: CrossChain) {
-    private val firstNetworkClient = ClientsManager.getNetworkClient(crossChain.fromNetwork)
+class SymbiosisCrossChainClient(val crossChain: CrossChain) {
+    private val firstNetworkClient = crossChain.fromNetwork.symbiosisClient
     private val repository = CrossChainSwapRepository(crossChain)
-
 
     init {
         require(crossChain.fromNetwork.chainId != crossChain.toNetwork.chainId) {
@@ -41,11 +31,11 @@ class CrossChainClient @RawUsageOfCrossChainConstructor constructor(val crossCha
 
     @Throws(Throwable::class)
     suspend fun getAllowedRawRangeForInput(
-        fromToken: Token,
+        fromToken: DecimalsToken,
         slippageTolerance: Percentage = Percentage(0.07.bn),
     ): AllowedRangeResult {
-        require(fromToken.network.chainId == crossChain.fromNetwork.chainId) {
-            "fromToken is from invalid network (${fromToken.network.networkName}, but required ${crossChain.fromNetwork.networkName})"
+        require(fromToken.asToken.network.chainId == crossChain.fromNetwork.chainId) {
+            "fromToken is from invalid network (${fromToken.asToken.network.networkName}, but required ${crossChain.fromNetwork.networkName})"
         }
 
         val minTradeResult = firstNetworkClient.uniLike.exactOut(
@@ -53,7 +43,7 @@ class CrossChainClient @RawUsageOfCrossChainConstructor constructor(val crossCha
                 first = fromToken,
                 second = crossChain.fromToken
             ),
-            amountOut = crossChain.fromToken.convertRealToInteger(crossChain.minStableTokensAmountPerTrade),
+            amountOut = crossChain.fromToken.amount(crossChain.minStableTokensAmountPerTrade).raw,
         )
 
         val minTrade = when (minTradeResult) {
@@ -93,7 +83,7 @@ class CrossChainClient @RawUsageOfCrossChainConstructor constructor(val crossCha
         fromToken: DecimalsToken,
         slippageTolerance: Percentage = Percentage(0.07.bn),
     ): DecimalsAllowedRangeResult =
-        when (val result = getAllowedRawRangeForInput(fromToken as Token, slippageTolerance)) {
+        when (val result = getAllowedRawRangeForInput(fromToken, slippageTolerance)) {
             is AllowedRangeResult.Success ->
                 DecimalsAllowedRangeResult.Success(
                     minAmount = fromToken.amountRaw(result.minAmount),
@@ -117,7 +107,7 @@ class CrossChainClient @RawUsageOfCrossChainConstructor constructor(val crossCha
         amountIn: BigInt,
         slippageTolerance: Percentage = Percentage(0.07.bn),
         recipient: EthereumAddress = from
-    ): CrossChainSwapRepository.Result {
+    ): CrossChainSwapRepository.SwapResult {
         require(slippageTolerance <= 50 && slippageTolerance >= 0) { "Tolerance should be in [0;1) range but was $slippageTolerance" }
 
         require(tokens.first.asToken.network.chainId == crossChain.fromNetwork.chainId) {

@@ -7,7 +7,9 @@ import com.symbiosis.sdk.gas.GasConfiguration
 import com.symbiosis.sdk.internal.kbignum.UINT256_MAX
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.checkTokenAllowance
+import com.symbiosis.sdk.network.sendTransaction
 import com.symbiosis.sdk.swap.Percentage
+import com.symbiosis.sdk.transaction.Web3Transaction
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.EthereumAddress
@@ -79,13 +81,13 @@ data class OneInchTrade(
             )
     }
 
-    suspend fun execute(credentials: Credentials) {
+    suspend fun execute(credentials: Credentials): Web3Transaction {
         // if you want custom gasProvider here
         // just call this function by yourself, so
         // next call will just check if approval required
         approveMaxIfRequired(credentials)
 
-        client.network.nonceController.withNonce(credentials.address) { nonce ->
+        val signed = client.network.nonceController.withNonce(credentials.address) { nonce ->
             credentials.signer.signContractTransaction(
                 nonce = nonce,
                 chainId = client.network.chainId,
@@ -95,5 +97,9 @@ data class OneInchTrade(
                 gasConfiguration = GasConfiguration.Legacy(gasPrice, gasLimit)
             )
         }
+
+        val hash = client.sendTransaction(signed)
+
+        return Web3Transaction(client, hash)
     }
 }

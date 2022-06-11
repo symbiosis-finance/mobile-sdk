@@ -14,6 +14,8 @@ interface CrossChain {
     val minStableTokensAmountPerTrade: BigNum
     val maxStableTokensAmountPerTrade: BigNum
 
+    val advisorUrl: String // used to get bridging fee
+
     val hasPoolOnFirstNetwork: Boolean get() = fromNetwork.chainId == stablePool.fromNetwork.chainId
     val hasPoolOnSecondNetwork: Boolean get() = toNetwork.chainId == stablePool.fromNetwork.chainId
 }

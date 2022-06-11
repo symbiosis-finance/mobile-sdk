@@ -15,4 +15,4 @@ class SingleNetworkTokenPair(val first: DecimalsToken, val second: DecimalsToken
 }
 
 val SingleNetworkTokenPair.asOneInchPair get() = OneInchTokenPair(first.asOneInchToken, second.asOneInchToken)
-val SingleNetworkTokenPair.asNetworkTokenPair get() = NetworkTokenPair(first.asToken, second.asToken)
+val SingleNetworkTokenPair.asNetworkTokenPair get() = NetworkTokenPair(first, second)

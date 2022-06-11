@@ -23,7 +23,9 @@ fun testWeb3(endpointUrl: String) = Web3(
             contentType(ContentType.Application.Json)
         }
     },
-    json = Json,
+    json = Json {
+        ignoreUnknownKeys = true
+    },
     endpointUrl = endpointUrl
 )
 
