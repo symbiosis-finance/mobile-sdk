@@ -8,6 +8,7 @@ import dev.icerock.moko.web3.TransactionHash
 import dev.icerock.moko.web3.entity.LogEvent
 import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.hex.Hex32String
+import dev.icerock.moko.web3.requests.getBlockNumber
 import dev.icerock.moko.web3.requests.polling.newLogsShortPolling
 import dev.icerock.moko.web3.requests.waitForTransactionReceipt
 import kotlinx.coroutines.flow.first
@@ -47,8 +48,10 @@ class CrossChainSwapTransaction(
     }
 
     suspend fun waitForCompletionEvent(requestId: Hex32String): LogEvent {
+        val fromBlock = outputNetworkClient.getBlockNumber() - outputNetworkClient.network.maxBlocksPerRequest
+
         return outputNetworkClient.newLogsShortPolling(
-            fromBlock = BlockState.Earliest,
+            fromBlock = BlockState.Quantity(fromBlock),
             topics = adapter.eventTopics(requestId, revertableAddress),
             address = adapter.eventEmitterAddress
         ).first()

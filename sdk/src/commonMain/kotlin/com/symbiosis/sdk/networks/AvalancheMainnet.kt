@@ -3,7 +3,6 @@ package com.symbiosis.sdk.networks
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.DecimalsToken
-import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -12,6 +11,8 @@ import dev.icerock.moko.web3.Web3Executor
 
 class AvalancheMainnet(override val executor: Web3Executor) : DefaultNetwork() {
     constructor(endpointUrl: String) : this(Web3(endpointUrl))
+
+    override val maxBlocksPerRequestInt = 2048
 
     override val networkName: String = "AvalancheMainnet"
 

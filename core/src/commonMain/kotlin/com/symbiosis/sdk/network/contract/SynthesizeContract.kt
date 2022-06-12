@@ -10,7 +10,7 @@ import com.symbiosis.sdk.contract.write
 import com.symbiosis.sdk.contract.writeRequest
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.stuck.StuckRequest
+import com.symbiosis.sdk.stuck.StuckTransaction
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.BlockState
 import dev.icerock.moko.web3.ContractAddress
@@ -199,7 +199,7 @@ class SynthesizeContract internal constructor(
         params = listOf(externalId.byteArray),
         mapper = { (state) ->
             state as BigInt
-            StuckRequest.State.values().first { it.value == state.toInt() }
+            StuckTransaction.State.values().first { it.value == state.toInt() }
         }
     )
 

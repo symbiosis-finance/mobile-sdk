@@ -8,7 +8,7 @@ import com.symbiosis.sdk.contract.write
 import com.symbiosis.sdk.contract.writeRequest
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.stuck.StuckRequest
+import com.symbiosis.sdk.stuck.StuckTransaction
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.BlockState
 import dev.icerock.moko.web3.ContractAddress
@@ -135,7 +135,14 @@ class PortalContract internal constructor(
         chainIdFrom: BigInt
     ): WriteRequest = wrapped.writeRequest(
         method = "revertBurnRequest",
-        params = listOf(stableBridgingFee, internalId.byteArray, receiveSide.bigInt, oppositeBridge.bigInt, chainIdFrom)
+        params = listOf(
+            stableBridgingFee,
+            internalId.byteArray,
+            receiveSide.bigInt,
+            oppositeBridge.bigInt,
+            chainIdFrom,
+            HexString("0x73796d62696f7369732d61707000000000000000000000000000000000000000").byteArray
+        )
     )
 
     suspend fun revertBurnRequest(
@@ -184,7 +191,7 @@ class PortalContract internal constructor(
     fun unsynthesizeStatesRequest(externalId: Hex32String) = wrapped.readRequest(
         method = "unsynthesizeStates",
         params = listOf(externalId.byteArray),
-        mapper = { (state) -> StuckRequest.State.values().first { it.ordinal == (state as BigInt).toInt() } }
+        mapper = { (state) -> StuckTransaction.State.values().first { it.ordinal == (state as BigInt).toInt() } }
     )
 
     fun getExternalId(

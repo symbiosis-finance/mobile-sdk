@@ -12,7 +12,11 @@ import com.symbiosis.sdk.providers.DefaultTTLProvider
 import dev.icerock.moko.web3.ContractAddress
 
 abstract class DefaultNetwork : Network {
+
     abstract val tokens: List<DecimalsToken>
+
+    open val maxBlocksPerRequestInt: Int = 5_000
+    override val maxBlocksPerRequest: BigInt get() = maxBlocksPerRequestInt.bi
 
     override val gasProvider: GasProvider = DefaultGasProvider
     override val swapTTLProvider: SwapTTLProvider = DefaultTTLProvider

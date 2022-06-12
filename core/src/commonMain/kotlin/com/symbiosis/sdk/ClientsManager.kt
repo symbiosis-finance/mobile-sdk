@@ -1,10 +1,12 @@
 package com.symbiosis.sdk
 
 import com.soywiz.kbignum.BigInt
+import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
+import dev.icerock.moko.web3.ContractAddress
 
 /**
  * This is a parent class for every network client,
@@ -22,6 +24,10 @@ interface ClientsManager {
 }
 
 fun ClientsManager.findBestTrade(amountInt: BigInt): Unit = TODO()
+
+fun ClientsManager.findToken(address: ContractAddress, chainId: BigInt): DecimalsErc20Token? =
+    allTokens.filterIsInstance<DecimalsErc20Token>()
+        .find { token -> token.network.chainId == chainId && token.tokenAddress == address }
 
 fun ClientsManager.getCrossChainClient(firstNetwork: Network, secondNetwork: Network) =
     getCrossChainClient(firstNetwork.chainId, secondNetwork.chainId)

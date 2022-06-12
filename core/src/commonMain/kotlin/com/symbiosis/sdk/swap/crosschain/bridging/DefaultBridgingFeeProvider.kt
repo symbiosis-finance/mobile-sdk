@@ -41,9 +41,8 @@ class DefaultBridgingFeeProvider(private val adapterFactory: Adapter.Factory) : 
                 stableTrade,
                 outputTrade,
                 recipient
-            ),
-            feeToken = feeToken
-        )
+            )
+        ).let { bridgingFee -> TokenAmount(bridgingFee, feeToken) }
     }
 
     interface Adapter {

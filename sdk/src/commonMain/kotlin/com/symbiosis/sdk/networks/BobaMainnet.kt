@@ -3,7 +3,6 @@ package com.symbiosis.sdk.networks
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.DecimalsToken
-import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress

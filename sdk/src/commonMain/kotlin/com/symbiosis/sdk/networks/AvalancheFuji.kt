@@ -14,6 +14,8 @@ import dev.icerock.moko.web3.Web3Executor
 open class AvalancheFuji(override val executor: Web3Executor) : DefaultNetwork() {
     constructor(endpointUrl: String = "https://api.avax-test.network/ext/bc/C/rpc") : this(Web3(endpointUrl))
 
+    override val maxBlocksPerRequestInt = 2048
+
     override val networkName: String = "AvalancheFuji"
 
     override val chainIdInt = 0xA869

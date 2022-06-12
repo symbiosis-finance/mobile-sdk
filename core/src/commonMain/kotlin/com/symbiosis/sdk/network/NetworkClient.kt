@@ -12,7 +12,6 @@ import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.gas.GasConfiguration
 import com.symbiosis.sdk.network.contract.NerveContract
 import com.symbiosis.sdk.network.contract.OracleContract
-import com.symbiosis.sdk.network.contract.OutboundRequest
 import com.symbiosis.sdk.network.contract.PoolContract
 import com.symbiosis.sdk.network.contract.PortalContract
 import com.symbiosis.sdk.network.contract.RouterContract
@@ -30,25 +29,16 @@ import com.symbiosis.sdk.network.contract.abi.portalContractAbi
 import com.symbiosis.sdk.network.contract.abi.routerContractAbi
 import com.symbiosis.sdk.network.contract.abi.synthesizeContractAbi
 import com.symbiosis.sdk.network.contract.metaRouter.MetaRouterContract
-import com.symbiosis.sdk.stuck.StuckRequest
 import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import com.symbiosis.sdk.swap.uni.LPTokenAddressGenerator
 import com.symbiosis.sdk.swap.uni.generate
 import com.symbiosis.sdk.transaction.SignedTransaction
 import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.BlockState
 import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
 import dev.icerock.moko.web3.WalletAddress
 import dev.icerock.moko.web3.Web3Executor
-import dev.icerock.moko.web3.Web3RpcRequest
-import dev.icerock.moko.web3.contract.ABIDecoder
 import dev.icerock.moko.web3.contract.SmartContract
 import dev.icerock.moko.web3.contract.createErc20TokenAbi
-import dev.icerock.moko.web3.entity.LogEvent
-import dev.icerock.moko.web3.hex.Hex32String
-import dev.icerock.moko.web3.requests.executeBatch
-import dev.icerock.moko.web3.requests.getBlockNumber
 import kotlinx.serialization.json.Json
 
 /**
@@ -236,134 +226,134 @@ class NetworkClient constructor(val network: Network) :
         return@withNonce handler(signedTransaction)
     }
 
-    suspend fun getStuckTransactions(
-        address: WalletAddress,
-        clients: List<NetworkClient>,
-        blocksOffset: Int = 5_000
-    ): List<StuckRequest> {
-        val currentBlock = getBlockNumber()
-
-        fun LogEvent.burnClient() = clients
-            .first { burnChainId() == it.network.chainId }
-
-        fun LogEvent.synthClient() = clients
-            .first { synthChainId() == it.network.chainId }
-
-        val (synthesizeEvents, burnEvents) = executeBatch(
-            portal.getSynthesizeRequestsRequest(
-                address = address,
-                fromBlock = BlockState.Quantity(blockNumber = currentBlock - blocksOffset),
-                toBlock = BlockState.Quantity(blockNumber = currentBlock)
-            ),
-            synthesize.getBurnRequestsRequest(
-                address = address,
-                fromBlock = BlockState.Quantity(blockNumber = currentBlock - blocksOffset),
-                toBlock = BlockState.Quantity(blockNumber = currentBlock)
-            )
-        ).let { (synthesize, burn) ->
-            synthesize.filter { log -> log.synthChainId() in clients.map { client -> client.network.chainId } } to
-                    burn.filter { log -> log.burnChainId() in clients.map { client -> client.network.chainId } }
-        }
-
-        val strategies = synthesizeEvents.map { event ->
-            ProcessStrategy.Synthesize(
-                event.synthInternalId(),
-                fromClient = this,
-                targetClient = event.synthClient(),
-                address
-            )
-        } + burnEvents.map { event ->
-            ProcessStrategy.Burn(event.burnInternalId(), fromClient = this, targetClient = event.burnClient(), address)
-        }
-
-        strategies.takeIf { it.isNotEmpty() } ?: return emptyList()
-
-        return processRequests(strategies)
-    }
-
-    private abstract class ProcessStrategy(
-        val fromClient: NetworkClient,
-        val targetClient: NetworkClient,
-        val internalId: Hex32String
-    ) {
-        abstract fun getExternalId(): Hex32String
-        abstract fun requestsRequest(): Web3RpcRequest<*, out OutboundRequest>
-        abstract fun statesRequest(): Web3RpcRequest<*, StuckRequest.State>
-
-        class Burn(
-            internalId: Hex32String,
-            fromClient: NetworkClient,
-            targetClient: NetworkClient,
-            private val revertableAddress: EthereumAddress
-        ) : ProcessStrategy(fromClient, targetClient, internalId) {
-            override fun getExternalId(): Hex32String =
-                fromClient.portal.getExternalId(internalId, targetClient.network, revertableAddress)
-
-            override fun requestsRequest() = fromClient.synthesize.requestsRequest(getExternalId())
-            override fun statesRequest() = targetClient.portal.unsynthesizeStatesRequest(getExternalId())
-        }
-
-        class Synthesize(
-            internalId: Hex32String,
-            fromClient: NetworkClient,
-            targetClient: NetworkClient,
-            private val revertableAddress: EthereumAddress
-        ) : ProcessStrategy(fromClient, targetClient, internalId) {
-            override fun getExternalId(): Hex32String =
-                fromClient.synthesize.getExternalId(internalId, targetClient.network, revertableAddress)
-
-            override fun requestsRequest() = fromClient.portal.requestsRequest(getExternalId())
-            override fun statesRequest() = targetClient.synthesize.synthesizeStatesRequest(getExternalId())
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private suspend fun processRequests(strategies: List<ProcessStrategy>): List<StuckRequest> {
-        val requests = executeBatch(strategies.map { it.requestsRequest() })
-
-        val states = strategies.groupBy { it.targetClient.network.chainId }
-            .entries
-            .flatMap { (_, strategies) ->
-                val client = strategies.first().targetClient
-                client.executeBatch(strategies.map { it.statesRequest() })
-            }
-
-        return strategies
-            .zip(requests)
-            .zip(states) { (strategy, request), state -> Triple(strategy, request, state) }
-            .filter { (_, request) -> request.state == OutboundRequest.State.Sent }
-            .filter { (_, _, state) -> state == StuckRequest.State.Default }
-            .map { (strategy, request, state) ->
-                StuckRequest(
-                    internalId = strategy.internalId,
-                    externalId = strategy.getExternalId(),
-                    request = request,
-                    state = state,
-                    fromClient = strategy.fromClient,
-                    targetClient = strategy.targetClient,
-                )
-            }
-    }
+//    suspend fun getStuckTransactions(
+//        address: WalletAddress,
+//        clients: List<NetworkClient>,
+//        blocksOffset: Int = 5_000
+//    ): List<StuckTransaction> {
+//        val currentBlock = getBlockNumber()
+//
+//        fun LogEvent.burnClient() = clients
+//            .first { burnChainId() == it.network.chainId }
+//
+//        fun LogEvent.synthClient() = clients
+//            .first { synthChainId() == it.network.chainId }
+//
+//        val (synthesizeEvents, burnEvents) = executeBatch(
+//            portal.getSynthesizeRequestsRequest(
+//                address = address,
+//                fromBlock = BlockState.Quantity(blockNumber = currentBlock - blocksOffset),
+//                toBlock = BlockState.Quantity(blockNumber = currentBlock)
+//            ),
+//            synthesize.getBurnRequestsRequest(
+//                address = address,
+//                fromBlock = BlockState.Quantity(blockNumber = currentBlock - blocksOffset),
+//                toBlock = BlockState.Quantity(blockNumber = currentBlock)
+//            )
+//        ).let { (synthesize, burn) ->
+//            synthesize.filter { log -> log.synthChainId() in clients.map { client -> client.network.chainId } } to
+//                    burn.filter { log -> log.burnChainId() in clients.map { client -> client.network.chainId } }
+//        }
+//
+//        val strategies = synthesizeEvents.map { event ->
+//            ProcessStrategy.Synthesize(
+//                event.synthInternalId(),
+//                fromClient = this,
+//                targetClient = event.synthClient(),
+//                address
+//            )
+//        } + burnEvents.map { event ->
+//            ProcessStrategy.Burn(event.burnInternalId(), fromClient = this, targetClient = event.burnClient(), address)
+//        }
+//
+//        strategies.takeIf { it.isNotEmpty() } ?: return emptyList()
+//
+//        return processRequests(strategies)
+//    }
+//
+//    private abstract class ProcessStrategy(
+//        val fromClient: NetworkClient,
+//        val targetClient: NetworkClient,
+//        val internalId: Hex32String
+//    ) {
+//        abstract fun getExternalId(): Hex32String
+//        abstract fun requestsRequest(): Web3RpcRequest<*, out OutboundRequest>
+//        abstract fun statesRequest(): Web3RpcRequest<*, StuckTransaction.State>
+//
+//        class Burn(
+//            internalId: Hex32String,
+//            fromClient: NetworkClient,
+//            targetClient: NetworkClient,
+//            private val revertableAddress: EthereumAddress
+//        ) : ProcessStrategy(fromClient, targetClient, internalId) {
+//            override fun getExternalId(): Hex32String =
+//                fromClient.portal.getExternalId(internalId, targetClient.network, revertableAddress)
+//
+//            override fun requestsRequest() = fromClient.synthesize.requestsRequest(getExternalId())
+//            override fun statesRequest() = targetClient.portal.unsynthesizeStatesRequest(getExternalId())
+//        }
+//
+//        class Synthesize(
+//            internalId: Hex32String,
+//            fromClient: NetworkClient,
+//            targetClient: NetworkClient,
+//            private val revertableAddress: EthereumAddress
+//        ) : ProcessStrategy(fromClient, targetClient, internalId) {
+//            override fun getExternalId(): Hex32String =
+//                fromClient.synthesize.getExternalId(internalId, targetClient.network, revertableAddress)
+//
+//            override fun requestsRequest() = fromClient.portal.requestsRequest(getExternalId())
+//            override fun statesRequest() = targetClient.synthesize.synthesizeStatesRequest(getExternalId())
+//        }
+//    }
+//
+//    @Suppress("UNCHECKED_CAST")
+//    private suspend fun processRequests(strategies: List<ProcessStrategy>): List<StuckTransaction> {
+//        val requests = executeBatch(strategies.map { it.requestsRequest() })
+//
+//        val states = strategies.groupBy { it.targetClient.network.chainId }
+//            .entries
+//            .flatMap { (_, strategies) ->
+//                val client = strategies.first().targetClient
+//                client.executeBatch(strategies.map { it.statesRequest() })
+//            }
+//
+//        return strategies
+//            .zip(requests)
+//            .zip(states) { (strategy, request), state -> Triple(strategy, request, state) }
+//            .filter { (_, request) -> request.state == OutboundRequest.State.Sent }
+//            .filter { (_, _, state) -> state == StuckTransaction.State.Pending }
+//            .map { (strategy, request, state) ->
+//                StuckTransaction(
+//                    internalId = strategy.internalId,
+//                    externalId = strategy.getExternalId(),
+//                    request = request,
+//                    state = state,
+//                    fromClient = strategy.fromClient,
+//                    targetClient = strategy.targetClient,
+//                )
+//            }
+//    }
 }
 
 fun NetworkClient.getTokenContract(currency: Erc20Token) =
     getTokenContract(currency.tokenAddress)
 
 // fixme: events should be decoded similar to methods
-private fun LogEvent.synthChainId() = ABIDecoder
-    .decodeLogEvent(portalContractAbi, event = this)
-    .let { (_, _, chainId) -> chainId as BigInt }
+//private fun LogEvent.synthChainId() = ABIDecoder
+//    .decodeLogEvent(portalContractAbi, event = this)
+//    .let { (_, _, chainId) -> chainId as BigInt }
 
-private fun LogEvent.burnChainId() = ABIDecoder
-    .decodeLogEvent(synthesizeContractAbi, event = this)
-    .let { (_, _, chainId) -> chainId as BigInt }
-
-private fun LogEvent.synthInternalId() = ABIDecoder
-    .decodeLogEvent(portalContractAbi, event = this)
-    .let { (internalId) -> Hex32String(internalId as ByteArray) }
-
-private fun LogEvent.burnInternalId() = ABIDecoder
-    .decodeLogEvent(synthesizeContractAbi, event = this)
-    .let { (internalId) -> Hex32String(internalId as ByteArray) }
+//private fun LogEvent.burnChainId() = ABIDecoder
+//    .decodeLogEvent(synthesizeContractAbi, event = this)
+//    .let { (_, _, chainId) -> chainId as BigInt }
+//
+//private fun LogEvent.synthInternalId() = ABIDecoder
+//    .decodeLogEvent(portalContractAbi, event = this)
+//    .let { (internalId) -> Hex32String(internalId as ByteArray) }
+//
+//private fun LogEvent.burnInternalId() = ABIDecoder
+//    .decodeLogEvent(synthesizeContractAbi, event = this)
+//    .let { (internalId) -> Hex32String(internalId as ByteArray) }
 
 val Network.networkClient get() = NetworkClient(network = this)

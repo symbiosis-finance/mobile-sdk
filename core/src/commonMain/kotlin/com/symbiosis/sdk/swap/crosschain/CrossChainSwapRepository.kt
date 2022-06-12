@@ -29,7 +29,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
         slippageTolerance: Percentage,
         from: EthereumAddress,
         recipient: EthereumAddress = from,
-        bridgingFee: TokenAmount? = null
+        bridgingFee: TokenAmount? = TokenAmount(0.bi, tokens.first)
     ): SwapResult {
         val pairAdapter = adapter.parsePair(tokens)
 

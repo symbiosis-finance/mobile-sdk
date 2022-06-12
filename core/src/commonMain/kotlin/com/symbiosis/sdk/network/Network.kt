@@ -12,6 +12,8 @@ import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3Executor
 
 interface Network {
+    val maxBlocksPerRequest: BigInt
+
     // General
     val chainId: BigInt
 

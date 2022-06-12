@@ -3,7 +3,6 @@ package com.symbiosis.sdk
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.DecimalsErc20Token
-import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.thisOrWrapped
 import com.symbiosis.sdk.network.contract.getRealTokenAddress
 import com.symbiosis.sdk.network.contract.getSyntheticToken
@@ -18,7 +17,6 @@ import dev.icerock.moko.web3.requests.getNativeBalance
 import dev.icerock.moko.web3.requests.polling.newLogsShortPolling
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 class SymbiosisSdkTestnetsTest {
