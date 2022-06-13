@@ -1,9 +1,9 @@
 package com.symbiosis.sdk.network
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.configuration.BridgingFeeProvider
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
+import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.dex.DexEndpoint
@@ -12,6 +12,8 @@ import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3Executor
 
 interface Network {
+    val maxBlocksPerRequest: BigInt
+
     // General
     val chainId: BigInt
 
@@ -30,11 +32,10 @@ interface Network {
     val metaRouterGatewayAddress: ContractAddress
 
     val nativeCurrency: DecimalsNativeToken
-    val swapBases: List<Erc20Token>
+    val uniSwapBases: List<DecimalsErc20Token>
     val dexEndpoints: List<DexEndpoint>
 
     val gasProvider: GasProvider
-    val bridgingFeeProvider: BridgingFeeProvider
     val swapTTLProvider: SwapTTLProvider
 
     val executor: Web3Executor

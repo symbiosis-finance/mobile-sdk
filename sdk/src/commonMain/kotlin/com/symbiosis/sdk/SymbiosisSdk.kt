@@ -1,10 +1,6 @@
 package com.symbiosis.sdk
 
-import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.crosschain.CrossChain
-import com.symbiosis.sdk.crosschain.CrossChainClient
-import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.network.NetworkClient
+import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
@@ -62,18 +58,5 @@ private fun createSymbiosisSdk(mainnet: SymbiosisSdkMainnet, testnet: SymbiosisS
         override val allTokens = mainnet.allTokens + testnet.allTokens
         override val allClients = mainnet.allClients + testnet.allClients
         override val allCrossChainClients = mainnet.allCrossChainClients + testnet.allCrossChainClients
-
-        // default implementation is always used when calling this function, so
-        // ClientsManager.* methods will have the default implementation
-        override fun getCrossChainClient(crossChain: CrossChain): CrossChainClient =
-            mainnet.getCrossChainClient(crossChain)
-
-        override fun getCrossChainClient(firstNetwork: Network, secondNetwork: Network): CrossChainClient? =
-            mainnet.getCrossChainClient(firstNetwork, secondNetwork)
-
-        override fun getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt): CrossChainClient? =
-            mainnet.getCrossChainClient(firstNetworkChainId, secondNetworkChainId)
-
-        override fun getNetworkClient(network: Network): NetworkClient =
-            mainnet.getNetworkClient(network)
+        override val swap: UnifiedSwapRepository = mainnet.swap
     }

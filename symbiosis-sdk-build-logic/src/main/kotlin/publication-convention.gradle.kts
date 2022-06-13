@@ -7,3 +7,17 @@ plugins {
     id("org.gradle.maven-publish")
     id("signing")
 }
+
+publishing {
+    repositories {
+        maven {
+            name = "symbiosis-github"
+            url = uri("https://maven.pkg.github.com/symbiosis-finance/mobile-sdk")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+

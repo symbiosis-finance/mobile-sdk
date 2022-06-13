@@ -1,5 +1,5 @@
 [versions]
-kotlinTestVersion = "1.5.20"
+kotlinTestVersion = "1.6.20"
 androidAppCompatVersion = "1.2.0"
 lifecycleVersion = "2.2.0"
 materialDesignVersion = "1.0.0"
@@ -11,12 +11,12 @@ mokoTestVersion = "0.4.0"
 kbignumVersion = "2.4.1.1"
 mokoResourcesVersion = "0.16.1"
 mokoWeb3Version = "0.18.0"
-ktorClientVersion = "1.6.1"
+ktorClientVersion = "2.0.0"
 web3jVersion = "4.8.5"
 mokoMvvmVersion = "0.11.0"
 logbackVersion = "1.2.5"
 multiplatformSettingsVersion = "0.8.1"
-symbiosisSdkVersion = "0.5.4"
+symbiosisSdkVersion = "1.0.1-alpha2"
 
 [libraries]
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
@@ -29,7 +29,8 @@ kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test-common", version.ref =
 kotlinTestJUnit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinTestVersion" }
 web3j = { module = "org.web3j:core", version.ref = "web3jVersion" }
 ktorClient = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientVersion" }
-ktorClientJson = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorClientVersion" }
+ktorClientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientVersion" }
+ktorClientJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientVersion" }
 ktorClientLogging = { module =  "io.ktor:ktor-client-logging", version.ref = "ktorClientVersion" }
 ktorClientCio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientVersion" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logbackVersion" }

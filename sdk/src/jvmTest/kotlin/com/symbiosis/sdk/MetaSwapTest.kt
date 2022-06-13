@@ -1,25 +1,33 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.symbiosis.sdk
 
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.crosschain.testnet.AvalancheFujiBscTestnet
 import com.symbiosis.sdk.crosschain.testnet.BscTestnetEthRinkeby
-import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.convertIntegerToReal
-import com.symbiosis.sdk.currency.convertRealToInteger
+import com.symbiosis.sdk.currency.TokenPair
+import com.symbiosis.sdk.currency.amount
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.getTokenContract
+import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.network.sendTransaction
-import com.symbiosis.sdk.swap.meta.CalculatedMetaSwapTrade
+import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository
+import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
+import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
+import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.WalletAddress
+import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.hex.HexString
 import dev.icerock.moko.web3.requests.waitForTransactionReceipt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.Test
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 // fixme: add mocked tests
 class MetaSwapTest {
-    private val sdk = ClientsManager()
 
 //    @Test
     fun metaSwapCalculation() {
@@ -27,20 +35,22 @@ class MetaSwapTest {
             val fromToken = testBSC.token.CAKE
             val targetToken = testETH.token.UNI
 
-            val metaSwap =
-                sdk.getCrossChainClient(
-                    crossChain = BscTestnetEthRinkeby(
-                        bscTestnetExecutor = testBSC.executor,
-                        ethRinkebyExecutor = testETH.executor
-                    )
+            val metaSwap = SymbiosisCrossChainClient(
+                crossChain = BscTestnetEthRinkeby(
+                    bscTestnetExecutor = testBSC.executor,
+                    ethRinkebyExecutor = testETH.executor
                 )
+            )
 
             println(
                 metaSwap.findBestTradeExactIn(
-                    fromToken = fromToken,
-                    targetToken = targetToken,
+                    tokens = TokenPair(
+                        fromToken,
+                        targetToken,
+                    ),
                     amountIn = 1_000_000_000_000_000_000.bi,
-                    to = alexWalletAddress
+                    from = alexWalletAddress,
+
                 )
             )
         }
@@ -48,44 +58,44 @@ class MetaSwapTest {
 
     //@Test
     fun metaSwapUnified() {
-        runBlocking {
-            val fromToken: Erc20Token = testAvalanche.token.USDT
-            val toToken: Erc20Token = testBSC.token.CAKE
-
-            println(
-                "balance of ${fromToken.tokenAddress} is ${
-                    testETH.token.UNI.convertIntegerToReal(
-                        sdk.getNetworkClient(testETH).getTokenContract(
-                            fromToken
-                        ).balanceOf(denWalletAddress)
-                    )
-                }"
-            )
-
-            val metaSwap = sdk.getCrossChainClient(
-                crossChain = AvalancheFujiBscTestnet(
-                    avalancheFujiExecutor = testAvalanche.executor,
-                    bscTestnetExecutor = testBSC.executor
-                )
-            )
-
-            val trade = metaSwap.findBestTradeExactIn(
-                fromToken = fromToken,
-                targetToken = toToken,
-                amountIn = testAvalanche.token.USDT.convertRealToInteger("12".bn),
-                to = denWalletAddress
-            ) as CalculatedMetaSwapTrade.ExactIn? ?: error("Trade was not found")
-
-            println("I will get ${testBSC.token.CAKE.convertIntegerToReal(trade.targetValueMin)}")
-
-            val txHash = metaSwap.execute(
-                credentials = denCredentials,
-                trade = trade,
-                gasProvider = testAvalanche.gasProvider
-            )
-
-            txHash.waitForReceipt()
-        }
+//        runBlocking {
+//            val fromToken: Erc20Token = testAvalanche.token.USDT
+//            val toToken: Erc20Token = testBSC.token.CAKE
+//
+//            println(
+//                "balance of ${fromToken.tokenAddress} is ${
+//                    testETH.token.UNI.convertIntegerToReal(
+//                        sdk.getNetworkClient(testETH).getTokenContract(
+//                            fromToken
+//                        ).balanceOf(denWalletAddress)
+//                    )
+//                }"
+//            )
+//
+//            val metaSwap = sdk.getCrossChainClient(
+//                crossChain = AvalancheFujiBscTestnet(
+//                    avalancheFujiExecutor = testAvalanche.executor,
+//                    bscTestnetExecutor = testBSC.executor
+//                )
+//            )
+//
+//            val trade = metaSwap.findBestTradeExactIn(
+//                fromToken = fromToken,
+//                targetToken = toToken,
+//                amountIn = testAvalanche.token.USDT.convertRealToInteger("12".bn),
+//                to = denWalletAddress
+//            ) as CalculatedMetaSwapTrade.ExactIn? ?: error("Trade was not found")
+//
+//            println("I will get ${testBSC.token.CAKE.convertIntegerToReal(trade.targetValueMin)}")
+//
+//            val txHash = metaSwap.execute(
+//                credentials = denCredentials,
+//                trade = trade,
+//                gasProvider = testAvalanche.gasProvider
+//            )
+//
+//            txHash.waitForReceipt()
+//        }
     }
 
     //    @Test
@@ -116,7 +126,7 @@ class MetaSwapTest {
             }
             testBSC.executor.waitForTransactionReceipt(txHash)
 
-            sdk.getNetworkClient(testBSC).also { client ->
+            testBSC.networkClient.also { client ->
                 with(client.getTokenContract(testBSC.token.BUSD)) {
                     balanceOf(alexWalletAddress).let(::println)
                     approveMax(
@@ -166,7 +176,7 @@ class MetaSwapTest {
             }
 
             with(
-                sdk.getNetworkClient(testETH)
+                testETH.networkClient
                     .getTokenContract(ContractAddress("0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"))
             ) {
                 approveMax(
@@ -204,37 +214,154 @@ class MetaSwapTest {
         }
     }
 
-    //@Test
+//    @Test
     fun testCrossChainRestrictions() {
         runBlocking {
-            val (min, max) = testSdk.bscTestnetEthRinkebyClient.getAllowedRangeForInput(
-                fromToken = testSdk.bscTestnet.token.BNB
+            val rangeResult = testSdk.ethRinkebyBscTestnetClient.getAllowedRangeForInput(
+                fromToken = testSdk.ethRinkeby.token.ETH
             )
 
-            println("Min allowed input: ${min.amount} BNB ($ ${testSdk.bscTestnetEthRinkebyClient.crossChain.minStableTokensAmountPerTrade})")
-            println("Max allowed input: ${max.amount} BNB ($ ${testSdk.bscTestnetEthRinkebyClient.crossChain.maxStableTokensAmountPerTrade})")
+            when (rangeResult) {
+                is SymbiosisCrossChainClient.AllowedRangeResult.Success -> {
+                    println("Min allowed input: ${rangeResult.minAmount.amount} BNB ($${testSdk.bscTestnetEthRinkebyClient.crossChain.minStableTokensAmountPerTrade})")
+                    println("Max allowed input: ${rangeResult.maxAmount.amount} BNB ($${testSdk.bscTestnetEthRinkebyClient.crossChain.maxStableTokensAmountPerTrade})")
+                }
+                SymbiosisCrossChainClient.AllowedRangeResult.TradeNotFound -> error("Path for this trade not found")
+            }
 
-            val amountIn = "50".bn
+
+            val amountIn = "0.00000001".bn
 
             println("Calculated meta swap trade BNB -> ETH for $amountIn BNB:")
 
-            val trade = testSdk.bscTestnetEthRinkebyClient.findBestTradeExactIn(
-                to = alexWalletAddress,
-                fromToken = testSdk.bscTestnet.token.BNB,
-                targetToken = testSdk.ethRinkeby.token.ETH,
-                amountIn = testSdk.bscTestnet.token.BNB.convertRealToInteger(amountIn)
+            val tradeResult = testSdk.ethRinkebyBscTestnetClient.findBestTradeExactIn(
+                from = WalletAddress("0x9f301D013ef1c0E8397a93Be1885a4DA481294cA"),
+                tokens = TokenPair(
+                    testSdk.ethRinkeby.token.ETH,
+                    testSdk.bscTestnet.token.BNB,
+                ),
+                amountIn = testSdk.ethRinkeby.token.ETH.amount(amountIn).raw
             )
 
-            when (trade) {
-                is CalculatedMetaSwapTrade.StableTokensGreaterThanMax ->
-                    println("$trade")
-                is CalculatedMetaSwapTrade.StableTokensLessThanMin ->
-                    println("$trade")
-                is CalculatedMetaSwapTrade.ExactIn ->
-                    println("$trade")
-                null ->
-                    println("Cannot find a trade!")
+            when (tradeResult) {
+                is CrossChainSwapRepository.SwapResult.Success -> println(tradeResult.trade)
+                CrossChainSwapRepository.SwapResult.TradeNotFound -> println("Trade not found")
             }
+        }
+    }
+
+    @Test
+    fun testnetTest() {
+        runBlocking {
+            val bnbToken = testSdk.bscTestnet.token.BNB
+            val usdcToken = testSdk.ethRinkeby.token.USDC
+
+            val bnbAmountIn = bnbToken.amount(0.01.bn).raw
+
+            val result = testSdk.bscTestnetEthRinkebyClient.findBestTradeExactIn(
+                from = alexWalletAddress,
+                tokens = TokenPair(
+                    first = bnbToken,
+                    second = usdcToken
+                ),
+                amountIn = bnbAmountIn
+            )
+
+            val trade = when (result) {
+                is CrossChainSwapRepository.SwapResult.Success -> result.trade
+                CrossChainSwapRepository.SwapResult.TradeNotFound -> error("Trade not found")
+                is CrossChainSwapRepository.SwapResult.StableTokenGreaterThanMax ->
+                    error("Price of input tokens is $${result.actualInDollars}, but max allowed is $${result.maxInDollars}")
+                is CrossChainSwapRepository.SwapResult.StableTokenLessThanBridgingFee ->
+                    error("Price of input tokens is $${result.actualInDollars}, but bridging fee is $${result.bridgingFee.amount}")
+                is CrossChainSwapRepository.SwapResult.StableTokenLessThanMin ->
+                    error("Price of input tokens is $${result.actualInDollars}, but min allowed is $${result.minInDollars}")
+            }
+
+            println("Trade calculated: $result")
+            println("Executing...")
+
+            val transaction = when (val executeResult = trade.execute(alexCredentials)) {
+                CrossChainTradeExecutorAdapter.ExecuteResult.ExecutionRevertedWithoutSending ->
+                    error("Execution for this trade was reverted while estimating gas")
+                is CrossChainTradeExecutorAdapter.ExecuteResult.Sent ->
+                    executeResult.transaction
+            }
+
+            println("Transaction sent with hash: ${transaction.transactionHash}")
+            println("Waiting for transaction to be mined on input network...")
+
+            val receipt = transaction.waitForReceiptOnInputNetwork()
+
+            println("Transaction mined: $receipt")
+
+            if (receipt.status != TransactionReceipt.Status.SUCCESS)
+                return@runBlocking println("Transaction failed.")
+
+            println("Waiting for completed log event on output network...")
+
+            val logEvent = transaction.waitForCompletionEvent(receipt)
+            println("Transaction execution succeed. Log: $logEvent")
+        }
+    }
+
+//    @Test
+    fun mainnetTest() {
+        runBlocking {
+            val alexWallet = WalletAddress("0x9f301D013ef1c0E8397a93Be1885a4DA481294cA")
+
+            val maticToken = mainnetSdk.polygonMainnet.token.MATIC
+            val bnbToken = mainnetSdk.bscMainnet.token.BNB
+            val amountIn = 100.bn // matic amount
+
+            val (result, time) = measureTimedValue {
+                mainnetSdk.polygonMainnetBscMainnetClient.findBestTradeExactIn(
+                    from = alexWallet,
+                    tokens = TokenPair(
+                        first = maticToken,
+                        second = bnbToken
+                    ),
+                    amountIn = maticToken.amount(amountIn).raw
+                )
+            }
+
+            val trade = when (result) {
+                is CrossChainSwapRepository.SwapResult.Success -> result.trade
+                CrossChainSwapRepository.SwapResult.TradeNotFound -> error("Trade not found")
+                is CrossChainSwapRepository.SwapResult.StableTokenGreaterThanMax ->
+                    error("Price of input tokens is $${result.actualInDollars}, but max allowed is $${result.maxInDollars}")
+                is CrossChainSwapRepository.SwapResult.StableTokenLessThanBridgingFee ->
+                    error("Price of input tokens is $${result.actualInDollars}, but bridging fee is $${result.bridgingFee.amount}")
+                is CrossChainSwapRepository.SwapResult.StableTokenLessThanMin ->
+                    error("Price of input tokens is $${result.actualInDollars}, but min allowed is $${result.minInDollars}")
+            }
+
+            val amountOut = trade.amountOutEstimated.amount
+            val amountOutMin = trade.amountOutMin.amount
+
+            println("""
+                
+                Trade was calculated in $time:
+                
+                Tokens: $maticToken -> $bnbToken
+                Input Amount: $amountIn MATIC
+                Amount Out: $amountOut BNB
+                Amount Out Min: $amountOutMin BNB
+                
+                Trade Path:
+                
+                First[OneInch]: ${trade.inputTrade.amountIn.amount} MATIC -> ${trade.inputTrade.amountOutMin.amount} USDC. Price impact: ${trade.inputTrade.priceImpact}
+                Second[Nerve]: ${trade.stableTrade.amountIn.amount} USDC -> ${trade.stableTrade.amountOutEstimated.amount} sBUSD. Price impact: ${trade.stableTrade.priceImpact}
+                Burn: ${trade.stableTrade.amountOutEstimated.amount} sBUSD -> ${trade.outputTrade.amountIn.amount} BUSD (${trade.fee.bridgingFee.amount} sBUSD bridging fee)
+                Third[OneInch]: ${trade.outputTrade.amountIn.amount} BUSD -> ${trade.outputTrade.amountOutEstimated.amount} BNB. Price impact: ${trade.outputTrade.priceImpact}
+                
+            """.trimIndent())
+
+            println("Execution...")
+
+            val hash = trade.execute(Credentials.createFromKeyPhrase(TODO())!!)
+
+            println("Sent transaction with hash: $hash")
         }
     }
 }

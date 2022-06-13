@@ -4,8 +4,7 @@ package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
-import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -23,14 +22,14 @@ class BscTestnet(override val executor: Web3Executor) : DefaultNetwork() {
     override val synthesizeAddressString = "0x68801662cab0D678E5216CB67DaD350271375024"
     override val bridgeAddressString = "0xBA7c80bb5d316c4eE55F96F47d1a1477fFD1aFb6"
     override val routerAddressString = "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
-    override val metaRouterAddressString = "0x51bCcf889989af8afd98C9e386C935A3C0Ff43f0"
-    override val metaRouterGatewayAddressString = "0xE9EF3E03cd8E4641B867F8A58d4311da8dAd49c8"
+    override val metaRouterAddressString = "0x2901Cb45972516E1EBf7dcff43665b56d9171A46"
+    override val metaRouterGatewayAddressString = "0x4b212745A02Dfe930942146A260E6B4C93C77ca7"
 
     val token = Tokens()
-    override val tokens: List<Token> = listOf(token.BNB, token.WBNB, token.BUSD, token.CAKE)
+    override val tokens: List<DecimalsToken> = listOf(token.BNB, token.WBNB, token.BUSD, token.CAKE)
 
     override val nativeCurrency = token.BNB
-    override val swapBases: List<Erc20Token> = listOf(token.WBNB, token.CAKE, token.BUSD)
+    override val uniSwapBases: List<DecimalsErc20Token> = listOf(token.WBNB, token.CAKE, token.BUSD)
     override val dexEndpoints: List<DexEndpoint> = listOf(
         // Pancake
         DexEndpoint.hardcoded(

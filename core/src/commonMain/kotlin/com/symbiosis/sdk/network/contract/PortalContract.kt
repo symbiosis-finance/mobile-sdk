@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
@@ -10,7 +8,7 @@ import com.symbiosis.sdk.contract.write
 import com.symbiosis.sdk.contract.writeRequest
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.stuck.StuckRequest
+import com.symbiosis.sdk.stuck.StuckTransaction
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.BlockState
 import dev.icerock.moko.web3.ContractAddress
@@ -72,16 +70,17 @@ class PortalContract internal constructor(
         stableBridgingFee: BigInt,
         amount: BigInt,
         rtoken: ContractAddress,
-        chain2address: WalletAddress,
+        chain2address: EthereumAddress,
         receiveSide: ContractAddress,
         oppositeBridge: ContractAddress,
-        fromAddress: WalletAddress,
+        fromAddress: EthereumAddress,
         chainId: BigInt,
         swapTokens: List<ContractAddress>,
         secondDexRouter: ContractAddress,
         secondSwapCalldata: HexString,
         finalDexRouter: ContractAddress,
-        finalSwapCalldata: HexString?
+        finalSwapCalldata: HexString?,
+        finalOffset: BigInt
     ): HexString = wrapped.encodeMethod(
         method = "metaSynthesize",
         params = listOf(
@@ -99,6 +98,7 @@ class PortalContract internal constructor(
                 secondSwapCalldata.byteArray,
                 finalDexRouter.bigInt,
                 finalSwapCalldata?.byteArray ?: byteArrayOf(),
+                finalOffset,
                 chain2address.bigInt
             )
         )
@@ -107,21 +107,23 @@ class PortalContract internal constructor(
     fun getMetaUnsynthesizeCalldata(
         token: ContractAddress,
         amount: BigInt,
-        to: WalletAddress,
+        to: EthereumAddress,
         synthesisRequestsCount: BigInt,
+        finalDexAddress: ContractAddress,
         finalNetwork: Network,
         finalSwapCalldata: HexString?,
-        finalRouterAddress: ContractAddress
+        finalOffset: BigInt
     ): HexString = wrapped.encodeMethod(
         method = "metaUnsynthesize",
         params = listOf(
-            0.bi, // bridging fee
+            1.bi, // bridging fee
             getExternalId(synthesisRequestsCount, finalNetwork, to).byteArray, // tx id
             to.bigInt, // toAddress
             amount,
             token.bigInt,
-            finalRouterAddress.bigInt,
-            finalSwapCalldata?.byteArray ?: byteArrayOf()
+            finalDexAddress.bigInt,
+            finalSwapCalldata?.byteArray ?: byteArrayOf(),
+            finalOffset
         )
     )
 
@@ -133,7 +135,14 @@ class PortalContract internal constructor(
         chainIdFrom: BigInt
     ): WriteRequest = wrapped.writeRequest(
         method = "revertBurnRequest",
-        params = listOf(stableBridgingFee, internalId.byteArray, receiveSide.bigInt, oppositeBridge.bigInt, chainIdFrom)
+        params = listOf(
+            stableBridgingFee,
+            internalId.byteArray,
+            receiveSide.bigInt,
+            oppositeBridge.bigInt,
+            chainIdFrom,
+            HexString("0x73796d62696f7369732d61707000000000000000000000000000000000000000").byteArray
+        )
     )
 
     suspend fun revertBurnRequest(
@@ -182,7 +191,7 @@ class PortalContract internal constructor(
     fun unsynthesizeStatesRequest(externalId: Hex32String) = wrapped.readRequest(
         method = "unsynthesizeStates",
         params = listOf(externalId.byteArray),
-        mapper = { (state) -> StuckRequest.State.values().first { it.ordinal == (state as BigInt).toInt() } }
+        mapper = { (state) -> StuckTransaction.State.values().first { it.ordinal == (state as BigInt).toInt() } }
     )
 
     fun getExternalId(

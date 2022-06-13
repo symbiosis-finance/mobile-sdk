@@ -5,7 +5,7 @@ import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.requests.waitForTransactionReceipt
 
 class RevertTransaction(
-    val request: StuckRequest,
+    val request: StuckTransaction,
     val transactionHash: TransactionHash
 ) {
     suspend fun waitForCompletion(): TransactionReceipt =

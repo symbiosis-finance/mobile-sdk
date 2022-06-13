@@ -18,7 +18,7 @@ class RouterContract internal constructor(
     private val executor: Web3Executor,
     private val network: Network,
     private val nonceController: NonceController,
-    private val wrapped: SmartContract,
+    val wrapped: SmartContract,
     private val defaultGasProvider: GasProvider,
     private val defaultSwapTTLProvider: SwapTTLProvider,
     private val tokenContractFactory: (ContractAddress) -> TokenContract

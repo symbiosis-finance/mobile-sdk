@@ -2,12 +2,12 @@ package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
+import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.contract.write
-import com.symbiosis.sdk.crosschain.CrossChainClient
+import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.swap.meta.NerveStablePool
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3Executor
@@ -22,14 +22,14 @@ class NerveContract(
     private val defaultGasProvider: GasProvider,
 ) {
     fun calculateSwapRequest(
-        tokenIndexFrom: Int,
-        tokenIndexTo: Int,
+        tokenIndexFrom: BigInt,
+        tokenIndexTo: BigInt,
         amount: BigInt
     ) = wrapped.readRequest(
         method = "calculateSwap",
         params = listOf(
-            tokenIndexFrom.bi,
-            tokenIndexTo.bi,
+            tokenIndexFrom,
+            tokenIndexTo,
             amount
         )
     ) { result ->
@@ -40,8 +40,8 @@ class NerveContract(
     }
 
     suspend fun calculateSwap(
-        tokenIndexFrom: Int,
-        tokenIndexTo: Int,
+        tokenIndexFrom: BigInt,
+        tokenIndexTo: BigInt,
         amount: BigInt
     ) = executor.executeBatch(
         calculateSwapRequest(
@@ -58,7 +58,6 @@ class NerveContract(
         dx: BigInt,
         minDy: BigInt,
         deadline: BigInt,
-        value: BigInt,
         gasProvider: GasProvider? = null
     ) = wrapped.write(
         chainId = network.chainId,
@@ -73,7 +72,6 @@ class NerveContract(
             deadline
         ),
         gasProvider = gasProvider ?: defaultGasProvider,
-        value = value
     )
 
     fun getSwapCallData(
@@ -96,7 +94,7 @@ class NerveContract(
 
     /**
      * Method that provides token index on stable pools according to metaRouter direction
-     * @see CrossChainClient.findBestTradeExactIn
+     * @see SymbiosisCrossChainClient.findBestTradeExactIn
      */
     fun getTokenIndex(
         nerveStablePool: NerveStablePool,

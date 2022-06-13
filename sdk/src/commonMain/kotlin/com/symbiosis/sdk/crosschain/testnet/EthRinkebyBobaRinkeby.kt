@@ -4,14 +4,14 @@ import com.symbiosis.sdk.crosschain.DefaultCrossChain
 import com.symbiosis.sdk.crosschain.StablePools
 import com.symbiosis.sdk.networks.BobaRinkeby
 import com.symbiosis.sdk.networks.EthRinkeby
-import com.symbiosis.sdk.swap.meta.NerveStablePool
+import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
 class EthRinkebyBobaRinkeby(
     ethRinkebyExecutor: Web3Executor,
     bobaRinkebyExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : TestnetCrossChain() {
     constructor(ethRinkebyUrl: String, bobaRinkebyUrl: String) :
             this(Web3(ethRinkebyUrl), Web3(bobaRinkebyUrl))
 

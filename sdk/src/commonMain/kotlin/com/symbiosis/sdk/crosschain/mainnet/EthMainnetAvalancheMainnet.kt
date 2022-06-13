@@ -10,7 +10,7 @@ import dev.icerock.moko.web3.Web3Executor
 class EthMainnetAvalancheMainnet(
     ethMainnetExecutor: Web3Executor,
     avalancheMainnetExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : MainnetCrossChain() {
     constructor(ethMainnetUrl: String, avalancheMainnetUrl: String) :
             this(Web3(ethMainnetUrl), Web3(avalancheMainnetUrl))
 

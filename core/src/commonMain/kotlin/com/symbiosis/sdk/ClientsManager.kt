@@ -1,48 +1,32 @@
 package com.symbiosis.sdk
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.crosschain.CrossChain
-import com.symbiosis.sdk.crosschain.CrossChainClient
-import com.symbiosis.sdk.crosschain.RawUsageOfCrossChainConstructor
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsErc20Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.network.NetworkClient
-import com.symbiosis.sdk.network.RawUsageOfNetworkConstructor
+import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
+import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository
+import dev.icerock.moko.web3.ContractAddress
 
 /**
- * This is a parent class for every network client,
- * it's like a multi-network manager of your single-network clients
- *
- * The entity which responds for the exact network called [NetworkClient]
- *
- * @see NetworkClient
+ * This is a parent class for all swap clients
  */
-@OptIn(RawUsageOfNetworkConstructor::class, RawUsageOfCrossChainConstructor::class)
 interface ClientsManager {
     val allNetworks: List<Network>
-    val allTokens: List<Token>
-    val allClients: List<NetworkClient>
-    val allCrossChainClients: List<CrossChainClient>
+    val allTokens: List<DecimalsToken>
+    val allClients: List<SymbiosisNetworkClient>
+    val allCrossChainClients: List<SymbiosisCrossChainClient>
 
-    fun getCrossChainClient(firstNetwork: Network, secondNetwork: Network) =
-        getCrossChainClient(firstNetwork.chainId, secondNetwork.chainId)
-
-    fun getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt) = allCrossChainClients
-        .find { it.crossChain.fromNetwork.chainId == firstNetworkChainId &&
-                it.crossChain.toNetwork.chainId == secondNetworkChainId }
-
-    fun getNetworkClient(network: Network) = Companion.getNetworkClient(network)
-    fun getCrossChainClient(crossChain: CrossChain) = Companion.getCrossChainClient(crossChain)
-
-    companion object {
-        fun getNetworkClient(network: Network) = NetworkClient(network)
-        fun getCrossChainClient(crossChain: CrossChain) = CrossChainClient(crossChain)
-    }
+    val swap: UnifiedSwapRepository get() = UnifiedSwapRepository(allCrossChainClients.map { it.crossChain })
 }
 
-fun ClientsManager() = object : ClientsManager {
-    override val allNetworks: List<Network> = listOf()
-    override val allTokens: List<Token> = listOf()
-    override val allClients: List<NetworkClient> = listOf()
-    override val allCrossChainClients: List<CrossChainClient> = listOf()
-}
+fun ClientsManager.findToken(address: ContractAddress, chainId: BigInt): DecimalsErc20Token? =
+    allTokens.filterIsInstance<DecimalsErc20Token>()
+        .find { token -> token.network.chainId == chainId && token.tokenAddress == address }
+
+fun ClientsManager.getCrossChainClient(firstNetwork: Network, secondNetwork: Network) =
+    getCrossChainClient(firstNetwork.chainId, secondNetwork.chainId)
+
+fun ClientsManager.getCrossChainClient(firstNetworkChainId: BigInt, secondNetworkChainId: BigInt) = allCrossChainClients
+    .find { it.crossChain.fromNetwork.chainId == firstNetworkChainId &&
+            it.crossChain.toNetwork.chainId == secondNetworkChainId }

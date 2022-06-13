@@ -4,14 +4,14 @@ import com.symbiosis.sdk.crosschain.DefaultCrossChain
 import com.symbiosis.sdk.crosschain.StablePools
 import com.symbiosis.sdk.networks.EthMainnet
 import com.symbiosis.sdk.networks.PolygonMainnet
-import com.symbiosis.sdk.swap.meta.NerveStablePool
+import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
 class EthMainnetPolygonMainnet(
     ethMainnetExecutor: Web3Executor,
     polygonMainnetExecutor: Web3Executor
-) : DefaultCrossChain() {
+) : MainnetCrossChain() {
     constructor(ethMainnetUrl: String, polygonMainnetUrl: String) :
             this(Web3(ethMainnetUrl), Web3(polygonMainnetUrl))
 
