@@ -26,7 +26,7 @@ object SymbiosisBridgingApi {
     }
     private val client = HttpClient {
         install(Logging) {
-            level = LogLevel.ALL
+            level = LogLevel.NONE
         }
         install(DefaultRequest) {
             contentType(ContentType.Application.Json)

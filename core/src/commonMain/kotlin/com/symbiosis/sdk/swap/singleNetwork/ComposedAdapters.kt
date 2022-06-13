@@ -1,6 +1,7 @@
 package com.symbiosis.sdk.swap.singleNetwork
 
 import com.soywiz.kbignum.BigInt
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository.ExactInResult
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository.ExactOutResult
@@ -11,7 +12,7 @@ internal class ComposedExactInAdapter(
     private val second: SingleNetworkSwapRepository.ExactInAdapter
 ) : SingleNetworkSwapRepository.ExactInAdapter {
     override suspend fun exactIn(
-        amountIn: BigInt,
+        amountIn: TokenAmount,
         tokens: SingleNetworkTokenPair,
         slippageTolerance: Percentage,
         from: EthereumAddress,
@@ -30,7 +31,7 @@ internal class ComposedExactInAdapter(
             else -> return firstTradeResult
         }
 
-        return when (firstTrade.amountOutEstimated > secondTrade.amountOutEstimated) {
+        return when (firstTrade.amountOutEstimated.raw > secondTrade.amountOutEstimated.raw) {
             true -> firstTradeResult
             false -> secondTradeResult
         }
@@ -64,7 +65,7 @@ internal class ComposedExactOutAdapter(
             else -> return firstTradeResult
         }
 
-        return when (firstTrade.amountInEstimated < secondTrade.amountInEstimated) {
+        return when (firstTrade.amountInEstimated.raw < secondTrade.amountInEstimated.raw) {
             true -> firstTradeResult
             false -> secondTradeResult
         }

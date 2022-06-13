@@ -1,6 +1,7 @@
 package com.symbiosis.sdk.swap.singleNetwork
 
 import com.soywiz.kbignum.BigInt
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import dev.icerock.moko.web3.EthereumAddress
 
@@ -19,7 +20,7 @@ class SingleNetworkSwapRepository(adapters: List<Adapter>) {
             .reduce { accAdapter, adapter -> accAdapter + adapter }
 
     suspend fun exactIn(
-        amountIn: BigInt,
+        amountIn: TokenAmount,
         tokens: SingleNetworkTokenPair,
         slippageTolerance: Percentage,
         from: EthereumAddress,
@@ -43,7 +44,7 @@ class SingleNetworkSwapRepository(adapters: List<Adapter>) {
 
     interface ExactInAdapter : Adapter {
         suspend fun exactIn(
-            amountIn: BigInt,
+            amountIn: TokenAmount,
             tokens: SingleNetworkTokenPair,
             slippageTolerance: Percentage,
             from: EthereumAddress,

@@ -1,7 +1,9 @@
 package com.symbiosis.sdk.swap.crosschain
 
+import com.symbiosis.sdk.currency.NetworkTokenPair
+
 interface TokenPairAdapter {
-    val inputPair: SingleNetworkTokenPairAdapter?
+    val inputPair: NetworkTokenPair?
     val stablePair: StableSwapTokenPairAdapter
-    val outputPair: SingleNetworkTokenPairAdapter?
+    val outputPair: NetworkTokenPair?
 }

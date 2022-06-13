@@ -1,5 +1,6 @@
 package com.symbiosis.sdk
 
+import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 
@@ -57,4 +58,5 @@ private fun createSymbiosisSdk(mainnet: SymbiosisSdkMainnet, testnet: SymbiosisS
         override val allTokens = mainnet.allTokens + testnet.allTokens
         override val allClients = mainnet.allClients + testnet.allClients
         override val allCrossChainClients = mainnet.allCrossChainClients + testnet.allCrossChainClients
+        override val swap: UnifiedSwapRepository = mainnet.swap
     }

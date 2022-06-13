@@ -2,8 +2,8 @@ package com.symbiosis.sdk.swap.crosschain.executor
 
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.currency.NativeToken
+import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import dev.icerock.moko.web3.EthereumAddress
@@ -13,7 +13,7 @@ fun CrossChainTradeExecutorAdapter(
     inputTrade: SingleNetworkSwapTradeAdapter,
     stableTrade: StableSwapTradeAdapter,
     outputTrade: SingleNetworkSwapTradeAdapter,
-    tokens: CrossChainTokenPair,
+    tokens: TokenPair,
     bridgingFee: BigInt,
     fromAddress: EthereumAddress,
     recipient: EthereumAddress

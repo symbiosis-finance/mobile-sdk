@@ -2,6 +2,7 @@ package com.symbiosis.sdk.swap.uni
 
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.currency.NetworkTokenPair
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.dex.DexEndpoint
 
 class UniLikeSwapRepository(private val router: Router) {
@@ -9,6 +10,8 @@ class UniLikeSwapRepository(private val router: Router) {
         object TradeNotFound : ExactInResult
         class Success(val trade: UniLikeTrade.ExactIn) : ExactInResult
     }
+
+    suspend fun exactIn(amountIn: TokenAmount, tokens: NetworkTokenPair) = exactIn(amountIn.raw, tokens)
 
     suspend fun exactIn(amountIn: BigInt, tokens: NetworkTokenPair) =
         calculateRoutes(tokens)

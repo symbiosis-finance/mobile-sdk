@@ -2,6 +2,8 @@ package com.symbiosis.sdk.swap.crosschain.nerve
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
+import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.currency.amountRaw
 import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.swap.crosschain.fromToken
@@ -21,17 +23,17 @@ class DefaultNerveStablePoolAdapter(private val crossChain: CrossChain) : NerveS
         .fromNetwork
         .networkClient
 
-    override suspend fun findTrade(amountIn: BigInt): NerveSwapTrade {
-        val amountOutEstimated = when (amountIn) {
+    override suspend fun findTrade(amountIn: TokenAmount): NerveSwapTrade {
+        val amountOutEstimated = when (amountIn.raw) {
             0.bi -> 0.bi
             else -> networkClient
                 .getNerveContract(crossChain.stablePool)
-                .calculateSwap(tokenIndexFrom, tokenIndexTo, amountIn)
+                .calculateSwap(tokenIndexFrom, tokenIndexTo, amountIn.raw)
         }
 
         return NerveSwapTrade(
             amountIn = amountIn,
-            amountOutEstimated = amountOutEstimated,
+            amountOutEstimated = crossChain.targetToken.amountRaw(amountOutEstimated),
             crossChain = crossChain,
             networkClient = networkClient,
             tokenIndexFrom = tokenIndexFrom,

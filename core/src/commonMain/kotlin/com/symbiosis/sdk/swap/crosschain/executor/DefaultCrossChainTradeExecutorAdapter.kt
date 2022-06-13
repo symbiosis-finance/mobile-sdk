@@ -36,7 +36,7 @@ class DefaultCrossChainTradeExecutorAdapter(
                     approvedTokens = directionAdapter.approvedTokens,
                     firstDexRouter = inputTrade.routerAddress,
                     secondDexRouter = stableTrade.routerAddress,
-                    amount = inputTrade.amountIn,
+                    amount = inputTrade.amountIn.raw,
                     nativeIn = nativeIn,
                     relayRecipient = directionAdapter.relayRecipient,
                     otherSideCallData = directionAdapter.otherSideCallData(deadline),

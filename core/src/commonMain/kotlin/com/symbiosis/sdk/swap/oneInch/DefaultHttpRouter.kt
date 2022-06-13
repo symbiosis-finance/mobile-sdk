@@ -1,6 +1,6 @@
 package com.symbiosis.sdk.swap.oneInch
 
-import com.soywiz.kbignum.BigInt
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.oneInch.priceImpact.OneInchPriceImpactRepository
@@ -16,7 +16,7 @@ class DefaultHttpRouter(
 
     override suspend fun findBestTrade(
         tokens: OneInchTokenPair,
-        amountIn: BigInt,
+        amountIn: TokenAmount,
         slippageTolerance: Percentage,
         fromAddress: EthereumAddress,
         recipient: EthereumAddress
@@ -26,7 +26,7 @@ class DefaultHttpRouter(
         val swapResult = oneInchClient.swap(
             fromTokenAddress = tokens.first.address,
             toTokenAddress = tokens.second.address,
-            amount = amountIn,
+            amount = amountIn.raw,
             fromAddress = fromAddress,
             slippageTolerance = slippageTolerance,
             destReceiver = recipient
@@ -41,14 +41,14 @@ class DefaultHttpRouter(
         }
 
         val priceImpact: Percentage = priceImpactRepository
-            .priceImpact(tokens, amountIn, swapResponse.toTokenAmount)
+            .priceImpact(tokens, amountIn.raw, swapResponse.toTokenAmount)
 
         val trade = OneInchTrade(
             client = networkClient,
             oneInchClient = oneInchClient,
             tokens = tokens,
             amountIn = amountIn,
-            amountOutEstimated = swapResponse.toTokenAmount,
+            amountOutEstimated = TokenAmount(swapResponse.toTokenAmount, tokens.second.asToken(networkClient.network)),
             callData = swapResponse.tx.data,
             to = swapResponse.tx.to,
             value = swapResponse.tx.value,

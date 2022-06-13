@@ -5,14 +5,13 @@ import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.currency.amount
-import com.symbiosis.sdk.currency.amountRaw
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.fromToken
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
 import com.symbiosis.sdk.symbiosisClient
 import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.WalletAddress
 
 class SymbiosisCrossChainClient(val crossChain: CrossChain) {
     private val firstNetworkClient = crossChain.fromNetwork.symbiosisClient
@@ -25,12 +24,12 @@ class SymbiosisCrossChainClient(val crossChain: CrossChain) {
     }
 
     sealed interface AllowedRangeResult {
-        class Success(val minAmount: BigInt, val maxAmount: BigInt) : AllowedRangeResult
+        class Success(val minAmount: TokenAmount, val maxAmount: TokenAmount) : AllowedRangeResult
         object TradeNotFound : AllowedRangeResult
     }
 
     @Throws(Throwable::class)
-    suspend fun getAllowedRawRangeForInput(
+    suspend fun getAllowedRangeForInput(
         fromToken: DecimalsToken,
         slippageTolerance: Percentage = Percentage(0.07.bn),
     ): AllowedRangeResult {
@@ -73,25 +72,13 @@ class SymbiosisCrossChainClient(val crossChain: CrossChain) {
         )
     }
 
-    sealed interface DecimalsAllowedRangeResult {
-        class Success(val minAmount: TokenAmount, val maxAmount: TokenAmount) : DecimalsAllowedRangeResult
-        object TradeNotFound : DecimalsAllowedRangeResult
-    }
-
-    @Throws(Throwable::class)
-    suspend fun getAllowedRangeForInput(
-        fromToken: DecimalsToken,
-        slippageTolerance: Percentage = Percentage(0.07.bn),
-    ): DecimalsAllowedRangeResult =
-        when (val result = getAllowedRawRangeForInput(fromToken, slippageTolerance)) {
-            is AllowedRangeResult.Success ->
-                DecimalsAllowedRangeResult.Success(
-                    minAmount = fromToken.amountRaw(result.minAmount),
-                    maxAmount = fromToken.amountRaw(result.maxAmount)
-                )
-            AllowedRangeResult.TradeNotFound ->
-                DecimalsAllowedRangeResult.TradeNotFound
-        }
+    suspend fun findBestTradeExactIn(
+        amountIn: TokenAmount,
+        tokens: TokenPair,
+        from: EthereumAddress,
+        recipient: EthereumAddress = from,
+        slippageTolerance: Percentage = Percentage(0.07.bn)
+    ) = findBestTradeExactIn(amountIn.raw, tokens, from, recipient, slippageTolerance)
 
     /**
      * find Best trade using meta router
@@ -102,11 +89,11 @@ class SymbiosisCrossChainClient(val crossChain: CrossChain) {
      **/
     @Throws(Throwable::class)
     suspend fun findBestTradeExactIn(
-        from: WalletAddress,
-        tokens: CrossChainTokenPair,
         amountIn: BigInt,
-        slippageTolerance: Percentage = Percentage(0.07.bn),
-        recipient: EthereumAddress = from
+        tokens: TokenPair,
+        from: EthereumAddress,
+        recipient: EthereumAddress = from,
+        slippageTolerance: Percentage = Percentage(0.07.bn)
     ): CrossChainSwapRepository.SwapResult {
         require(slippageTolerance <= 50 && slippageTolerance >= 0) { "Tolerance should be in [0;1) range but was $slippageTolerance" }
 
@@ -117,6 +104,6 @@ class SymbiosisCrossChainClient(val crossChain: CrossChain) {
             "targetToken is from invalid network (${tokens.second.asToken.network.networkName}, but required ${crossChain.toNetwork.networkName})"
         }
 
-        return repository.findBestTradeExactIn(amountIn, tokens, slippageTolerance, from, recipient)
+        return repository.findBestTradeExactIn(TokenAmount(amountIn, tokens.first), tokens, slippageTolerance, from, recipient)
     }
 }

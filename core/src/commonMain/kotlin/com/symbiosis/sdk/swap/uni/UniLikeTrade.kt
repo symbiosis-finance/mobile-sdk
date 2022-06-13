@@ -15,7 +15,7 @@ import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.checkTokenAllowance
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository.CalculatedRoute
-import com.symbiosis.sdk.transaction.Web3Transaction
+import com.symbiosis.sdk.transaction.Web3SwapTransaction
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.EthereumAddress
@@ -36,8 +36,12 @@ sealed interface UniLikeTrade {
 
     val callDataOffset: BigInt
 
+    fun recalculateExactIn(amountIn: TokenAmount) = recalculateExactIn(amountIn.raw)
+
     fun recalculateExactIn(amountIn: BigInt): ExactIn =
         route.exactIn(amountIn)
+
+    fun recalculateExactOut(amountOut: TokenAmount) = recalculateExactOut(amountOut.raw)
 
     fun recalculateExactOut(amountOut: BigInt): CalculatedRoute.ExactOutResult =
         route.exactOut(amountOut)
@@ -54,26 +58,31 @@ sealed interface UniLikeTrade {
         deadline: BigInt? = null,
         gasProvider: GasProvider? = null,
         recipient: EthereumAddress = credentials.address
-    ): Web3Transaction
+    ): Web3SwapTransaction
 
     data class ExactIn(
         override val route: CalculatedRoute,
         override val networkClient: NetworkClient,
         override val fee: TokenAmount,
         override val priceImpact: Percentage,
-        val amountIn: BigInt,
-        val amountOutEstimated: BigInt
+        val amountIn: TokenAmount,
+        val amountOutEstimated: TokenAmount
     ) : UniLikeTrade {
 
         private val rawPath = path.map { it.tokenAddress }
 
         val value: BigInt = when (tokens.first) {
             is DecimalsErc20Token -> 0.bi
-            is DecimalsNativeToken -> amountIn
+            is DecimalsNativeToken -> amountIn.raw
         }
 
-        fun amountOutMin(slippageTolerance: Percentage): BigInt =
-            (amountOutEstimated.toBigNum() * (1.bn - slippageTolerance.fractionalValue)).toBigInt()
+        fun amountOutMin(slippageTolerance: Percentage): TokenAmount {
+            val amountOutEstimatedInt = amountOutEstimated.raw
+            val amountOutMinInt =
+                (amountOutEstimatedInt.toBigNum() * (1.bn - slippageTolerance.fractionalValue)).toBigInt()
+
+            return TokenAmount(amountOutMinInt, amountOutEstimated.token)
+        }
 
         // https://github.com/symbiosis-finance/js-sdk/blob/cef348e5ca7263a369f0f8f6cfcc9255021993e1/src/router.ts#L87-L113
         override val callDataOffset: BigInt =
@@ -89,7 +98,7 @@ sealed interface UniLikeTrade {
         ): HexString {
             return when (route.tokens.first) {
                 is DecimalsNativeToken -> networkClient.router.getSwapExactNativeForTokensCallData(
-                    amountOutMin = amountOutMin(slippageTolerance),
+                    amountOutMin = amountOutMin(slippageTolerance).raw,
                     path = rawPath,
                     recipient = recipient,
                     deadline = deadline
@@ -98,8 +107,8 @@ sealed interface UniLikeTrade {
                     is DecimalsNativeToken -> networkClient.router::getSwapExactTokensForNativeCallData
                     is DecimalsErc20Token -> networkClient.router::getSwapExactTokensForTokensCallData
                 }.invoke(
-                    /* amountIn = */amountIn,
-                    /* amountOutMin = */amountOutMin(slippageTolerance),
+                    /* amountIn = */amountIn.raw,
+                    /* amountOutMin = */amountOutMin(slippageTolerance).raw,
                     /* path = */rawPath,
                     /* deadline = */deadline,
                     /* recipient = */recipient
@@ -113,7 +122,7 @@ sealed interface UniLikeTrade {
             deadline: BigInt?,
             gasProvider: GasProvider?,
             recipient: EthereumAddress
-        ): Web3Transaction {
+        ): Web3SwapTransaction {
             require(slippageTolerance >= 0.bn && slippageTolerance <= 1.bn)
 
             val function = when (route.tokens.first) {
@@ -126,13 +135,13 @@ sealed interface UniLikeTrade {
 
             return function(
                 /* credentials = */credentials,
-                /* amountIn = */amountIn,
-                /* amountOutMin = */amountOutMin(slippageTolerance),
+                /* amountIn = */amountIn.raw,
+                /* amountOutMin = */amountOutMin(slippageTolerance).raw,
                 /* path = */rawPath,
                 /* deadline = */deadline,
                 /* gasProvider = */gasProvider,
                 /* recipient = */recipient.bigInt
-            ).let { hash -> Web3Transaction(networkClient, hash) }
+            ).let { hash -> Web3SwapTransaction(networkClient, hash) }
         }
     }
 
@@ -141,8 +150,8 @@ sealed interface UniLikeTrade {
         override val networkClient: NetworkClient,
         override val fee: TokenAmount,
         override val priceImpact: Percentage,
-        val amountOut: BigInt,
-        val amountInEstimated: BigInt
+        val amountOut: TokenAmount,
+        val amountInEstimated: TokenAmount
     ) : UniLikeTrade {
 
         // https://github.com/symbiosis-finance/js-sdk/blob/cef348e5ca7263a369f0f8f6cfcc9255021993e1/src/router.ts#L114-L135
@@ -154,11 +163,15 @@ sealed interface UniLikeTrade {
 
         fun value(slippageTolerance: Percentage) = when (tokens.first) {
             is DecimalsErc20Token -> 0.bi
-            is DecimalsNativeToken -> amountInMax(slippageTolerance)
+            is DecimalsNativeToken -> amountInMax(slippageTolerance).raw
         }
 
-        fun amountInMax(slippageTolerance: Percentage) =
-            (amountInEstimated.toBigNum() * (1.bn + slippageTolerance.fractionalValue)).toBigInt()
+        fun amountInMax(slippageTolerance: Percentage): TokenAmount {
+            val amountInEstimatedInt = amountInEstimated.raw
+            val amountInMaxInt =
+                (amountInEstimatedInt.toBigNum() * (1.bn + slippageTolerance.fractionalValue)).toBigInt()
+            return TokenAmount(amountInMaxInt, amountInEstimated.token)
+        }
 
         override suspend fun callData(slippageTolerance: Percentage, recipient: EthereumAddress, deadline: BigInt?): HexString {
             TODO("Not yet implemented, because was not need yet")
@@ -199,7 +212,7 @@ sealed interface UniLikeTrade {
             deadline: BigInt?,
             gasProvider: GasProvider?,
             recipient: EthereumAddress
-        ): Web3Transaction {
+        ): Web3SwapTransaction {
             require(slippageTolerance >= 0.bn && slippageTolerance <= 1.bn)
 
             approveMaxIfRequired(credentials, gasProvider)
@@ -214,13 +227,13 @@ sealed interface UniLikeTrade {
 
             return function(
                 /* credentials = */credentials,
-                /* amountInMax = */amountInMax(slippageTolerance),
-                /* amountOut = */amountOut,
+                /* amountInMax = */amountInMax(slippageTolerance).raw,
+                /* amountOut = */amountOut.raw,
                 /* path = */path.map { it.tokenAddress },
                 /* deadline = */deadline,
                 /* gasProvider = */gasProvider,
                 /* recipient = */recipient.bigInt
-            ).let { hash -> Web3Transaction(networkClient, hash) }
+            ).let { hash -> Web3SwapTransaction(networkClient, hash) }
         }
     }
 }

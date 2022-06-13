@@ -1,8 +1,8 @@
 package com.symbiosis.sdk.swap.crosschain.bridging
 
+import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.fromToken
@@ -25,7 +25,7 @@ internal class BurnBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBridg
     override val receiveSide: ContractAddress = outputNetwork.portalAddress
 
     override suspend fun callData(
-        tokens: CrossChainTokenPair,
+        tokens: TokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
@@ -35,7 +35,7 @@ internal class BurnBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBridg
             .portal
             .getMetaUnsynthesizeCalldata(
                 token = crossChain.stablePool.tokens.last().tokenAddress,
-                amount = stableTrade.amountOutEstimated,
+                amount = stableTrade.amountOutEstimated.raw,
                 to = recipient,
                 synthesisRequestsCount = inputNetworkClient.synthesize.requestsCount(),
                 finalNetwork = outputNetwork,
@@ -49,7 +49,7 @@ internal class SynthBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBrid
     override val receiveSide: ContractAddress = outputNetwork.synthesizeAddress
 
     override suspend fun callData(
-        tokens: CrossChainTokenPair,
+        tokens: TokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
@@ -66,7 +66,7 @@ internal class SynthBridgingFeeProviderAdapter(crossChain: CrossChain) : AbsBrid
             swapTokens = getSynthSwapTokens(stableTrade, outputTrade, tokens.second),
             stableSwapCallData = stableTrade.callData(deadline = null),
             stablePoolAddress = crossChain.stablePool.address,
-            firstSwapAmountOut = inputTrade.amountOutEstimated,
+            firstSwapAmountOut = inputTrade.amountOutEstimated.raw,
             firstStableToken = crossChain.fromToken.tokenAddress
         )
 }

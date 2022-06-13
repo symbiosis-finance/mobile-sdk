@@ -4,15 +4,15 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.GasProvider
-import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.currency.amountRaw
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
+import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.wallet.Credentials
 
 data class NerveSwapTrade(
-    val amountIn: BigInt,
-    val amountOutEstimated: BigInt,
+    val amountIn: TokenAmount,
+    val amountOutEstimated: TokenAmount,
     val crossChain: CrossChain,
     val networkClient: NetworkClient,
     val tokenIndexFrom: BigInt,
@@ -22,8 +22,8 @@ data class NerveSwapTrade(
     val priceImpact: Percentage
 
     init {
-        val amountInAsReal = tokens.first.amountRaw(raw = amountIn).amount
-        val amountOutAsReal = tokens.second.amountRaw(raw = amountOutEstimated).amount
+        val amountInAsReal = amountIn.amount
+        val amountOutAsReal = amountOutEstimated.amount
 
         val difference = amountInAsReal - amountOutAsReal
 
@@ -38,7 +38,7 @@ data class NerveSwapTrade(
     val nerveContract = networkClient
         .getNerveContract(crossChain.stablePool)
     fun callData(deadline: BigInt) = nerveContract
-        .getSwapCallData(tokenIndexFrom, tokenIndexTo, dx = amountIn, minDy = 0.bi, deadline)
+        .getSwapCallData(tokenIndexFrom, tokenIndexTo, dx = amountIn.raw, minDy = 0.bi, deadline)
 
     suspend fun execute(
         credentials: Credentials,
@@ -48,7 +48,7 @@ data class NerveSwapTrade(
         credentials = credentials,
         tokenIndexFrom = tokenIndexFrom,
         tokenIndexTo = tokenIndexTo,
-        dx = amountIn,
+        dx = amountIn.raw,
         minDy = 0.bi,
         deadline = deadline,
         gasProvider = gasProvider

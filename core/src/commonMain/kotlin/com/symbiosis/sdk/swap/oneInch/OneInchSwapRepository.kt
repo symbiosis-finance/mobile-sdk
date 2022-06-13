@@ -2,13 +2,14 @@ package com.symbiosis.sdk.swap.oneInch
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.EthereumAddress
 
 class OneInchSwapRepository(private val router: Router, val network: Network) {
     suspend fun exactIn(
-        amountIn: BigInt,
+        amountIn: TokenAmount,
         tokens: OneInchTokenPair,
         slippageTolerance: Percentage /* 0 to 50 */,
         fromAddress: EthereumAddress,
@@ -21,7 +22,7 @@ class OneInchSwapRepository(private val router: Router, val network: Network) {
     interface Router {
         suspend fun findBestTrade(
             tokens: OneInchTokenPair,
-            amountIn: BigInt,
+            amountIn: TokenAmount,
             slippageTolerance: Percentage /* 0% to 50% */,
             fromAddress: EthereumAddress,
             recipient: EthereumAddress

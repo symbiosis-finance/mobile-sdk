@@ -4,26 +4,21 @@ import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
+import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository
 import dev.icerock.moko.web3.ContractAddress
 
 /**
- * This is a parent class for every network client,
- * it's like a multi-network manager of your single-network clients
- *
- * The entity which responds for the exact network called [NetworkClient]
- *
- * @see NetworkClient
+ * This is a parent class for all swap clients
  */
 interface ClientsManager {
     val allNetworks: List<Network>
     val allTokens: List<DecimalsToken>
     val allClients: List<SymbiosisNetworkClient>
     val allCrossChainClients: List<SymbiosisCrossChainClient>
-}
 
-fun ClientsManager.findBestTrade(amountInt: BigInt): Unit = TODO()
+    val swap: UnifiedSwapRepository get() = UnifiedSwapRepository(allCrossChainClients.map { it.crossChain })
+}
 
 fun ClientsManager.findToken(address: ContractAddress, chainId: BigInt): DecimalsErc20Token? =
     allTokens.filterIsInstance<DecimalsErc20Token>()

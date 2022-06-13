@@ -17,7 +17,7 @@ class Web3UniLikeSwapCalculatedRoutes(
             if (tradeResult !is UniLikeSwapRepository.ExactInResult.Success)
                 return@fold UniLikeSwapRepository.ExactInResult.Success(trade)
 
-            return@fold when (tradeResult.trade.amountOutEstimated > trade.amountOutEstimated) {
+            return@fold when (tradeResult.trade.amountOutEstimated.raw > trade.amountOutEstimated.raw) {
                 true -> tradeResult
                 false -> UniLikeSwapRepository.ExactInResult.Success(trade)
             }
@@ -41,7 +41,7 @@ class Web3UniLikeSwapCalculatedRoutes(
             if (tradeResult !is UniLikeSwapRepository.ExactOutResult.Success)
                 return@fold currentTradeResult
 
-            return@fold when (currentTradeResult.trade.amountInEstimated < tradeResult.trade.amountInEstimated) {
+            return@fold when (currentTradeResult.trade.amountInEstimated.raw < tradeResult.trade.amountInEstimated.raw) {
                 true -> currentTradeResult
                 false -> tradeResult
             }

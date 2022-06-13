@@ -15,6 +15,6 @@ fun SingleNetworkSwapRepository(
         ?.let(::OneInchSwapAdapter)
 
     return SingleNetworkSwapRepository(
-        listOfNotNull(uniLikeAdapter, oneInchIfSupportedAdapter)
+        listOf(ComposedUniSwapAndOneInchAdapter(uniLikeAdapter, oneInchIfSupportedAdapter))
     )
 }

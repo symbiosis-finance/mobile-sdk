@@ -4,6 +4,7 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.configuration.SwapTTLProvider
 import com.symbiosis.sdk.currency.DecimalsErc20Token
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.internal.time.timeMillis
 import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.crosschain.nerve.NerveSwapRepository
@@ -13,7 +14,7 @@ class DefaultStableSwapRepositoryAdapter(
     private val swapTTLProvider: SwapTTLProvider,
     private val chainId: BigInt
 ) : StableSwapRepositoryAdapter {
-    override suspend fun findBestTrade(amountIn: BigInt): StableSwapTradeAdapter {
+    override suspend fun findBestTrade(amountIn: TokenAmount): StableSwapTradeAdapter {
         val trade = nerveSwapRepository.findTrade(amountIn)
 
         val route =

@@ -34,8 +34,8 @@ class Web3UniLikeSwapCalculatedRoute(
             networkClient = networkClient,
             fee = TokenAmount(tradeFee, tokens.first),
             priceImpact = Percentage(priceImpact),
-            amountIn = amountIn,
-            amountOutEstimated = amountOut,
+            amountIn = TokenAmount(amountIn, tokens.first),
+            amountOutEstimated = TokenAmount(amountOut, tokens.second),
             route = this
         )
     }
@@ -66,8 +66,8 @@ class Web3UniLikeSwapCalculatedRoute(
                 networkClient = networkClient,
                 fee = TokenAmount(tradeFee, tokens.first),
                 priceImpact = Percentage(priceImpact),
-                amountOut = amountOut,
-                amountInEstimated = amountIn,
+                amountOut = TokenAmount(amountOut, tokens.first),
+                amountInEstimated = TokenAmount(amountIn, tokens.second),
                 route = this
             )
         )

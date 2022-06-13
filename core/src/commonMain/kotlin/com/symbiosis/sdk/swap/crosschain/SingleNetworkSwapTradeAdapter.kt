@@ -4,9 +4,9 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.AddressZero
+import com.symbiosis.sdk.currency.DecimalsErc20Token
+import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.NativeToken
-import com.symbiosis.sdk.currency.Token
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTrade
@@ -14,9 +14,9 @@ import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.hex.HexString
 
 sealed interface SingleNetworkSwapTradeAdapter {
-    val amountIn: BigInt
-    val amountOutEstimated: BigInt
-    val amountOutMin: BigInt
+    val amountIn: TokenAmount
+    val amountOutEstimated: TokenAmount
+    val amountOutMin: TokenAmount
     val priceImpact: Percentage
     val fee: TokenAmount
     val callData: HexString?
@@ -34,12 +34,12 @@ sealed interface SingleNetworkSwapTradeAdapter {
         val underlying: SingleNetworkTrade.ExactIn,
         val slippageTolerance: Percentage
     ) : SingleNetworkSwapTradeAdapter {
-        override val amountIn: BigInt = underlying.amountIn
-        override val amountOutEstimated: BigInt = underlying.amountOutEstimated
+        override val amountIn = underlying.amountIn
+        override val amountOutEstimated = underlying.amountOutEstimated
         override val priceImpact: Percentage = underlying.priceImpact
         override val fee: TokenAmount = underlying.fee
         override val callData: HexString = underlying.callData
-        override val amountOutMin: BigInt = underlying.amountOutMin
+        override val amountOutMin = underlying.amountOutMin
         override val routerAddress: ContractAddress = underlying.routerAddress
         override val callDataOffset: BigInt = underlying.callDataOffset
         override val firstTokenAddress: ContractAddress? = (underlying.tokens.first as? Erc20Token)
@@ -47,19 +47,18 @@ sealed interface SingleNetworkSwapTradeAdapter {
     }
 
     data class Empty(
-        override val amountIn: BigInt,
-        val firstToken: Token,
+        override val amountIn: TokenAmount,
     ) : SingleNetworkSwapTradeAdapter {
         override val firstTokenAddress: ContractAddress? =
-            when (firstToken) {
-                is Erc20Token -> firstToken.tokenAddress
-                is NativeToken -> null
+            when (amountIn.token) {
+                is DecimalsErc20Token -> amountIn.token.tokenAddress
+                is DecimalsNativeToken -> null
             }
         override val amountOutEstimated = amountIn
         override val priceImpact = Percentage(0.bn)
-        override val fee = TokenAmount(0.bi, firstToken.network.nativeCurrency)
+        override val fee = TokenAmount(0.bi, amountIn.token.network.nativeCurrency)
         override val callData: HexString? = null
-        override val amountOutMin: BigInt = amountIn
+        override val amountOutMin = amountIn
         override val routerAddress: ContractAddress = AddressZero
         override val callDataOffset: BigInt = 0.bi
     }

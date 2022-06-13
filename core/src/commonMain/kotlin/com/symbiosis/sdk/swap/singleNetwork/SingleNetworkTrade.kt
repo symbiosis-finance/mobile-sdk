@@ -2,6 +2,7 @@ package com.symbiosis.sdk.swap.singleNetwork
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bn
+import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.Network
@@ -9,15 +10,14 @@ import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
 import com.symbiosis.sdk.swap.oneInch.OneInchTrade
 import com.symbiosis.sdk.swap.oneInch.asNetworkPair
-import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
 import com.symbiosis.sdk.swap.uni.UniLikeTrade
-import com.symbiosis.sdk.transaction.Web3Transaction
+import com.symbiosis.sdk.transaction.Web3SwapTransaction
+import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.EthereumAddress
 import dev.icerock.moko.web3.hex.HexString
-import com.symbiosis.sdk.wallet.Credentials
 
-sealed interface SingleNetworkTrade {
+interface SingleNetworkTrade {
     val slippageTolerance: Percentage
     val priceImpact: Percentage
     val fee: TokenAmount
@@ -28,20 +28,18 @@ sealed interface SingleNetworkTrade {
     val callData: HexString
     val callDataOffset: BigInt
 
-    suspend fun recalculateExactIn(amountIn: BigInt): ExactIn
-
-    suspend fun execute(credentials: Credentials): Web3Transaction
+    suspend fun execute(credentials: Credentials, gasProvider: GasProvider? = null): Web3SwapTransaction
 
     sealed interface ExactIn : SingleNetworkTrade {
-        val amountIn: BigInt
-        val amountOutEstimated: BigInt
-        val amountOutMin: BigInt
+        val amountIn: TokenAmount
+        val amountOutEstimated: TokenAmount
+        val amountOutMin: TokenAmount
     }
 
     sealed interface ExactOut : SingleNetworkTrade {
-        val amountOut: BigInt
-        val amountInEstimated: BigInt
-        val amountInMax: BigInt
+        val amountOut: TokenAmount
+        val amountInEstimated: TokenAmount
+        val amountInMax: TokenAmount
     }
 
     sealed class UniLike(
@@ -61,20 +59,6 @@ sealed interface SingleNetworkTrade {
             return ExactIn(trade, slippageTolerance, recipient, callData)
         }
 
-        suspend fun recalculateExactOut(amountOut: BigInt): SingleNetworkSwapRepository.ExactOutResult {
-            val trade = when (val result = underlying.recalculateExactOut(amountOut)) {
-                is UniLikeSwapRepository.CalculatedRoute.ExactOutResult.Success ->
-                    result.trade
-                is UniLikeSwapRepository.CalculatedRoute.ExactOutResult.InsufficientLiquidity ->
-                    return SingleNetworkSwapRepository.ExactOutResult.InsufficientLiquidity
-            }
-            val callData = trade.callData(slippageTolerance, recipient)
-
-            return SingleNetworkSwapRepository.ExactOutResult.Success(
-                trade = ExactOut(trade, slippageTolerance, callData, recipient)
-            )
-        }
-
         suspend fun execute(credentials: Credentials) = underlying.execute(
             credentials, slippageTolerance, recipient = recipient
         )
@@ -92,6 +76,9 @@ sealed interface SingleNetworkTrade {
             override val routerAddress = underlying.routerAddress
             override val value = underlying.value
             override val tokens = underlying.tokens
+
+            override suspend fun execute(credentials: Credentials, gasProvider: GasProvider?): Web3SwapTransaction =
+                underlying.execute(credentials, slippageTolerance, gasProvider = gasProvider)
         }
         data class ExactOut(
             val underlying: UniLikeTrade.ExactOut,
@@ -106,6 +93,9 @@ sealed interface SingleNetworkTrade {
             override val routerAddress = underlying.routerAddress
             override val value = underlying.value(slippageTolerance)
             override val tokens = underlying.tokens
+
+            override suspend fun execute(credentials: Credentials, gasProvider: GasProvider?): Web3SwapTransaction =
+                underlying.execute(credentials, slippageTolerance, gasProvider = gasProvider)
         }
     }
 
@@ -118,9 +108,14 @@ sealed interface SingleNetworkTrade {
 
         override val amountIn = underlying.amountIn
         override val amountOutEstimated = underlying.amountOutEstimated
-        override val amountOutMin =
-            (underlying.amountOutEstimated.toBigNum() * (1.bn - slippageTolerance.fractionalValue))
+        override val amountOutMin: TokenAmount
+
+        init {
+            val amountOutEstimatedInt = amountOutEstimated.raw
+            val amountOutMinInt = (amountOutEstimatedInt.toBigNum() * (1.bn - slippageTolerance.fractionalValue))
                 .toBigInt()
+            amountOutMin = TokenAmount(amountOutMinInt, amountOutEstimated.token)
+        }
 
         // https://github.com/symbiosis-finance/js-sdk/blob/8fa705c582aef82c97ff5b37b802dfd1ba829b18/src/crosschain/oneInchTrade.ts#L124
         override val priceImpact: Percentage = underlying.priceImpact
@@ -132,16 +127,9 @@ sealed interface SingleNetworkTrade {
         override val value = underlying.value
         override val tokens = underlying.tokens.asNetworkPair(network)
 
-        override suspend fun recalculateExactIn(amountIn: BigInt): ExactIn =
-            with (underlying) {
-                val trade = oneInchSwapRepository
-                    .exactIn(amountIn, tokens, slippageTolerance, fromAddress, recipient)
-                OneInch(underlying, oneInchSwapRepository, network)
-            }
-
         override val callDataOffset: BigInt = underlying.callDataOffset
 
-        override suspend fun execute(credentials: Credentials): Web3Transaction =
-            underlying.execute(credentials)
+        override suspend fun execute(credentials: Credentials, gasProvider: GasProvider?): Web3SwapTransaction =
+            underlying.execute(credentials, gasProvider)
     }
 }

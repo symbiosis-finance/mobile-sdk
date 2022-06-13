@@ -1,8 +1,8 @@
 package com.symbiosis.sdk.swap.crosschain.bridging
 
 import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import dev.icerock.moko.web3.ContractAddress
@@ -13,7 +13,7 @@ class DefaultBridgingFeeProvider(private val adapterFactory: Adapter.Factory) : 
     private val api = SymbiosisBridgingApi
 
     override suspend fun getBridgingFee(
-        tokens: CrossChainTokenPair,
+        tokens: TokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
@@ -49,7 +49,7 @@ class DefaultBridgingFeeProvider(private val adapterFactory: Adapter.Factory) : 
         val receiveSide: ContractAddress
 
         suspend fun callData(
-            tokens: CrossChainTokenPair,
+            tokens: TokenPair,
             inputTrade: SingleNetworkSwapTradeAdapter,
             stableTrade: StableSwapTradeAdapter,
             outputTrade: SingleNetworkSwapTradeAdapter,

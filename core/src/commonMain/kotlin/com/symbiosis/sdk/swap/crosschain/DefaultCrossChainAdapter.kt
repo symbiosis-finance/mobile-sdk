@@ -3,7 +3,10 @@ package com.symbiosis.sdk.swap.crosschain
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bi
+import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.currency.TokenPair
+import com.symbiosis.sdk.currency.amountRaw
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository.Adapter.ExactInResult
 import com.symbiosis.sdk.swap.crosschain.bridging.BridgingFeeProvider
@@ -23,7 +26,7 @@ class DefaultCrossChainAdapter(
     override val minStableTokenInDollars: BigNum = crossChain.minStableTokensAmountPerTrade
     override val maxStableTokenInDollars: BigNum = crossChain.maxStableTokensAmountPerTrade
 
-    override fun parsePair(pair: CrossChainTokenPair): TokenPairAdapter {
+    override fun parsePair(pair: TokenPair): TokenPairAdapter {
         require(pair.first.asToken.network.chainId == crossChain.fromNetwork.chainId) {
             "Invalid crossChain selected"
         }
@@ -35,7 +38,7 @@ class DefaultCrossChainAdapter(
     }
 
     override fun createExecutor(
-        tokens: CrossChainTokenPair,
+        tokens: TokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,
@@ -48,8 +51,8 @@ class DefaultCrossChainAdapter(
     )
 
     override suspend fun inputTrade(
-        amountIn: BigInt,
-        tokens: SingleNetworkTokenPairAdapter,
+        amountIn: TokenAmount,
+        tokens: NetworkTokenPair,
         slippageTolerance: Percentage
     ): ExactInResult = inputSingleNetworkSwap.exactIn(
         amountIn = amountIn,
@@ -59,27 +62,31 @@ class DefaultCrossChainAdapter(
         recipient = inputNetwork.metaRouterAddress
     )
 
-    override suspend fun stableTrade(amountIn: BigInt, bridgingFee: BigInt): StableSwapTradeAdapter {
+    override suspend fun stableTrade(amountIn: TokenAmount, bridgingFee: BigInt): StableSwapTradeAdapter {
+        val amountInInt = when (crossChain.hasPoolOnSecondNetwork) {
+            true -> (amountIn.raw - bridgingFee).let { int -> if (int > 0.bi) int else 0.bi }
+            false -> amountIn.raw
+        }
+
         return stable.findBestTrade(
-            amountIn = when (crossChain.hasPoolOnSecondNetwork) {
-                true -> (amountIn - bridgingFee).let { int -> if (int > 0.bi) int else 0.bi }
-                false -> amountIn
-            }
+            amountIn = amountIn.token.amountRaw(amountInInt)
         )
     }
 
     override suspend fun outputTrade(
-        amountIn: BigInt,
+        amountIn: TokenAmount,
         bridgingFee: BigInt,
-        tokens: SingleNetworkTokenPairAdapter,
+        tokens: NetworkTokenPair,
         slippageTolerance: Percentage,
         recipient: EthereumAddress
     ): ExactInResult {
+        val amountInInt = when (crossChain.hasPoolOnFirstNetwork) {
+            true -> (amountIn.raw - bridgingFee).let { int -> if (int > 0.bi) int else 0.bi }
+            false -> amountIn.raw
+        }
+
         return outputSingleNetworkSwap.exactIn(
-            amountIn = when (crossChain.hasPoolOnFirstNetwork) {
-                true -> (amountIn - bridgingFee).let { int -> if (int > 0.bi) int else 0.bi }
-                false -> amountIn
-            },
+            amountIn = amountIn.token.amountRaw(amountInInt),
             tokens = tokens,
             slippageTolerance = slippageTolerance,
             from = outputNetwork.metaRouterAddress,
@@ -88,7 +95,7 @@ class DefaultCrossChainAdapter(
     }
 
     override suspend fun getBridgingFee(
-        tokens: CrossChainTokenPair,
+        tokens: TokenPair,
         inputTrade: SingleNetworkSwapTradeAdapter,
         stableTrade: StableSwapTradeAdapter,
         outputTrade: SingleNetworkSwapTradeAdapter,

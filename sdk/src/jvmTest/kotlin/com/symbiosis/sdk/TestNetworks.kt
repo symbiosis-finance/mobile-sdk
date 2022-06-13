@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 fun testWeb3(endpointUrl: String) = Web3(
     httpClient = HttpClient {
         install(Logging) {
-            level = LogLevel.ALL
+            level = LogLevel.NONE
         }
         install(DefaultRequest) {
             contentType(ContentType.Application.Json)

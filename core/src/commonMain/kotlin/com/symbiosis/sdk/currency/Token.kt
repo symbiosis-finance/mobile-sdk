@@ -51,6 +51,7 @@ interface NativeToken : Token {
 
 sealed interface DecimalsToken {
     val decimals: Int
+    val network: Network
 
     val asToken: Token get() = when (this) {
         is DecimalsErc20Token -> this

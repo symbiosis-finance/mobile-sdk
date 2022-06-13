@@ -26,6 +26,10 @@ class TokenAmount(amount: BigNum, val token: DecimalsToken) {
         require(this.token == other.token) { "Cannot multiply different tokens" }
         return TokenAmount(amount = amount * other.amount, token)
     }
+
+    override fun toString(): String {
+        return "TokenAmount(token=$token, amount=$amount)"
+    }
 }
 
 fun DecimalsToken.amountRaw(raw: BigInt) = TokenAmount(raw, token = this)

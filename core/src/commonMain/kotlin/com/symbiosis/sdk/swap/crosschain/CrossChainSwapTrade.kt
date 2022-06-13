@@ -4,15 +4,17 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.EthereumAddress
 
 data class CrossChainSwapTrade(
-    val amountIn: BigInt,
-    val amountOutEstimated: BigInt,
-    val amountOutMin: BigInt,
+    val tokens: TokenPair,
+    val amountIn: TokenAmount,
+    val amountOutEstimated: TokenAmount,
+    val amountOutMin: TokenAmount,
     val inputTrade: SingleNetworkSwapTradeAdapter,
     val stableTrade: StableSwapTradeAdapter,
     val outputTrade: SingleNetworkSwapTradeAdapter,

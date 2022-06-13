@@ -5,7 +5,7 @@ import dev.icerock.moko.web3.TransactionHash
 import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.requests.waitForTransactionReceipt
 
-class Web3Transaction(
+class Web3SwapTransaction(
     val networkClient: NetworkClient,
     val transactionHash: TransactionHash
 ) {

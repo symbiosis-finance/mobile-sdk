@@ -3,13 +3,14 @@ package com.symbiosis.sdk.swap.oneInch
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.configuration.GasProvider
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.gas.GasConfiguration
 import com.symbiosis.sdk.internal.kbignum.UINT256_MAX
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.checkTokenAllowance
 import com.symbiosis.sdk.network.sendTransaction
 import com.symbiosis.sdk.swap.Percentage
-import com.symbiosis.sdk.transaction.Web3Transaction
+import com.symbiosis.sdk.transaction.Web3SwapTransaction
 import com.symbiosis.sdk.wallet.Credentials
 import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.EthereumAddress
@@ -21,8 +22,8 @@ data class OneInchTrade(
     private val oneInchClient: OneInchHttpClient,
     val recipient: EthereumAddress,
     val tokens: OneInchTokenPair,
-    val amountIn: BigInt,
-    val amountOutEstimated: BigInt,
+    val amountIn: TokenAmount,
+    val amountOutEstimated: TokenAmount,
     val callData: HexString,
     val to: ContractAddress,
     val value: BigInt,
@@ -81,11 +82,15 @@ data class OneInchTrade(
             )
     }
 
-    suspend fun execute(credentials: Credentials): Web3Transaction {
+    suspend fun execute(credentials: Credentials, gasProvider: GasProvider? = null): Web3SwapTransaction {
         // if you want custom gasProvider here
         // just call this function by yourself, so
         // next call will just check if approval required
         approveMaxIfRequired(credentials)
+
+        val gasConfiguration = gasProvider
+            ?.getGasConfiguration(fromAddress, to, callData, value, client)
+            ?: GasConfiguration.Legacy(gasPrice, gasLimit)
 
         val signed = client.network.nonceController.withNonce(credentials.address) { nonce ->
             credentials.signer.signContractTransaction(
@@ -94,12 +99,12 @@ data class OneInchTrade(
                 to = to,
                 contractData = callData.prefixed,
                 value = value,
-                gasConfiguration = GasConfiguration.Legacy(gasPrice, gasLimit)
+                gasConfiguration = gasConfiguration
             )
         }
 
         val hash = client.sendTransaction(signed)
 
-        return Web3Transaction(client, hash)
+        return Web3SwapTransaction(client, hash)
     }
 }

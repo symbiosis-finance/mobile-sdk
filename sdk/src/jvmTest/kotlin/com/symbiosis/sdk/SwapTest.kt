@@ -72,7 +72,7 @@ class SwapTest {
 
             client.networkClient.synthesize.burnSynthTokens(
                 credentials = alexCredentials,
-                amount = tradeResult.trade.amountOutEstimated,
+                amount = tradeResult.trade.amountOutEstimated.raw,
                 synthCurrencyAddress = sWBNB.tokenAddress,
                 targetNetwork = testETH,
                 stableBridgingFee = 0.bi

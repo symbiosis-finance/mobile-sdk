@@ -5,14 +5,13 @@ package com.symbiosis.sdk
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.crosschain.testnet.BscTestnetEthRinkeby
+import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.currency.amount
-import com.symbiosis.sdk.currency.amountRaw
 import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.getTokenContract
 import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.network.sendTransaction
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository
-import com.symbiosis.sdk.swap.crosschain.CrossChainTokenPair
 import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
 import com.symbiosis.sdk.wallet.Credentials
@@ -45,12 +44,13 @@ class MetaSwapTest {
 
             println(
                 metaSwap.findBestTradeExactIn(
-                    tokens = CrossChainTokenPair(
+                    tokens = TokenPair(
                         fromToken,
                         targetToken,
                     ),
                     amountIn = 1_000_000_000_000_000_000.bi,
                     from = alexWalletAddress,
+
                 )
             )
         }
@@ -222,11 +222,11 @@ class MetaSwapTest {
             )
 
             when (rangeResult) {
-                is SymbiosisCrossChainClient.DecimalsAllowedRangeResult.Success -> {
+                is SymbiosisCrossChainClient.AllowedRangeResult.Success -> {
                     println("Min allowed input: ${rangeResult.minAmount.amount} BNB ($${testSdk.bscTestnetEthRinkebyClient.crossChain.minStableTokensAmountPerTrade})")
                     println("Max allowed input: ${rangeResult.maxAmount.amount} BNB ($${testSdk.bscTestnetEthRinkebyClient.crossChain.maxStableTokensAmountPerTrade})")
                 }
-                SymbiosisCrossChainClient.DecimalsAllowedRangeResult.TradeNotFound -> error("Path for this trade not found")
+                SymbiosisCrossChainClient.AllowedRangeResult.TradeNotFound -> error("Path for this trade not found")
             }
 
 
@@ -236,7 +236,7 @@ class MetaSwapTest {
 
             val tradeResult = testSdk.ethRinkebyBscTestnetClient.findBestTradeExactIn(
                 from = WalletAddress("0x9f301D013ef1c0E8397a93Be1885a4DA481294cA"),
-                tokens = CrossChainTokenPair(
+                tokens = TokenPair(
                     testSdk.ethRinkeby.token.ETH,
                     testSdk.bscTestnet.token.BNB,
                 ),
@@ -260,7 +260,7 @@ class MetaSwapTest {
 
             val result = testSdk.bscTestnetEthRinkebyClient.findBestTradeExactIn(
                 from = alexWalletAddress,
-                tokens = CrossChainTokenPair(
+                tokens = TokenPair(
                     first = bnbToken,
                     second = usdcToken
                 ),
@@ -317,7 +317,7 @@ class MetaSwapTest {
             val (result, time) = measureTimedValue {
                 mainnetSdk.polygonMainnetBscMainnetClient.findBestTradeExactIn(
                     from = alexWallet,
-                    tokens = CrossChainTokenPair(
+                    tokens = TokenPair(
                         first = maticToken,
                         second = bnbToken
                     ),
@@ -336,8 +336,8 @@ class MetaSwapTest {
                     error("Price of input tokens is $${result.actualInDollars}, but min allowed is $${result.minInDollars}")
             }
 
-            val amountOut = bnbToken.amountRaw(trade.amountOutEstimated).amount
-            val amountOutMin = bnbToken.amountRaw(trade.amountOutMin).amount
+            val amountOut = trade.amountOutEstimated.amount
+            val amountOutMin = trade.amountOutMin.amount
 
             println("""
                 
@@ -350,10 +350,10 @@ class MetaSwapTest {
                 
                 Trade Path:
                 
-                First[OneInch]: ${maticToken.amountRaw(trade.inputTrade.amountIn).amount} MATIC -> ${mainnetSdk.polygonMainnet.token.USDC.amountRaw(trade.inputTrade.amountOutMin).amount} USDC. Price impact: ${trade.inputTrade.priceImpact}
-                Second[Nerve]: ${mainnetSdk.polygonMainnet.token.USDC.amountRaw(trade.stableTrade.amountIn).amount} USDC -> ${mainnetSdk.bscMainnet.token.BUSD.amountRaw(trade.stableTrade.amountOutEstimated).amount} sBUSD. Price impact: ${trade.stableTrade.priceImpact}
-                Burn: ${mainnetSdk.bscMainnet.token.BUSD.amountRaw(trade.stableTrade.amountOutEstimated).amount} sBUSD -> ${mainnetSdk.bscMainnet.token.BUSD.amountRaw(trade.outputTrade.amountIn).amount} BUSD (${trade.fee.bridgingFee.amount} sBUSD bridging fee)
-                Third[OneInch]: ${mainnetSdk.bscMainnet.token.BUSD.amountRaw(trade.outputTrade.amountIn).amount} BUSD -> ${bnbToken.amountRaw(trade.outputTrade.amountOutEstimated).amount} BNB. Price impact: ${trade.outputTrade.priceImpact}
+                First[OneInch]: ${trade.inputTrade.amountIn.amount} MATIC -> ${trade.inputTrade.amountOutMin.amount} USDC. Price impact: ${trade.inputTrade.priceImpact}
+                Second[Nerve]: ${trade.stableTrade.amountIn.amount} USDC -> ${trade.stableTrade.amountOutEstimated.amount} sBUSD. Price impact: ${trade.stableTrade.priceImpact}
+                Burn: ${trade.stableTrade.amountOutEstimated.amount} sBUSD -> ${trade.outputTrade.amountIn.amount} BUSD (${trade.fee.bridgingFee.amount} sBUSD bridging fee)
+                Third[OneInch]: ${trade.outputTrade.amountIn.amount} BUSD -> ${trade.outputTrade.amountOutEstimated.amount} BNB. Price impact: ${trade.outputTrade.priceImpact}
                 
             """.trimIndent())
 
