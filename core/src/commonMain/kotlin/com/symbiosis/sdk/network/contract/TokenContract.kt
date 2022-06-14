@@ -94,7 +94,7 @@ suspend fun TokenContract.approveMaxIfNeed(
 }
 
 suspend fun TokenContract.checkTokenAllowance(
-    credentials: Credentials,
+    address: WalletAddress,
     spender: ContractAddress,
     amount: BigInt
-): Boolean = allowance(credentials.address, spender) >= amount
+): Boolean = allowance(address, spender) >= amount

@@ -19,9 +19,7 @@ https://sdk.symbiosis.finance/symbiosis-mobile-sdk/mobile-sdk-quick-start) here.
 
 ## Installation
 
-1) First of all, you have to be a member of [symbiosis-finance](https://github.com/symbiosis-finance) group, because the package is in a private repository.
-2) When you get a team access, you have to add the following code snippet to project's repositories script:
-`settings.gradle.kts`
+1) Add the following snippet to your repositories
 ```groovy
 repositories {
     maven {
@@ -37,10 +35,10 @@ where
 `GITHUB_USERNAME` - your github username, that has access to the repository,
 `TOKEN` - your github's personal access token, there is a [guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) of how to get it, you need the following scopes: `repo`, `workflow`, `read:packages`.
 
-3) add the following code to the module where you want to use sdk:
+2) Add the following code to the module where you want to use sdk:
 ```groovy
 dependencies {
-    commonMainApi("com.symbiosis:sdk:$version")
+    commonMainApi("com.symbiosis:sdk:2.0.1")
 }
 ```
 

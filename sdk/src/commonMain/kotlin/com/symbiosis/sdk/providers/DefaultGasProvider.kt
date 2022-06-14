@@ -21,7 +21,7 @@ object DefaultGasProvider : GasProvider {
         value: BigInt?
     ): BigInt = executor.getEstimateGas(
         from = from,
-        gasPrice = gasPrice(executor),
+        gasPrice = gasPrice,
         to = to,
         callData = callData,
         value = value
@@ -33,16 +33,18 @@ object DefaultGasProvider : GasProvider {
         callData: HexString?,
         value: BigInt?,
         executor: Web3Executor
-    ): GasConfiguration =
-        GasConfiguration.Legacy(
-            gasPrice = gasPrice(executor),
+    ): GasConfiguration {
+        val gasPrice = gasPrice(executor)
+        return GasConfiguration.Legacy(
+            gasPrice = gasPrice,
             gasLimit = gasLimit(
                 from = from,
                 to = to,
-                gasPrice = gasPrice(executor),
+                gasPrice = gasPrice,
                 callData = callData,
                 value = value,
                 executor = executor
             )
         )
+    }
 }

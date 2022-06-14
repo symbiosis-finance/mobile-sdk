@@ -7,256 +7,193 @@ import kotlinx.serialization.json.jsonArray
 //language=json
 private const val ABI = """
 [
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_synthesis",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_wrapper",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "internalType": "address[]",
-            "name": "firstPath",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "secondPath",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "finalPath",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address",
-            "name": "firstDexRouter",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "secondDexRouter",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "firstAmountOutMin",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "secondAmountOutMin",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "firstDeadline",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "finalAmountOutMin",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "finalDeadline",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "finalDexRouter",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "chainID",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "bridge",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "portal",
-            "type": "address"
-          }
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_token",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "_receiveSide",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "_calldata",
+                "type": "bytes"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_offset",
+                "type": "uint256"
+            }
         ],
-        "internalType": "struct MetaRouteStructs.MetaRouteTransaction",
-        "name": "_metarouteTransaction",
-        "type": "tuple"
-      }
-    ],
-    "name": "metaRoute",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "internalType": "address[]",
-            "name": "firstPath",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "secondPath",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "finalPath",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address",
-            "name": "firstDexRouter",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "secondDexRouter",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "firstAmountOutMin",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "secondAmountOutMin",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "firstDeadline",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "finalAmountOutMin",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "finalDeadline",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "finalDexRouter",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "chainID",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "bridge",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "portal",
-            "type": "address"
-          }
+        "name": "externalCall",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "stableBridgingFee",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "externalID",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "tokenReal",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "chainID",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address[]",
+                        "name": "swapTokens",
+                        "type": "address[]"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "secondDexRouter",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "secondSwapCalldata",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "finalReceiveSide",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "finalCalldata",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "finalOffset",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct MetaRouteStructs.MetaMintTransaction",
+                "name": "_metaMintTransaction",
+                "type": "tuple"
+            }
         ],
-        "internalType": "struct MetaRouteStructs.MetaRouteTransaction",
-        "name": "_metarouteTransaction",
-        "type": "tuple"
-      }
-    ],
-    "name": "metaRouteNative",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "synthesis",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "wrapper",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
+        "name": "metaMintSwap",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "bytes",
+                        "name": "firstSwapCalldata",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "secondSwapCalldata",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "address[]",
+                        "name": "approvedTokens",
+                        "type": "address[]"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "firstDexRouter",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "secondDexRouter",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "nativeIn",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "relayRecipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "otherSideCalldata",
+                        "type": "bytes"
+                    }
+                ],
+                "internalType": "struct MetaRouteStructs.MetaRouteTransaction",
+                "name": "_metarouteTransaction",
+                "type": "tuple"
+            }
+        ],
+        "name": "metaRoute",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "metaRouterGateway",
+        "outputs": [
+            {
+                "internalType": "contract MetaRouterGateway",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
 ]
 """
 
-internal val metaRouterContract: JsonArray = Json.parseToJsonElement(ABI).jsonArray
-
+internal val metaRouterV2Contract: JsonArray = Json.parseToJsonElement(ABI).jsonArray

@@ -6,7 +6,6 @@ package com.symbiosis.sdk.serializer
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
-import dev.icerock.moko.web3.hex.HexString
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -21,10 +20,8 @@ object BigIntSerializer {
         )
 
         override fun serialize(encoder: Encoder, value: BigInt) =
-            encoder.encodeString(HexString(value).prefixed)
-
-        override fun deserialize(decoder: Decoder): BigInt =
-            HexString(decoder.decodeString()).bigInt
+            encoder.encodeString(value.toString())
+        override fun deserialize(decoder: Decoder): BigInt = decoder.decodeString().bi
     }
     object LongPrimitive : KSerializer<BigInt> {
         override val descriptor = PrimitiveSerialDescriptor(

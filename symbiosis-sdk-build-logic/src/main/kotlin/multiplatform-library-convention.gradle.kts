@@ -11,5 +11,5 @@ plugins {
 
 kotlin {
     jvm()
-    ios()
+//    ios()
 }

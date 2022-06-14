@@ -4,8 +4,7 @@ package com.symbiosis.sdk.networks
 
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
-import com.symbiosis.sdk.currency.Erc20Token
-import com.symbiosis.sdk.currency.Token
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
 import dev.icerock.moko.web3.ContractAddress
@@ -23,14 +22,15 @@ open class EthRinkeby(override val executor: Web3Executor) : DefaultNetwork() {
     override val synthesizeAddressString = "0xA9E177ff9c88b1DF688AaB02C599F0c24e895f0f"
     override val bridgeAddressString = "0x09256eCAdb6ca96D1d7Fd96280cfA38D5F4E0c4C"
     override val routerAddressString = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
-    override val metaRouterAddressString = "0xaEF8DEfDBca28A3dADb510fc861aa105e51160Eb"
+    override val metaRouterAddressString = "0x420063Aa9DC201038bacAbe4F1A987b293eED3C0"
+    override val metaRouterGatewayAddressString = "0xeb4edB23fd2e80920112372a2f54549b64a6d203"
 
     val token = Tokens()
-    override val tokens: List<Token> = listOf(token.ETH, token.WETH, token.USDC, token.UNI)
+    override val tokens: List<DecimalsToken> = listOf(token.ETH, token.WETH, token.USDC, token.UNI)
 
-    override val nativeCurrency: DecimalsNativeToken = token.ETH
-    override val swapBases: List<Erc20Token> = listOf(token.WETH)
-    override val dexEndpoints: List<DexEndpoint> = listOf(
+    override val nativeCurrency = token.ETH
+    override val uniSwapBases = listOf(token.WETH)
+    override val dexEndpoints = listOf(
         // UNI
         DexEndpoint.hardcoded(
             factoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
@@ -55,10 +55,7 @@ open class EthRinkeby(override val executor: Web3Executor) : DefaultNetwork() {
             tokenAddress = "0xc778417e063141139fce010982780140aa0cd5ab",
             decimals = 18
         )
-        val ETH = DecimalsNativeToken(
-            network = this@EthRinkeby,
-            wrapped = WETH
-        )
+        val ETH = DecimalsNativeToken(WETH)
 
         private fun DecimalsErc20Token(network: Network, tokenAddress: String, decimals: Int) =
             DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
