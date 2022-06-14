@@ -6,6 +6,7 @@ import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.AddressZero
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
@@ -21,6 +22,7 @@ sealed interface SingleNetworkSwapTradeAdapter {
     val fee: TokenAmount
     val callData: HexString?
     val routerAddress: ContractAddress
+    val path: List<DecimalsToken>
 
     /**
      * @return null if input token is native
@@ -44,6 +46,7 @@ sealed interface SingleNetworkSwapTradeAdapter {
         override val callDataOffset: BigInt = underlying.callDataOffset
         override val firstTokenAddress: ContractAddress? = (underlying.tokens.first as? Erc20Token)
             ?.tokenAddress
+        override val path = underlying.path
     }
 
     data class Empty(
@@ -61,5 +64,6 @@ sealed interface SingleNetworkSwapTradeAdapter {
         override val amountOutMin = amountIn
         override val routerAddress: ContractAddress = AddressZero
         override val callDataOffset: BigInt = 0.bi
+        override val path = listOf(amountIn.token)
     }
 }

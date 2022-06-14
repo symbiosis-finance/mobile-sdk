@@ -2,11 +2,13 @@ package com.symbiosis.sdk.swap.unified
 
 import com.symbiosis.sdk.swap.crosschain.transaction.CrossChainSwapTransaction
 import com.symbiosis.sdk.transaction.Web3SwapTransaction
+import dev.icerock.moko.web3.TransactionHash
 import dev.icerock.moko.web3.entity.LogEvent
 import dev.icerock.moko.web3.entity.TransactionReceipt
 
 
 sealed interface UnifiedSwapTransaction {
+    val transactionHash: TransactionHash
 
     sealed interface ReceiptResult {
         class Success(val receipt: TransactionReceipt) : ReceiptResult
@@ -30,6 +32,7 @@ sealed interface UnifiedSwapTransaction {
             }
 
         class Default(val underlying: Web3SwapTransaction) : SingleNetwork {
+            override val transactionHash = underlying.transactionHash
             override suspend fun waitForTransactionReceipt(): ReceiptResult =
                 when (val result = underlying.waitForReceipt()) {
                     is Web3SwapTransaction.ReceiptResult.Failure -> ReceiptResult.Failure(result.receipt)
@@ -53,6 +56,7 @@ sealed interface UnifiedSwapTransaction {
         }
 
         class Default(val underlying: CrossChainSwapTransaction) : CrossChain {
+            override val transactionHash = underlying.transactionHash
             override suspend fun waitForCompletionEvent(transactionReceipt: TransactionReceipt): LogEvent =
                 underlying.waitForCompletionEvent(transactionReceipt)
 

@@ -6,6 +6,7 @@ import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
@@ -31,8 +32,9 @@ sealed interface UniLikeTrade {
 
     val routerAddress: ContractAddress get() = networkClient.network.routerAddress
     val tokens: NetworkTokenPair get() = route.tokens
-    val path: List<Erc20Token> get() = route.pools.map { pool -> pool.pair.first } +
-            route.tokens.second.thisOrWrapped
+    val path: List<DecimalsToken> get() = listOf(route.tokens.first) +
+            route.pools.map { pool -> pool.pair.second }.dropLast(n = 1) +
+            route.tokens.second
 
     val callDataOffset: BigInt
 
@@ -69,7 +71,7 @@ sealed interface UniLikeTrade {
         val amountOutEstimated: TokenAmount
     ) : UniLikeTrade {
 
-        private val rawPath = path.map { it.tokenAddress }
+        private val rawPath = path.map { it.thisOrWrapped.tokenAddress }
 
         val value: BigInt = when (tokens.first) {
             is DecimalsErc20Token -> 0.bi
@@ -229,7 +231,7 @@ sealed interface UniLikeTrade {
                 /* credentials = */credentials,
                 /* amountInMax = */amountInMax(slippageTolerance).raw,
                 /* amountOut = */amountOut.raw,
-                /* path = */path.map { it.tokenAddress },
+                /* path = */path.map { it.thisOrWrapped.tokenAddress },
                 /* deadline = */deadline,
                 /* gasProvider = */gasProvider,
                 /* recipient = */recipient.bigInt
