@@ -10,6 +10,9 @@ plugins {
     `maven-publish`
 }
 
+group = "com.symbiosis.sdk"
+version = libs.versions.symbiosisSdkVersion.get()
+
 dependencies {
     jvmMainImplementation(libs.web3j)
     commonMainImplementation(libs.logback)

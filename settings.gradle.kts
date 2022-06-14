@@ -11,6 +11,13 @@ dependencyResolutionManagement {
         mavenLocal()
         mavenCentral()
         google()
+        maven {
+            url = uri("https://maven.pkg.github.com/symbiosis-finance/mobile-sdk")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 includeBuild("symbiosis-sdk-build-logic")
