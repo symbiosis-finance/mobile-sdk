@@ -3,6 +3,7 @@ package com.symbiosis.sdk.swap.singleNetwork
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.GasProvider
+import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.Network
@@ -10,6 +11,7 @@ import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
 import com.symbiosis.sdk.swap.oneInch.OneInchTrade
 import com.symbiosis.sdk.swap.oneInch.asNetworkPair
+import com.symbiosis.sdk.swap.oneInch.asToken
 import com.symbiosis.sdk.swap.uni.UniLikeTrade
 import com.symbiosis.sdk.transaction.Web3SwapTransaction
 import com.symbiosis.sdk.wallet.Credentials
@@ -27,6 +29,7 @@ interface SingleNetworkTrade {
     val tokens: NetworkTokenPair
     val callData: HexString
     val callDataOffset: BigInt
+    val path: List<DecimalsToken>
 
     suspend fun execute(credentials: Credentials, gasProvider: GasProvider? = null): Web3SwapTransaction
 
@@ -47,6 +50,7 @@ interface SingleNetworkTrade {
         private val slippageTolerance: Percentage,
         private val recipient: EthereumAddress
     ) {
+        val path = underlying.path
         val callDataOffset = underlying.callDataOffset
         val fee = underlying.fee
         val priceImpact = underlying.priceImpact
@@ -104,6 +108,10 @@ interface SingleNetworkTrade {
         private val oneInchSwapRepository: OneInchSwapRepository,
         private val network: Network
     ) : ExactIn {
+        override val path: List<DecimalsToken> = listOf(
+            underlying.tokens.first.asToken(network),
+            underlying.tokens.second.asToken(network)
+        )
         override val slippageTolerance = underlying.slippageTolerance
 
         override val amountIn = underlying.amountIn
