@@ -8,17 +8,17 @@ sealed interface UnifiedPath {
     val tokens: List<DecimalsToken>
 
     interface CrossChain : UnifiedPath {
-        val inputPath: List<DecimalsToken>
-        val stablePath: List<DecimalsToken>
-        val outputPath: List<DecimalsToken>
+        val inputPath: CrossChainPathTrade
+        val stablePath: CrossChainPathTrade
+        val outputPath: CrossChainPathTrade
 
         class Default(crossChain: CrossChainSwapTrade) : CrossChain {
-            override val inputPath = crossChain.inputTrade.path
-            override val stablePath = listOf(crossChain.stableTrade.tokens.first, crossChain.stableTrade.tokens.second)
-            override val outputPath = crossChain.outputTrade.path
+            override val inputPath = CrossChainPathTrade.Default(crossChain.inputTrade)
+            override val stablePath = CrossChainPathTrade.StableDefault(crossChain.stableTrade)
+            override val outputPath = CrossChainPathTrade.Default(crossChain.outputTrade)
 
             // omit stable path here cuz of duplicated tokens
-            override val tokens = inputPath + outputPath
+            override val tokens = inputPath.tokens + outputPath.tokens
 
             override fun toString(): String {
                 return "CrossChainPath(inputPath=$inputPath, stablePath=$stablePath, outputPath=$outputPath)"

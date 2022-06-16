@@ -17,8 +17,10 @@ interface ClientsManager {
     val allClients: List<SymbiosisNetworkClient>
     val allCrossChainClients: List<SymbiosisCrossChainClient>
 
-    val swap: UnifiedSwapRepository get() = UnifiedSwapRepository(allCrossChainClients.map { it.crossChain })
+
 }
+
+val ClientsManager.swap: UnifiedSwapRepository get() = UnifiedSwapRepository(allCrossChainClients.map { it.crossChain })
 
 fun ClientsManager.findToken(address: ContractAddress, chainId: BigInt): DecimalsErc20Token? =
     allTokens.filterIsInstance<DecimalsErc20Token>()

@@ -80,11 +80,14 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
             return findBestTradeExactIn(amountIn, tokens, slippageTolerance, from, recipient, bridging)
         }
 
+        val dollarsAmount = adapter.dollarsAmount(stableTrade.amountOutEstimated, bridgingFee)
+
         val crossChainTrade = CrossChainSwapTrade(
             tokens = tokens,
             amountIn = amountIn,
             amountOutEstimated = outputTrade.amountOutEstimated,
             amountOutMin = outputTrade.amountOutMin,
+            dollarsAmount = dollarsAmount,
             inputTrade, stableTrade, outputTrade,
             bridgingFee = bridgingFee,
             slippageTolerance = slippageTolerance,
@@ -174,5 +177,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
             outputTrade: SingleNetworkSwapTradeAdapter,
             recipient: EthereumAddress
         ): TokenAmount
+
+        fun dollarsAmount(stableTradeAmountOut: TokenAmount, bridgingFee: TokenAmount): BigNum
     }
 }

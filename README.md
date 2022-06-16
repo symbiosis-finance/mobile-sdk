@@ -38,7 +38,7 @@ where
 2) Add the following code to the module where you want to use sdk:
 ```groovy
 dependencies {
-    commonMainApi("com.symbiosis.sdk:sdk:2.0.2")
+    commonMainApi("com.symbiosis.sdk:sdk:2.0.3")
 }
 ```
 

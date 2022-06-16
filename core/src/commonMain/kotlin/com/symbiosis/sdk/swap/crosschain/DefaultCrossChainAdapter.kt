@@ -101,4 +101,10 @@ class DefaultCrossChainAdapter(
         outputTrade: SingleNetworkSwapTradeAdapter,
         recipient: EthereumAddress
     ): TokenAmount = bridgingFeeProvider.getBridgingFee(tokens, inputTrade, stableTrade, outputTrade, recipient)
+
+    override fun dollarsAmount(stableTradeAmountOut: TokenAmount, bridgingFee: TokenAmount): BigNum =
+        when (crossChain.hasPoolOnFirstNetwork) {
+            true -> stableTradeAmountOut.amount
+            false -> stableTradeAmountOut.amount + bridgingFee.amount
+        }
 }

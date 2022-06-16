@@ -1,5 +1,6 @@
 package com.symbiosis.sdk.swap.unified
 
+import com.soywiz.kbignum.BigNum
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
@@ -61,6 +62,8 @@ sealed interface UnifiedSwapTrade {
         override val path: UnifiedPath.CrossChain
         override val fees: UnifiedFees.CrossChain
 
+        val dollarsAmount: BigNum
+
         override suspend fun execute(
             credentials: Credentials,
             gasProvider: GasProvider?
@@ -74,6 +77,8 @@ sealed interface UnifiedSwapTrade {
             override val priceImpact = UnifiedPriceImpact.CrossChain.Default(underlying)
             override val path = UnifiedPath.CrossChain.Default(underlying)
             override val fees = UnifiedFees.CrossChain.Default(underlying)
+
+            override val dollarsAmount = underlying.dollarsAmount
 
             override suspend fun execute(
                 credentials: Credentials,

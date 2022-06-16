@@ -1,6 +1,7 @@
 package com.symbiosis.sdk.swap.crosschain
 
 import com.soywiz.kbignum.BigInt
+import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.TokenAmount
@@ -15,6 +16,7 @@ data class CrossChainSwapTrade(
     val amountIn: TokenAmount,
     val amountOutEstimated: TokenAmount,
     val amountOutMin: TokenAmount,
+    val dollarsAmount: BigNum,
     val inputTrade: SingleNetworkSwapTradeAdapter,
     val stableTrade: StableSwapTradeAdapter,
     val outputTrade: SingleNetworkSwapTradeAdapter,
