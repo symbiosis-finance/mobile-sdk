@@ -16,7 +16,7 @@ web3jVersion = "4.8.5"
 mokoMvvmVersion = "0.11.0"
 logbackVersion = "1.2.5"
 multiplatformSettingsVersion = "0.8.1"
-symbiosisSdkVersion = "2.0.4"
+symbiosisSdkVersion = "2.0.5"
 
 [libraries]
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }

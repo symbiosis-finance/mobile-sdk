@@ -37,6 +37,18 @@ class SymbiosisCrossChainClient(val crossChain: CrossChain) {
             "fromToken is from invalid network (${fromToken.asToken.network.networkName}, but required ${crossChain.fromNetwork.networkName})"
         }
 
+        if (fromToken == crossChain.fromToken)
+            return AllowedRangeResult.Success(
+                minAmount = TokenAmount(
+                    amount = crossChain.minStableTokensAmountPerTrade,
+                    token = fromToken
+                ),
+                maxAmount = TokenAmount(
+                    amount = crossChain.maxStableTokensAmountPerTrade,
+                    token = fromToken
+                )
+            )
+
         val minTradeResult = firstNetworkClient.uniLike.exactOut(
             tokens = NetworkTokenPair(
                 first = fromToken,
