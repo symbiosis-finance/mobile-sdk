@@ -28,10 +28,10 @@ open class AvalancheFuji(override val executor: Web3Executor) : DefaultNetwork()
     override val metaRouterGatewayAddressString = "0xbcF3931C3f84A55a2DF8979D168f9DC97Ce93ED6"
 
     val token = Tokens()
-    override val tokens: List<DecimalsToken> = listOf(token.AWAX, token.WAWAX, token.USDT)
+    override val tokens: List<DecimalsToken> = listOf(token.AVAX, token.WAVAX, token.USDT)
 
-    override val nativeCurrency: DecimalsNativeToken = token.AWAX
-    override val uniSwapBases: List<DecimalsErc20Token> = listOf(token.WAWAX, token.USDT)
+    override val nativeCurrency: DecimalsNativeToken = token.AVAX
+    override val uniSwapBases: List<DecimalsErc20Token> = listOf(token.WAVAX, token.USDT)
     override val dexEndpoints: List<DexEndpoint> = listOf(
         DexEndpoint.hardcoded(
             factoryContractAddress = "0xb278D63e2E2a4aeb5A398eB87a91FF909B72C8D5",
@@ -46,12 +46,12 @@ open class AvalancheFuji(override val executor: Web3Executor) : DefaultNetwork()
             tokenAddress = "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
             decimals = 6
         )
-        val WAWAX = DecimalsErc20Token(
+        val WAVAX = DecimalsErc20Token(
             network = this@AvalancheFuji,
             tokenAddress = "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
             decimals = 18
         )
-        val AWAX = DecimalsNativeToken(WAWAX)
+        val AVAX = DecimalsNativeToken(WAVAX)
 
         private fun DecimalsErc20Token(network: Network, tokenAddress: String, decimals: Int) =
             DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
