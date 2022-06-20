@@ -21,23 +21,7 @@ class MetaRouterContract(
     private val defaultGasProvider: GasProvider,
     private val chainId: BigInt
 ) {
-    sealed interface FirstToken {
-        object Native : FirstToken
-        class Erc20(val address: ContractAddress) : FirstToken
-    }
-    /**
-     * meta route contract method
-     * @param chainId outbound (or start) network
-     * @param credentials user's wallet
-     * @param firstSwapCallData first on-chain swap call data
-     * @param secondSwapCallData nerve pool swap call data (empty by default, must be empty if route is reversed)
-     * @param approvedTokens list of tokens to approve for meta router (first in trade and stable pool tokens)
-     * @param firstDexRouter decentralized exchange on first network
-     * @param secondDexRouter decentralized exchange on nerve pool
-     * @param amount value of token to spend
-     * @param relayRecipient portal or synthesize contract address (depends on strict or reversed mode)
-     * @param otherSideCallData call data to execute on inbound (final) network
-     */
+
     suspend fun metaRoute(
         credentials: Credentials,
         firstSwapCallData: HexString?,

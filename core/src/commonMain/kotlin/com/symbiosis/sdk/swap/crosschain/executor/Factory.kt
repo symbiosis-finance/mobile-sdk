@@ -31,6 +31,7 @@ fun CrossChainTradeExecutorAdapter(
 
     return DefaultCrossChainTradeExecutorAdapter(
         crossChain, inputTrade, stableTrade, directionAdapter,
-        nativeIn = tokens.first is NativeToken
+        nativeIn = tokens.first is NativeToken,
+        tokens = tokens
     )
 }
