@@ -15,18 +15,19 @@ fun SymbiosisSdk(
     avalancheMainnetUrl: String = "https://api.avax.network/ext/bc/C/rpc",
     bobaMainnetUrl: String = "https://mainnet.boba.network/",
     avalancheFujiUrl: String = "https://api.avax-test.network/ext/bc/C/rpc",
-    bobaRinkebyUrl: String = "https://rinkeby.boba.network/"
+    bobaRinkebyUrl: String = "https://rinkeby.boba.network/",
+    web3Provider: (String) -> Web3Executor = ::Web3
 ) = SymbiosisSdk(
-    avalancheMainnetExecutor = Web3(avalancheMainnetUrl),
-    bscMainnetExecutor = Web3(bscMainnetUrl),
-    ethMainnetExecutor = Web3(ethMainnetUrl),
-    polygonMainnetExecutor = Web3(polygonMainnetUrl),
-    bobaMainnetExecutor = Web3(bobaMainnetUrl),
-    avalancheFujiExecutor = Web3(avalancheFujiUrl),
-    bscTestnetExecutor = Web3(bscTestnetUrl),
-    ethRinkebyExecutor = Web3(ethRinkebyUrl),
-    polygonMumbaiExecutor = Web3(polygonMumbaiUrl),
-    bobaRinkebyExecutor = Web3(bobaRinkebyUrl)
+    avalancheMainnetExecutor = web3Provider(avalancheMainnetUrl),
+    bscMainnetExecutor = web3Provider(bscMainnetUrl),
+    ethMainnetExecutor = web3Provider(ethMainnetUrl),
+    polygonMainnetExecutor = web3Provider(polygonMainnetUrl),
+    bobaMainnetExecutor = web3Provider(bobaMainnetUrl),
+    avalancheFujiExecutor = web3Provider(avalancheFujiUrl),
+    bscTestnetExecutor = web3Provider(bscTestnetUrl),
+    ethRinkebyExecutor = web3Provider(ethRinkebyUrl),
+    polygonMumbaiExecutor = web3Provider(polygonMumbaiUrl),
+    bobaRinkebyExecutor = web3Provider(bobaRinkebyUrl)
 )
 
 fun SymbiosisSdk(

@@ -44,7 +44,7 @@ class SynthCrossChainExecutorDirectionAdapter(
             .getMetaSynthesizeCalldata(
                 stableBridgingFee = bridgingFee,
                 amount = inputTrade.amountOutMin.raw,
-                rtoken = inputTrade.firstTokenAddress ?: stableTrade.tokens.first.tokenAddress,
+                rtoken = stableTrade.tokens.first.tokenAddress,
                 chain2address = recipient,
                 receiveSide = crossChain.toNetwork.synthesizeAddress,
                 oppositeBridge = crossChain.toNetwork.bridgeAddress,

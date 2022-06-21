@@ -7,6 +7,7 @@ import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.internal.time.timeMillis
 import com.symbiosis.sdk.network.networkClient
+import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.nerve.NerveSwapRepository
 
 class DefaultStableSwapRepositoryAdapter(
@@ -14,8 +15,8 @@ class DefaultStableSwapRepositoryAdapter(
     private val swapTTLProvider: SwapTTLProvider,
     private val chainId: BigInt
 ) : StableSwapRepositoryAdapter {
-    override suspend fun findBestTrade(amountIn: TokenAmount): StableSwapTradeAdapter {
-        val trade = nerveSwapRepository.findTrade(amountIn)
+    override suspend fun findBestTrade(amountIn: TokenAmount, slippageTolerance: Percentage): StableSwapTradeAdapter {
+        val trade = nerveSwapRepository.findTrade(amountIn, slippageTolerance)
 
         val route =
             when (trade.crossChain.hasPoolOnFirstNetwork) {

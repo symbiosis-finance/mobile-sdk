@@ -1,8 +1,8 @@
 package com.symbiosis.sdk.swap.crosschain
 
-import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.swap.Percentage
 
 interface StableSwapRepositoryAdapter {
-    suspend fun findBestTrade(amountIn: TokenAmount): StableSwapTradeAdapter
+    suspend fun findBestTrade(amountIn: TokenAmount, slippageTolerance: Percentage): StableSwapTradeAdapter
 }

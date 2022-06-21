@@ -1,15 +1,36 @@
 package com.symbiosis.sdk
 
+import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.currency.amount
+import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository
 import com.symbiosis.sdk.swap.unified.UnifiedSwapTrade
 import com.symbiosis.sdk.swap.unified.UnifiedSwapTransaction
+import dev.icerock.moko.web3.WalletAddress
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 class UnifiedSwapTest {
+
+    @Test
+    fun test() {
+        runBlocking {
+            println(
+                testSdk.bscTestnet.networkClient.getTokenContract(
+                    testSdk.bscTestnet.token.BUSD.tokenAddress
+                ).allowance(
+                    WalletAddress("0x9f301D013ef1c0E8397a93Be1885a4DA481294cA"),
+                    spender = testSdk.bscTestnet.metaRouterGatewayAddress
+                )
+            )
+            println(
+                "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".bi(radix = 16)
+            )
+        }
+    }
+
     @Test
     fun crossChainTest() {
         runBlocking {

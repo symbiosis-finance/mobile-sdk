@@ -2,6 +2,7 @@ package com.symbiosis.sdk.swap.crosschain.executor
 
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.currency.NativeToken
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
@@ -16,7 +17,8 @@ fun CrossChainTradeExecutorAdapter(
     tokens: TokenPair,
     bridgingFee: BigInt,
     fromAddress: EthereumAddress,
-    recipient: EthereumAddress
+    recipient: EthereumAddress,
+    amountIn: TokenAmount
 ): CrossChainTradeExecutorAdapter {
     val directionAdapter = when (crossChain.hasPoolOnFirstNetwork) {
         true -> BurnCrossChainExecutorDirectionAdapter(
@@ -32,6 +34,7 @@ fun CrossChainTradeExecutorAdapter(
     return DefaultCrossChainTradeExecutorAdapter(
         crossChain, inputTrade, stableTrade, directionAdapter,
         nativeIn = tokens.first is NativeToken,
-        tokens = tokens
+        tokens = tokens,
+        amountIn = amountIn
     )
 }

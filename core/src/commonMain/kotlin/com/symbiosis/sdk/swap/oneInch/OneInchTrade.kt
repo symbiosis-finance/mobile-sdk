@@ -5,7 +5,6 @@ import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.gas.GasConfiguration
-import com.symbiosis.sdk.internal.kbignum.UINT256_MAX
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.checkTokenAllowance
 import com.symbiosis.sdk.network.sendTransaction
@@ -64,7 +63,7 @@ data class OneInchTrade(
 
         return !client
             .getTokenContract(inputToken.address)
-            .checkTokenAllowance(walletAddress, approveSpender(), BigInt.UINT256_MAX)
+            .checkTokenAllowance(walletAddress, approveSpender(), amountIn.raw)
     }
 
     suspend fun approveMaxIfRequired(

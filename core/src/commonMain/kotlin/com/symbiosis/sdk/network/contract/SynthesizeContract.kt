@@ -62,6 +62,7 @@ class SynthesizeContract internal constructor(
                 targetNetwork.bridgeAddress.bigInt,
                 credentials.address.bigInt,
                 targetNetwork.chainId,
+                ClientId
             ),
             gasProvider = gasProvider ?: defaultGasProvider,
             value = 10_000_000_000_000_000.bi
@@ -95,7 +96,8 @@ class SynthesizeContract internal constructor(
                 receiveSide.bigInt,
                 oppositeBridge.bigInt,
                 chain2Address.bigInt,
-                chainId
+                chainId,
+                ClientId
             )
         )
     )
@@ -145,7 +147,8 @@ class SynthesizeContract internal constructor(
             internalId.byteArray,
             receiveSide.bigInt,
             oppositeBridge.bigInt,
-            chainIdFrom
+            chainIdFrom,
+            ClientId
         )
     )
 

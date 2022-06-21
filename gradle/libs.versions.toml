@@ -10,13 +10,13 @@ kotlinxSerializationVersion = "1.2.2"
 mokoTestVersion = "0.4.0"
 kbignumVersion = "2.4.1.1"
 mokoResourcesVersion = "0.16.1"
-mokoWeb3Version = "0.19.0"
+mokoWeb3Version = "0.20.0"
 ktorClientVersion = "2.0.0"
 web3jVersion = "4.8.5"
 mokoMvvmVersion = "0.11.0"
 logbackVersion = "1.2.5"
 multiplatformSettingsVersion = "0.8.1"
-symbiosisSdkVersion = "2.0.6"
+symbiosisSdkVersion = "2.0.9"
 
 [libraries]
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }

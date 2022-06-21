@@ -44,10 +44,11 @@ class DefaultCrossChainAdapter(
         outputTrade: SingleNetworkSwapTradeAdapter,
         bridgingFee: BigInt,
         fromAddress: EthereumAddress,
-        recipient: EthereumAddress
+        recipient: EthereumAddress,
+        amountIn: TokenAmount
     ): CrossChainTradeExecutorAdapter = CrossChainTradeExecutorAdapter(
         crossChain, inputTrade, stableTrade, outputTrade,
-        tokens, bridgingFee, fromAddress, recipient
+        tokens, bridgingFee, fromAddress, recipient, amountIn
     )
 
     override suspend fun inputTrade(
@@ -62,14 +63,15 @@ class DefaultCrossChainAdapter(
         recipient = inputNetwork.metaRouterAddress
     )
 
-    override suspend fun stableTrade(amountIn: TokenAmount, bridgingFee: BigInt): StableSwapTradeAdapter {
+    override suspend fun stableTrade(amountIn: TokenAmount, bridgingFee: BigInt, slippageTolerance: Percentage): StableSwapTradeAdapter {
         val amountInInt = when (crossChain.hasPoolOnSecondNetwork) {
             true -> (amountIn.raw - bridgingFee).let { int -> if (int > 0.bi) int else 0.bi }
             false -> amountIn.raw
         }
 
         return stable.findBestTrade(
-            amountIn = amountIn.token.amountRaw(amountInInt)
+            amountIn = amountIn.token.amountRaw(amountInInt),
+            slippageTolerance = slippageTolerance
         )
     }
 
