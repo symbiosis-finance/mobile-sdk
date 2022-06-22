@@ -59,7 +59,8 @@ class PortalContract internal constructor(
                 targetNetwork.synthesizeAddress.bigInt,
                 targetNetwork.bridgeAddress.bigInt,
                 credentials.address.bigInt,
-                targetNetwork.chainId
+                targetNetwork.chainId,
+                ClientId
             ),
             gasProvider = gasProvider ?: defaultGasProvider,
             value = 10_000_000_000_000_000.bi
@@ -99,7 +100,8 @@ class PortalContract internal constructor(
                 finalDexRouter.bigInt,
                 finalSwapCalldata?.byteArray ?: byteArrayOf(),
                 finalOffset,
-                chain2address.bigInt
+                chain2address.bigInt,
+                ClientId
             )
         )
     )
@@ -141,7 +143,7 @@ class PortalContract internal constructor(
             receiveSide.bigInt,
             oppositeBridge.bigInt,
             chainIdFrom,
-            HexString("0x73796d62696f7369732d61707000000000000000000000000000000000000000").byteArray
+            ClientId
         )
     )
 

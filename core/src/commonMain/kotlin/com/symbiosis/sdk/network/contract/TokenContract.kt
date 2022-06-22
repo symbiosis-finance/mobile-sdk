@@ -14,6 +14,7 @@ import dev.icerock.moko.web3.WalletAddress
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
 import dev.icerock.moko.web3.requests.executeBatch
+import dev.icerock.moko.web3.requests.waitForTransactionReceipt
 
 @Suppress("MemberVisibilityCanBePrivate")
 class TokenContract internal constructor(
@@ -51,7 +52,7 @@ class TokenContract internal constructor(
     ): TransactionHash {
         val transferAmount = BigInt.UINT256_MAX
 
-        return wrapped.write(
+        val txHash = wrapped.write(
             chainId = network.chainId,
             nonceController = nonceController,
             credentials = credentials,
@@ -62,6 +63,10 @@ class TokenContract internal constructor(
             ),
             gasProvider = gasProvider ?: defaultGasProvider
         )
+
+        executor.waitForTransactionReceipt(txHash)
+
+        return txHash
     }
 
     fun balanceOfRequest(address: WalletAddress) =

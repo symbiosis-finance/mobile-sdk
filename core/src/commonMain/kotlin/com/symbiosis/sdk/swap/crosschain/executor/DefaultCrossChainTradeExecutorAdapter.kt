@@ -3,8 +3,8 @@ package com.symbiosis.sdk.swap.crosschain.executor
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.DecimalsErc20Token
+import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.TokenPair
-import com.symbiosis.sdk.internal.kbignum.UINT256_MAX
 import com.symbiosis.sdk.network.contract.checkTokenAllowance
 import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.crosschain.CrossChain
@@ -23,7 +23,8 @@ class DefaultCrossChainTradeExecutorAdapter(
     private val stableTrade: StableSwapTradeAdapter,
     private val directionAdapter: DirectionAdapter,
     private val nativeIn: Boolean,
-    private val tokens: TokenPair
+    private val tokens: TokenPair,
+    private val amountIn: TokenAmount
 ) : CrossChainTradeExecutorAdapter {
 
     private val inputClient = tokens.first.network.networkClient
@@ -36,7 +37,7 @@ class DefaultCrossChainTradeExecutorAdapter(
 
         return !inputClient
             .getTokenContract(inputToken.tokenAddress)
-            .checkTokenAllowance(walletAddress, inputClient.network.metaRouterGatewayAddress, BigInt.UINT256_MAX)
+            .checkTokenAllowance(walletAddress, inputClient.network.metaRouterGatewayAddress, amountIn.raw)
     }
 
     suspend fun approveMaxIfRequired(

@@ -71,13 +71,14 @@ fun SymbiosisSdkMainnet(
     ethMainnetUrl: String,
     polygonMainnetUrl: String = "https://polygon-rpc.com",
     avalancheMainnetUrl: String = "https://api.avax.network/ext/bc/C/rpc",
-    bobaMainnetUrl: String = "https://mainnet.boba.network/"
+    bobaMainnetUrl: String = "https://mainnet.boba.network/",
+    web3Provider: (String) -> Web3Executor = ::Web3
 ) = SymbiosisSdkMainnet(
-    avalancheMainnetExecutor = Web3(avalancheMainnetUrl),
-    bscMainnetExecutor = Web3(bscMainnetUrl),
-    ethMainnetExecutor = Web3(ethMainnetUrl),
-    polygonMainnetExecutor = Web3(polygonMainnetUrl),
-    bobaMainnetExecutor = Web3(bobaMainnetUrl)
+    avalancheMainnetExecutor = web3Provider(avalancheMainnetUrl),
+    bscMainnetExecutor = web3Provider(bscMainnetUrl),
+    ethMainnetExecutor = web3Provider(ethMainnetUrl),
+    polygonMainnetExecutor = web3Provider(polygonMainnetUrl),
+    bobaMainnetExecutor = web3Provider(bobaMainnetUrl)
 )
 
 fun SymbiosisSdkMainnet(

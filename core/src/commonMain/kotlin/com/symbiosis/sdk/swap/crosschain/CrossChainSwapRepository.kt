@@ -49,6 +49,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
         val stableTrade = adapter.stableTrade(
             amountIn = inputTrade.amountOutMin,
             bridgingFee = bridgingFee?.raw ?: 0.bi,
+            slippageTolerance = slippageTolerance,
         )
 
         val stableTokenInDollars = stableTrade.amountOutEstimated.amount
@@ -99,7 +100,8 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
                 outputTrade,
                 bridgingFee.raw,
                 from,
-                recipient
+                recipient,
+                amountIn
             )
         )
 
@@ -119,7 +121,8 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
             outputTrade: SingleNetworkSwapTradeAdapter,
             bridgingFee: BigInt,
             fromAddress: EthereumAddress,
-            recipient: EthereumAddress
+            recipient: EthereumAddress,
+            amountIn: TokenAmount
         ): CrossChainTradeExecutorAdapter
 
         sealed interface ExactInResult {
@@ -147,6 +150,7 @@ class CrossChainSwapRepository(private val adapter: Adapter) {
         suspend fun stableTrade(
             amountIn: TokenAmount,
             bridgingFee: BigInt,
+            slippageTolerance: Percentage
         ): StableSwapTradeAdapter
 
         suspend fun outputTrade(
