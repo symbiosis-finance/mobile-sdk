@@ -1,14 +1,13 @@
 package com.symbiosis.sdk.swap.unified
 
 import com.soywiz.kbignum.BigNum
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapTrade
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTrade
-import com.symbiosis.sdk.wallet.Credentials
+import dev.icerock.moko.web3.signing.Credentials
 
 sealed interface UnifiedSwapTrade {
     val amountIn: TokenAmount
@@ -26,7 +25,7 @@ sealed interface UnifiedSwapTrade {
         object ExecutionRevertedWithoutSending : ExecuteResult<Nothing>
     }
 
-    suspend fun execute(credentials: Credentials, gasProvider: GasProvider? = null): ExecuteResult<*>
+    suspend fun execute(credentials: Credentials): ExecuteResult<*>
 
     interface SingleNetwork : UnifiedSwapTrade {
         override val tokens: NetworkTokenPair
@@ -34,10 +33,7 @@ sealed interface UnifiedSwapTrade {
         override val path: UnifiedPath.SingleNetwork
         override val fees: UnifiedFees.SingleNetwork
 
-        override suspend fun execute(
-            credentials: Credentials,
-            gasProvider: GasProvider?
-        ): ExecuteResult<UnifiedSwapTransaction.SingleNetwork>
+        override suspend fun execute(credentials: Credentials): ExecuteResult<UnifiedSwapTransaction.SingleNetwork>
 
         data class Default(val underlying: SingleNetworkTrade.ExactIn) : SingleNetwork {
             override val amountIn = underlying.amountIn
@@ -49,9 +45,9 @@ sealed interface UnifiedSwapTrade {
             override val fees = UnifiedFees.SingleNetwork.Default(underlying)
 
             override suspend fun execute(
-                credentials: Credentials, gasProvider: GasProvider?
+                credentials: Credentials
             ): ExecuteResult<UnifiedSwapTransaction.SingleNetwork> {
-                val web3Transaction = underlying.execute(credentials, gasProvider)
+                val web3Transaction = underlying.execute(credentials)
                 return UnifiedSwapTransaction.SingleNetwork.Default(web3Transaction)
                     .let { tx -> ExecuteResult.Success(tx) }
             }
@@ -65,8 +61,7 @@ sealed interface UnifiedSwapTrade {
         val dollarsAmount: BigNum
 
         override suspend fun execute(
-            credentials: Credentials,
-            gasProvider: GasProvider?
+            credentials: Credentials
         ): ExecuteResult<UnifiedSwapTransaction.CrossChain>
 
         data class Default(val underlying: CrossChainSwapTrade) : CrossChain {
@@ -81,11 +76,10 @@ sealed interface UnifiedSwapTrade {
             override val dollarsAmount = underlying.dollarsAmount
 
             override suspend fun execute(
-                credentials: Credentials,
-                gasProvider: GasProvider?
+                credentials: Credentials
             ): ExecuteResult<UnifiedSwapTransaction.CrossChain> {
                 val crossChainTransaction = when (
-                    val result = underlying.execute(credentials, gasProvider = gasProvider)
+                    val result = underlying.execute(credentials)
                 ) {
                     is CrossChainTradeExecutorAdapter.ExecuteResult.ExecutionRevertedWithoutSending ->
                         return ExecuteResult.ExecutionRevertedWithoutSending

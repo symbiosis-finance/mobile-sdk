@@ -11,9 +11,6 @@ class BobaMainnetBscMainnet(
     bobaMainnetExecutor: Web3Executor,
     bscMainnetExecutor: Web3Executor
 ) : MainnetCrossChain() {
-    constructor(bobaMainnetUrl: String, bscMainnetUrl: String) :
-            this(Web3(bobaMainnetUrl), Web3(bscMainnetUrl))
-
     override val fromNetwork = BobaMainnet(bobaMainnetExecutor)
     override val toNetwork = BscMainnet(bscMainnetExecutor)
     override val stablePool: NerveStablePool = StablePools.BOBA_MAINNET_USDC_BSC_MAINNET_sBUSD(fromNetwork, toNetwork)

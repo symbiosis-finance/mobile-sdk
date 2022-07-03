@@ -4,6 +4,7 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
+import com.symbiosis.sdk.internal.kbignum.toBigNum
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.OracleContract
 import com.symbiosis.sdk.swap.oneInch.OneInchToken

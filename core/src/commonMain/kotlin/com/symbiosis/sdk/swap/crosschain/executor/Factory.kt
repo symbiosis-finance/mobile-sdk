@@ -7,7 +7,7 @@ import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 fun CrossChainTradeExecutorAdapter(
     crossChain: CrossChain,

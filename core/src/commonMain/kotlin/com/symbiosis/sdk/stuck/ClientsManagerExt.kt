@@ -3,7 +3,7 @@ package com.symbiosis.sdk.stuck
 import com.symbiosis.sdk.ClientsManager
 import com.symbiosis.sdk.getCrossChainClient
 import com.symbiosis.sdk.network.NetworkClient
-import dev.icerock.moko.web3.WalletAddress
+import dev.icerock.moko.web3.entity.WalletAddress
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emitAll

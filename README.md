@@ -23,7 +23,7 @@ https://sdk.symbiosis.finance/symbiosis-mobile-sdk/mobile-sdk-quick-start) here.
 ```groovy
 repositories {
     maven {
-        url = uri("https://maven.pkg.github.com/symbiosis-finance/mobile-sdk")
+        url = uri("https://maven.pkg.github.com/symbiosis-finance/maven")
         credentials {
             username = System.getenv("GITHUB_USERNAME")
             password = System.getenv("TOKEN")
@@ -38,7 +38,7 @@ where
 2) Add the following code to the module where you want to use sdk:
 ```groovy
 dependencies {
-    commonMainApi("com.symbiosis.sdk:sdk:2.0.9")
+    commonMainApi("com.symbiosis.sdk:sdk:2.1.0")
 }
 ```
 

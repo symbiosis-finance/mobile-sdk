@@ -10,7 +10,7 @@ import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTokenPair
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTrade
 import com.symbiosis.sdk.swap.singleNetwork.asNetworkTokenPair
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class UniLikeSwapAdapter(
     private val uniLike: UniLikeSwapRepository

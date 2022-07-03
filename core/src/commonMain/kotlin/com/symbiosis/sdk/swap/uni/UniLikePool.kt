@@ -3,7 +3,8 @@ package com.symbiosis.sdk.swap.uni
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.NetworkTokenPair
-import dev.icerock.moko.web3.ContractAddress
+import com.symbiosis.sdk.internal.kbignum.toBigNum
+import dev.icerock.moko.web3.entity.ContractAddress
 
 data class UniLikePool(val pair: NetworkTokenPair.Erc20Only, val reserves: ReservesData, val address: ContractAddress) {
     fun outputAmountWithoutFee(amountIn: BigInt, hasImpact: Boolean): BigInt {

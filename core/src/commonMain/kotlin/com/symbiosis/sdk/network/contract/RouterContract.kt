@@ -1,25 +1,20 @@
 package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
-import com.symbiosis.sdk.contract.write
-import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.TransactionHash
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.entity.LogEvent
+import dev.icerock.moko.web3.entity.TransactionHash
+import dev.icerock.moko.web3.signing.Credentials
 
 class RouterContract internal constructor(
     private val executor: Web3Executor,
     private val network: Network,
-    private val nonceController: NonceController,
     val wrapped: SmartContract,
-    private val defaultGasProvider: GasProvider,
     private val defaultSwapTTLProvider: SwapTTLProvider,
     private val tokenContractFactory: (ContractAddress) -> TokenContract
 ) {
@@ -31,28 +26,23 @@ class RouterContract internal constructor(
         amountOutMin: BigInt,
         path: List<ContractAddress>,
         deadline: BigInt? = null,
-        gasProvider: GasProvider? = null,
-        recipient: BigInt = credentials.address.bigInt
+        recipient: EthereumAddress = credentials.address
     ): TransactionHash {
         tokenContractFactory(path.first()).approveMaxIfNeed(
             credentials = credentials,
             spender = wrapped.contractAddress,
-            amount = amountIn,
-            gasProvider = gasProvider
+            amount = amountIn
         )
         return wrapped.write(
-            chainId = network.chainId,
-            nonceController = nonceController,
             credentials = credentials,
             method = "swapExactTokensForTokens",
             params = listOf(
                 amountIn,
                 amountOutMin,
-                path.map(ContractAddress::bigInt),
+                path,
                 recipient,
                 deadline ?: defaultDeadline()
-            ),
-            gasProvider = gasProvider ?: defaultGasProvider
+            )
         )
     }
 
@@ -62,15 +52,15 @@ class RouterContract internal constructor(
         path: List<ContractAddress>,
         deadline: BigInt? = null,
         recipient: EthereumAddress
-    ) = wrapped.encodeMethod(
+    ) = wrapped.writeRequest(
         method = "swapExactTokensForTokens",
         params = listOf(
             amountIn, amountOutMin,
-            path.map(ContractAddress::bigInt),
-            recipient.bigInt,
+            path,
+            recipient,
             deadline ?: defaultDeadline()
         )
-    )
+    ).callData
 
     suspend fun swapTokensForExactTokens(
         credentials: Credentials,
@@ -78,29 +68,24 @@ class RouterContract internal constructor(
         amountOut: BigInt,
         path: List<ContractAddress>,
         deadline: BigInt? = null,
-        gasProvider: GasProvider? = null,
-        recipient: BigInt = credentials.address.bigInt
+        recipient: EthereumAddress = credentials.address
     ): TransactionHash {
         tokenContractFactory(path.first()).approveMaxIfNeed(
             credentials = credentials,
             spender = wrapped.contractAddress,
-            amount = amountInMax,
-            gasProvider = gasProvider
+            amount = amountInMax
         )
 
         return wrapped.write(
-            chainId = network.chainId,
-            nonceController = nonceController,
             credentials = credentials,
             method = "swapTokensForExactTokens",
             params = listOf(
                 amountOut,
                 amountInMax,
-                path.map(ContractAddress::bigInt),
+                path,
                 recipient,
                 deadline ?: defaultDeadline()
-            ),
-            gasProvider = gasProvider ?: defaultGasProvider
+            )
         )
     }
 
@@ -110,20 +95,16 @@ class RouterContract internal constructor(
         amountOutMin: BigInt,
         path: List<ContractAddress>,
         deadline: BigInt? = null,
-        gasProvider: GasProvider? = null,
-        recipient: BigInt = credentials.address.bigInt
+        recipient: EthereumAddress = credentials.address
     ) = wrapped.write(
-        chainId = network.chainId,
-        nonceController = nonceController,
         credentials = credentials,
         method = "swapExactETHForTokens",
         params = listOf(
             amountOutMin,
-            path.map(ContractAddress::bigInt),
+            path,
             recipient,
             deadline ?: defaultDeadline()
         ),
-        gasProvider = gasProvider ?: defaultGasProvider,
         value = amountInNative
     )
 
@@ -132,15 +113,15 @@ class RouterContract internal constructor(
         path: List<ContractAddress>,
         recipient: EthereumAddress,
         deadline: BigInt? = null,
-    ) = wrapped.encodeMethod(
+    ) = wrapped.writeRequest(
         method = "swapExactETHForTokens",
         params = listOf(
             amountOutMin,
-            path.map(ContractAddress::bigInt),
-            recipient.bigInt,
+            path,
+            recipient,
             deadline ?: defaultDeadline()
         )
-    )
+    ).callData
 
     suspend fun swapNativeForExactTokens(
         credentials: Credentials,
@@ -148,20 +129,16 @@ class RouterContract internal constructor(
         amountOut: BigInt,
         path: List<ContractAddress>,
         deadline: BigInt? = null,
-        gasProvider: GasProvider? = null,
-        recipient: BigInt = credentials.address.bigInt
+        recipient: EthereumAddress = credentials.address
     ) = wrapped.write(
-        chainId = network.chainId,
-        nonceController = nonceController,
         credentials = credentials,
         method = "swapETHForExactTokens",
         params = listOf(
             amountOut,
-            path.map(ContractAddress::bigInt),
+            path,
             recipient,
             deadline ?: defaultDeadline()
         ),
-        gasProvider = gasProvider ?: defaultGasProvider,
         value = amountInMaxNative
     )
 
@@ -171,29 +148,24 @@ class RouterContract internal constructor(
         amountOutNative: BigInt,
         path: List<ContractAddress>,
         deadline: BigInt? = null,
-        gasProvider: GasProvider? = null,
-        recipient: BigInt = credentials.address.bigInt
+        recipient: EthereumAddress = credentials.address
     ): TransactionHash {
         tokenContractFactory(path.first()).approveMaxIfNeed(
             credentials = credentials,
             spender = wrapped.contractAddress,
             amount = amountInMax,
-            gasProvider = gasProvider
         )
 
         return wrapped.write(
-            chainId = network.chainId,
-            nonceController = nonceController,
             credentials = credentials,
             method = "swapTokensForExactETH",
             params = listOf(
                 amountOutNative,
                 amountInMax,
-                path.map(ContractAddress::bigInt),
+                path,
                 recipient,
                 deadline ?: defaultDeadline()
-            ),
-            gasProvider = gasProvider ?: defaultGasProvider
+            )
         )
     }
 
@@ -203,29 +175,24 @@ class RouterContract internal constructor(
         amountOutMin: BigInt,
         path: List<ContractAddress>,
         deadline: BigInt? = null,
-        gasProvider: GasProvider? = null,
-        recipient: BigInt = credentials.address.bigInt
+        recipient: EthereumAddress = credentials.address
     ): TransactionHash {
         tokenContractFactory(path.first()).approveMaxIfNeed(
             credentials = credentials,
             spender = wrapped.contractAddress,
-            amount = amountIn,
-            gasProvider = gasProvider
+            amount = amountIn
         )
 
         return wrapped.write(
-            chainId = network.chainId,
-            nonceController = nonceController,
             credentials = credentials,
             method = "swapExactTokensForETH",
             params = listOf(
                 amountIn,
                 amountOutMin,
-                path.map(ContractAddress::bigInt),
+                path,
                 recipient,
                 deadline ?: defaultDeadline()
-            ),
-            gasProvider = gasProvider ?: defaultGasProvider
+            )
         )
     }
 
@@ -235,14 +202,14 @@ class RouterContract internal constructor(
         path: List<ContractAddress>,
         deadline: BigInt? = null,
         recipient: EthereumAddress
-    ) = wrapped.encodeMethod(
+    ) = wrapped.writeRequest(
         method = "swapExactTokensForETH",
         params = listOf(
             amountIn, amountOutMin,
-            path.map(ContractAddress::bigInt),
-            recipient.bigInt, deadline ?: defaultDeadline()
+            path,
+            recipient, deadline ?: defaultDeadline()
         )
-    )
+    ).callData
 }
 
 data class SwapTopic(

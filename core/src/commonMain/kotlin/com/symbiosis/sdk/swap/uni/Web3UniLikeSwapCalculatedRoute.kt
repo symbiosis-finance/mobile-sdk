@@ -6,6 +6,7 @@ import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.dex.DexEndpoint
+import com.symbiosis.sdk.internal.kbignum.toBigNum
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository.CalculatedRoute

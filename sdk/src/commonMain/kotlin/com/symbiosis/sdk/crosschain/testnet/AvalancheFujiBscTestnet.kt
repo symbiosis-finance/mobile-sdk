@@ -12,9 +12,6 @@ class AvalancheFujiBscTestnet(
     avalancheFujiExecutor: Web3Executor,
     bscTestnetExecutor: Web3Executor
 ) : TestnetCrossChain() {
-    constructor(avalancheFujiUrl: String, bscTestnetUrl: String) :
-            this(Web3(avalancheFujiUrl), Web3(bscTestnetUrl))
-
     override val fromNetwork = AvalancheFuji(avalancheFujiExecutor)
     override val toNetwork = BscTestnet(bscTestnetExecutor)
     override val stablePool: NerveStablePool =

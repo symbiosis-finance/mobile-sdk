@@ -1,20 +1,20 @@
 package com.symbiosis.sdk.networks
 
+import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
-import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
+import dev.icerock.moko.web3.entity.ContractAddress
 
 class EthMainnet(override val executor: Web3Executor) : DefaultNetwork() {
-    constructor(endpointUrl: String) : this(Web3(endpointUrl))
+    constructor(endpointUrl: String) : this(Web3(CHAIN_ID, endpointUrl))
 
     override val networkName = "EthMainnet"
 
-    override val chainIdInt = 0x1
     override val synthFabricAddressString = "0x0000000000000000000000000000000000000000"
     override val portalAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
     override val synthesizeAddressString = "0x0000000000000000000000000000000000000000"
@@ -56,5 +56,9 @@ class EthMainnet(override val executor: Web3Executor) : DefaultNetwork() {
 
         private fun DecimalsErc20Token(network: Network, tokenAddress: String, decimals: Int) =
             DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
+    }
+    
+    companion object {
+        val CHAIN_ID = 0x1.bi
     }
 }

@@ -4,7 +4,7 @@ import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.oneInch.priceImpact.OneInchPriceImpactRepository
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class DefaultHttpRouter(
     private val networkClient: NetworkClient,

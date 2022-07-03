@@ -1,7 +1,7 @@
 package com.symbiosis.sdk.serializer
 
 import com.soywiz.kbignum.bi
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

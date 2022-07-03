@@ -2,19 +2,19 @@ package com.symbiosis.sdk.swap.oneInch
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.TokenAmount
-import com.symbiosis.sdk.gas.GasConfiguration
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.checkTokenAllowance
-import com.symbiosis.sdk.network.sendTransaction
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.transaction.Web3SwapTransaction
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.WalletAddress
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
+import dev.icerock.moko.web3.entity.WalletAddress
+import dev.icerock.moko.web3.gas.GasConfiguration
 import dev.icerock.moko.web3.hex.HexString
+import dev.icerock.moko.web3.nonce.NonceManager
+import dev.icerock.moko.web3.requests.send
+import dev.icerock.moko.web3.signing.Credentials
 
 data class OneInchTrade(
     private val client: NetworkClient,
@@ -66,43 +66,49 @@ data class OneInchTrade(
             .checkTokenAllowance(walletAddress, approveSpender(), amountIn.raw)
     }
 
-    suspend fun approveMaxIfRequired(
-        credentials: Credentials,
-        gasProvider: GasProvider? = null
-    ) {
+    suspend fun approveMaxIfRequired(credentials: Credentials) {
         if (!isApproveRequired(credentials.address))
             return
 
         client.getTokenContract(tokens.first.address)
             .approveMax(
                 credentials = credentials,
-                spender = approveSpender(),
-                gasProvider = gasProvider
+                spender = approveSpender()
             )
     }
 
-    suspend fun execute(credentials: Credentials, gasProvider: GasProvider? = null): Web3SwapTransaction {
+    suspend fun execute(credentials: Credentials): Web3SwapTransaction {
         // if you want custom gasProvider here
         // just call this function by yourself, so
         // next call will just check if approval required
         approveMaxIfRequired(credentials)
 
-        val gasConfiguration = gasProvider
-            ?.getGasConfiguration(fromAddress, to, callData, value, client)
-            ?: GasConfiguration.Legacy(gasPrice, gasLimit)
+        val gasConfiguration = GasConfiguration.Legacy(gasPrice, gasLimit)
 
-        val signed = client.network.nonceController.withNonce(credentials.address) { nonce ->
-            credentials.signer.signContractTransaction(
-                nonce = nonce,
-                chainId = client.network.chainId,
-                to = to,
-                contractData = callData.prefixed,
-                value = value,
-                gasConfiguration = gasConfiguration
-            )
+        val signed = client.nonceManager.withNonce(credentials.address) { nonce ->
+            val result = when (credentials) {
+                is Credentials.Local -> credentials.signContractTransaction(
+                    nonce = nonce,
+                    chainId = client.network.chainId,
+                    to = to,
+                    callData = callData,
+                    value = value,
+                    gasConfiguration = gasConfiguration
+                )
+                is Credentials.Async -> credentials.signContractTransaction(
+                    nonce = nonce,
+                    chainId = client.network.chainId,
+                    to = to,
+                    callData = callData,
+                    value = value,
+                    gasConfiguration = gasConfiguration
+                )
+            }
+
+            return@withNonce NonceManager.NonceResult.Increase(result)
         }
 
-        val hash = client.sendTransaction(signed)
+        val hash = client.send(signed)
 
         return Web3SwapTransaction(client, hash)
     }

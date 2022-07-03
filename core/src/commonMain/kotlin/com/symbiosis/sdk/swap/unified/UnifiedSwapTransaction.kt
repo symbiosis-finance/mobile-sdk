@@ -2,7 +2,7 @@ package com.symbiosis.sdk.swap.unified
 
 import com.symbiosis.sdk.swap.crosschain.transaction.CrossChainSwapTransaction
 import com.symbiosis.sdk.transaction.Web3SwapTransaction
-import dev.icerock.moko.web3.TransactionHash
+import dev.icerock.moko.web3.entity.TransactionHash
 import dev.icerock.moko.web3.entity.LogEvent
 import dev.icerock.moko.web3.entity.TransactionReceipt
 

@@ -11,9 +11,6 @@ class EthMainnetAvalancheMainnet(
     ethMainnetExecutor: Web3Executor,
     avalancheMainnetExecutor: Web3Executor
 ) : MainnetCrossChain() {
-    constructor(ethMainnetUrl: String, avalancheMainnetUrl: String) :
-            this(Web3(ethMainnetUrl), Web3(avalancheMainnetUrl))
-
     override val fromNetwork = EthMainnet(ethMainnetExecutor)
     override val toNetwork = AvalancheMainnet(avalancheMainnetExecutor)
     override val stablePool = StablePools.AVALANCHE_MAINNET_USDC_ETH_MAINNET_sUSDC(toNetwork, fromNetwork)

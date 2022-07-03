@@ -4,8 +4,8 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class OneInchSwapRepository(private val router: Router, val network: Network) {
     suspend fun exactIn(

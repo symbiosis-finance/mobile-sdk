@@ -2,8 +2,8 @@ package com.symbiosis.sdk.swap.crosschain.transaction
 
 import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.crosschain.CrossChain
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.TransactionHash
+import dev.icerock.moko.web3.entity.EthereumAddress
+import dev.icerock.moko.web3.entity.TransactionHash
 
 fun CrossChainSwapTransaction(
     transactionHash: TransactionHash,

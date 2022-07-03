@@ -12,9 +12,6 @@ class EthMainnetPolygonMainnet(
     ethMainnetExecutor: Web3Executor,
     polygonMainnetExecutor: Web3Executor
 ) : MainnetCrossChain() {
-    constructor(ethMainnetUrl: String, polygonMainnetUrl: String) :
-            this(Web3(ethMainnetUrl), Web3(polygonMainnetUrl))
-
     override val fromNetwork = EthMainnet(ethMainnetExecutor)
     override val toNetwork = PolygonMainnet(polygonMainnetExecutor)
     override val stablePool: NerveStablePool = StablePools.POLYGON_MAINNET_USDC_ETH_MAINNET_sUSDC(toNetwork, fromNetwork)

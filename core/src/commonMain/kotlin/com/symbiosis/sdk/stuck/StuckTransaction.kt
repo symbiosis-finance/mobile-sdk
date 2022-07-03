@@ -1,15 +1,14 @@
 package com.symbiosis.sdk.stuck
 
 import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.OutboundRequest
 import com.symbiosis.sdk.network.contract.PortalContract
 import com.symbiosis.sdk.network.contract.SynthesizeContract
 import com.symbiosis.sdk.swap.crosschain.bridging.SymbiosisBridgingApi
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.Web3RpcException
+import dev.icerock.moko.web3.entity.Web3RpcException
 import dev.icerock.moko.web3.hex.Hex32String
+import dev.icerock.moko.web3.signing.Credentials
 
 class StuckTransaction(
     val internalId: Hex32String,
@@ -34,10 +33,7 @@ class StuckTransaction(
         object FailedWithoutSending : RevertResult
     }
 
-    suspend fun revert(
-        credentials: Credentials,
-        gasProvider: GasProvider = targetClient.network.gasProvider
-    ): RevertResult {
+    suspend fun revert(credentials: Credentials): RevertResult {
         val relayersCallData = when (request) {
             is SynthesizeContract.BurnOutboundRequest -> fromClient.synthesize.revertBurnRequest(
                 stableBridgingFee = 0.bi,
@@ -72,8 +68,7 @@ class StuckTransaction(
                     internalId = internalId,
                     receiveSide = receiveSide,
                     oppositeBridge = fromClient.network.bridgeAddress,
-                    chainIdFrom = fromClient.network.chainId,
-                    gasProvider = gasProvider
+                    chainIdFrom = fromClient.network.chainId
                 )
                 is PortalContract.SynthOutboundRequest -> targetClient.synthesize.revertSynthesizeRequest(
                     credentials = credentials,
@@ -81,8 +76,7 @@ class StuckTransaction(
                     internalId = internalId,
                     receiveSide = receiveSide,
                     oppositeBridge = fromClient.network.bridgeAddress,
-                    chainIdFrom = fromClient.network.chainId,
-                    gasProvider = gasProvider
+                    chainIdFrom = fromClient.network.chainId
                 )
                 else -> error("impossible state handled")
             }

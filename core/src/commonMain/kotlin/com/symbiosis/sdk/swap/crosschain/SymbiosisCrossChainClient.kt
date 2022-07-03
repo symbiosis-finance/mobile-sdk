@@ -11,7 +11,7 @@ import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.fromToken
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
 import com.symbiosis.sdk.symbiosisClient
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class SymbiosisCrossChainClient(val crossChain: CrossChain) {
     private val firstNetworkClient = crossChain.fromNetwork.symbiosisClient

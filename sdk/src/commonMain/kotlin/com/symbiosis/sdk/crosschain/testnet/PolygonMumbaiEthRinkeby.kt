@@ -12,9 +12,6 @@ class PolygonMumbaiEthRinkeby(
     polygonMumbaiExecutor: Web3Executor,
     ethRinkebyExecutor: Web3Executor
 ) : TestnetCrossChain() {
-    constructor(polygonMumbaiUrl: String, ethRinkebyUrl: String) :
-            this(Web3(polygonMumbaiUrl), Web3(ethRinkebyUrl))
-
     override val fromNetwork = PolygonMumbai(polygonMumbaiExecutor)
     override val toNetwork = EthRinkeby(ethRinkebyExecutor)
     override val stablePool: NerveStablePool =

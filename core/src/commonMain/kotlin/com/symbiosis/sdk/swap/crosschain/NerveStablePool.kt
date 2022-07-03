@@ -6,7 +6,7 @@ import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.contract.SynthFabricContract
 import com.symbiosis.sdk.network.contract.getSyntheticToken
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 
 data class NerveStablePool(
     val address: ContractAddress,

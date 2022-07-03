@@ -1,10 +1,10 @@
 package com.symbiosis.sdk.swap.crosschain.transaction
 
 import com.symbiosis.sdk.network.NetworkClient
-import dev.icerock.moko.web3.BlockState
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.TransactionHash
+import dev.icerock.moko.web3.entity.BlockState
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
+import dev.icerock.moko.web3.entity.TransactionHash
 import dev.icerock.moko.web3.entity.LogEvent
 import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.hex.Hex32String

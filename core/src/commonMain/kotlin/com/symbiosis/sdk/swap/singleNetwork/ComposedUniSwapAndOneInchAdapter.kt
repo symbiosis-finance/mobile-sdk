@@ -5,7 +5,7 @@ import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.singleNetwork.adapter.OneInchSwapAdapter
 import com.symbiosis.sdk.swap.singleNetwork.adapter.UniLikeSwapAdapter
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class ComposedUniSwapAndOneInchAdapter(
     val uniSwap: UniLikeSwapAdapter,

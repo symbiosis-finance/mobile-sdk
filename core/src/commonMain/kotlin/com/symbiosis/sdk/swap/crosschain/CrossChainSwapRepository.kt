@@ -8,7 +8,7 @@ import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class CrossChainSwapRepository(private val adapter: Adapter) {
 

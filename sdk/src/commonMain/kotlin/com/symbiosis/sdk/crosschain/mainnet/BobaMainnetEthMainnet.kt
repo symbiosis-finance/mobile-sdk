@@ -12,9 +12,6 @@ class BobaMainnetEthMainnet(
     bobaMainnetExecutor: Web3Executor,
     ethMainnetExecutor: Web3Executor
 ) : MainnetCrossChain() {
-    constructor(bobaMainnetUrl: String, ethMainnetUrl: String) :
-            this(Web3(bobaMainnetUrl), Web3(ethMainnetUrl))
-
     override val fromNetwork = BobaMainnet(bobaMainnetExecutor)
     override val toNetwork = EthMainnet(ethMainnetExecutor)
     override val stablePool: NerveStablePool = StablePools.BOBA_MAINNET_USDC_ETH_MAINNET_sUSDC(fromNetwork, toNetwork)

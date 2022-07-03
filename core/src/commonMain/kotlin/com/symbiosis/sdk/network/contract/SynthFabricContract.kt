@@ -4,10 +4,11 @@ import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.network.contract.abi.fabricContractAbi
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.ABIDecoder
 import dev.icerock.moko.web3.contract.SmartContract
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.entity.LogEvent
 import dev.icerock.moko.web3.requests.executeBatch
 
@@ -25,13 +26,13 @@ class SynthFabricContract internal constructor(
         chainId: BigInt
     ) = wrapped.readRequest(
         method = "getSyntRepresentation",
-        params = listOf(address.bigInt, chainId)
+        params = listOf(address, chainId)
     ) { synths ->
         if (synths.isEmpty())
             return@readRequest null
         return@readRequest Erc20Token(
             network = network,
-            tokenAddress = ContractAddress.createInstance(synths.first() as BigInt)
+            tokenAddress = (synths.first() as EthereumAddress).run { ContractAddress(prefixed) }
         )
     }
 
@@ -45,12 +46,12 @@ class SynthFabricContract internal constructor(
         synthAddress: ContractAddress
     ) = wrapped.readRequest(
         method = "getRealRepresentation",
-        params = listOf(synthAddress.bigInt),
+        params = listOf(synthAddress),
     ) { reals  ->
         if (reals.isEmpty())
             return@readRequest null
 
-        ContractAddress.createInstance(reals.first() as BigInt)
+        (reals.first() as EthereumAddress).run { ContractAddress(prefixed) }
     }
 
     suspend fun getRealTokenAddress(
@@ -76,8 +77,8 @@ fun LogEvent.parseApprovedToken(): ApprovedTokenFromContract = ABIDecoder.decode
     callData = data
 ).let { (realTokenAddress, realTokenChainId, synthTokenAddress) ->
     ApprovedTokenFromContract(
-        realTokenAddress = ContractAddress((realTokenAddress as BigInt).toString(radix = 16)),
+        realTokenAddress = ContractAddress((realTokenAddress as EthereumAddress).prefixed),
         realTokenChainId = (realTokenChainId as BigInt),
-        synthTokenAddress = ContractAddress((synthTokenAddress as BigInt).toString(radix = 16))
+        synthTokenAddress = ContractAddress((synthTokenAddress as EthereumAddress).prefixed)
     )
 }

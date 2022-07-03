@@ -12,9 +12,6 @@ class BscMainnetAvalancheMainnet(
     bscMainnetExecutor: Web3Executor,
     avalancheMainnetExecutor: Web3Executor
 ) : MainnetCrossChain() {
-    constructor(bscMainnetUrl: String, avalancheMainnetUrl: String) :
-            this(Web3(bscMainnetUrl), Web3(avalancheMainnetUrl))
-
     override val fromNetwork = BscMainnet(bscMainnetExecutor)
     override val toNetwork = AvalancheMainnet(avalancheMainnetExecutor)
     override val stablePool: NerveStablePool = StablePools.AVALANCHE_MAINNET_USDC_BSC_MAINNET_sBUSD(toNetwork, fromNetwork)

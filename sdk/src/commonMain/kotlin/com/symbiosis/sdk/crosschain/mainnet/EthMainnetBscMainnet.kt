@@ -12,9 +12,6 @@ class EthMainnetBscMainnet(
     ethMainnetExecutor: Web3Executor,
     bscMainnetExecutor: Web3Executor
 ) : MainnetCrossChain() {
-    constructor(ethMainnetUrl: String, bscMainnetUrl: String) :
-            this(Web3(ethMainnetUrl), Web3(bscMainnetUrl))
-
     override val fromNetwork = EthMainnet(ethMainnetExecutor)
     override val toNetwork = BscMainnet(bscMainnetExecutor)
     override val stablePool: NerveStablePool = StablePools.BSC_MAINNET_BUSD_ETH_MAINNET_sUSDC(toNetwork, fromNetwork)

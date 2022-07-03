@@ -4,7 +4,7 @@ package com.symbiosis.sdk.crosschain
 
 import com.symbiosis.sdk.networks.*
 import com.symbiosis.sdk.swap.crosschain.NerveStablePool
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 
 object StablePools {
     fun BSC_TESTNET_BUSD_ETH_RINKEBY_sUSDC_POOL(bscTestnet: BscTestnet, ethRinkeby: EthRinkeby) =

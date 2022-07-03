@@ -3,23 +3,16 @@ package com.symbiosis.sdk.network.contract
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.swap.crosschain.NerveStablePool
-import com.symbiosis.sdk.configuration.GasProvider
-import com.symbiosis.sdk.contract.write
 import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
-import com.symbiosis.sdk.internal.nonce.NonceController
-import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
+import dev.icerock.moko.web3.entity.ContractAddress
 import dev.icerock.moko.web3.requests.executeBatch
+import dev.icerock.moko.web3.signing.Credentials
 
 class NerveContract(
     private val wrapped: SmartContract,
-    private val network: Network,
-    private val nonceController: NonceController,
-    private val executor: Web3Executor,
-    private val defaultGasProvider: GasProvider,
+    private val executor: Web3Executor
 ) {
     fun calculateSwapRequest(
         tokenIndexFrom: BigInt,
@@ -57,30 +50,9 @@ class NerveContract(
         tokenIndexTo: BigInt,
         dx: BigInt,
         minDy: BigInt,
-        deadline: BigInt,
-        gasProvider: GasProvider? = null
+        deadline: BigInt
     ) = wrapped.write(
-        chainId = network.chainId,
-        nonceController = nonceController,
         credentials = credentials,
-        method = "swap",
-        params = listOf(
-            tokenIndexFrom,
-            tokenIndexTo,
-            dx,
-            minDy,
-            deadline
-        ),
-        gasProvider = gasProvider ?: defaultGasProvider,
-    )
-
-    fun getSwapCallData(
-        tokenIndexFrom: BigInt,
-        tokenIndexTo: BigInt,
-        dx: BigInt,
-        minDy: BigInt,
-        deadline: BigInt,
-    ) = wrapped.encodeMethod(
         method = "swap",
         params = listOf(
             tokenIndexFrom,
@@ -90,6 +62,23 @@ class NerveContract(
             deadline
         )
     )
+
+    fun getSwapCallData(
+        tokenIndexFrom: BigInt,
+        tokenIndexTo: BigInt,
+        dx: BigInt,
+        minDy: BigInt,
+        deadline: BigInt,
+    ) = wrapped.writeRequest(
+        method = "swap",
+        params = listOf(
+            tokenIndexFrom,
+            tokenIndexTo,
+            dx,
+            minDy,
+            deadline
+        )
+    ).callData
 
 
     /**

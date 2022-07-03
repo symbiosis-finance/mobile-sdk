@@ -8,15 +8,15 @@ androidCoreTestingVersion = "2.1.0"
 coroutinesVersion = "1.5.1-native-mt"
 kotlinxSerializationVersion = "1.2.2"
 mokoTestVersion = "0.4.0"
-kbignumVersion = "2.4.1.1"
+kbignumVersion = "2.5.0"
 mokoResourcesVersion = "0.16.1"
-mokoWeb3Version = "0.20.0"
+mokoWeb3Version = "1.0.1"
 ktorClientVersion = "2.0.0"
 web3jVersion = "4.8.5"
 mokoMvvmVersion = "0.11.0"
 logbackVersion = "1.2.5"
 multiplatformSettingsVersion = "0.8.1"
-symbiosisSdkVersion = "2.0.9"
+symbiosisSdkVersion = "2.1.0"
 
 [libraries]
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
@@ -37,7 +37,7 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logbackVer
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationVersion" }
 mokoMvvmLiveData = { module = "dev.icerock.moko:mvvm-livedata", version.ref = "mokoMvvmVersion" }
 mokoResources = { module = "dev.icerock.moko:resources", version.ref = "mokoResourcesVersion" }
-mokoWeb3 = { module = "dev.icerock.moko:web3", version.ref = "mokoWeb3Version" }
+mokoWeb3 = { module = "dev.icerock.moko:signing-delegated", version.ref = "mokoWeb3Version" }
 kbignum = { module = "com.soywiz.korlibs.kbignum:kbignum", version.ref = "kbignumVersion" }
 mokoTestCore = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestVersion" }
 symbiosisSdk = { module = "com.symbiosis:sdk", version.ref = "symbiosisSdkVersion" }

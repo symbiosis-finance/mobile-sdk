@@ -7,7 +7,7 @@ import com.symbiosis.sdk.stuck.StuckTransactionsRepository
 import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository
-import dev.icerock.moko.web3.WalletAddress
+import dev.icerock.moko.web3.entity.WalletAddress
 
 /**
  * Everything for swaps inside one network

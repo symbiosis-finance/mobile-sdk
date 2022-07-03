@@ -1,21 +1,21 @@
 package com.symbiosis.sdk.networks
 
+import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
 import com.symbiosis.sdk.dex.DexEndpoint.Companion.hardcoded as DexEndpoint
 
 open class BobaMainnet(override val executor: Web3Executor) : DefaultNetwork() {
-    constructor(endpointUrl: String) : this(Web3(endpointUrl))
+    constructor(endpointUrl: String) : this(Web3(CHAIN_ID, endpointUrl))
 
     override val networkName: String = "BobaMainnet"
 
-    override val chainIdInt: Int = 0x120
     override val synthFabricAddressString = "0x947a0d452b40013190295a4151A090E1638Fb848"
     override val portalAddressString = "0xD7F9989bE0d15319d13d6FA5d468211C89F0b147"
     override val synthesizeAddressString = "0xb80fDAA74dDA763a8A158ba85798d373A5E84d84"
@@ -52,5 +52,9 @@ open class BobaMainnet(override val executor: Web3Executor) : DefaultNetwork() {
 
         private fun DecimalsErc20Token(network: Network, tokenAddress: String, decimals: Int) =
             DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
+    }
+    
+    companion object {
+        val CHAIN_ID = 0x120.bi
     }
 }

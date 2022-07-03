@@ -1,9 +1,9 @@
 package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.WalletAddress
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
+import dev.icerock.moko.web3.entity.WalletAddress
 
 sealed interface OutboundRequest {
     val recipient: EthereumAddress

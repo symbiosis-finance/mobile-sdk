@@ -3,7 +3,6 @@ package com.symbiosis.sdk.swap.uni
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.DecimalsToken
@@ -12,16 +11,17 @@ import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.thisOrWrapped
 import com.symbiosis.sdk.internal.kbignum.UINT256_MAX
+import com.symbiosis.sdk.internal.kbignum.toBigNum
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.checkTokenAllowance
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.uni.UniLikeSwapRepository.CalculatedRoute
 import com.symbiosis.sdk.transaction.Web3SwapTransaction
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.WalletAddress
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
+import dev.icerock.moko.web3.entity.WalletAddress
 import dev.icerock.moko.web3.hex.HexString
+import dev.icerock.moko.web3.signing.Credentials
 
 sealed interface UniLikeTrade {
     val route: CalculatedRoute
@@ -58,7 +58,6 @@ sealed interface UniLikeTrade {
         credentials: Credentials,
         slippageTolerance: Percentage,
         deadline: BigInt? = null,
-        gasProvider: GasProvider? = null,
         recipient: EthereumAddress = credentials.address
     ): Web3SwapTransaction
 
@@ -122,7 +121,6 @@ sealed interface UniLikeTrade {
             credentials: Credentials,
             slippageTolerance: Percentage,
             deadline: BigInt?,
-            gasProvider: GasProvider?,
             recipient: EthereumAddress
         ): Web3SwapTransaction {
             require(slippageTolerance >= 0.bn && slippageTolerance <= 1.bn)
@@ -141,8 +139,7 @@ sealed interface UniLikeTrade {
                 /* amountOutMin = */amountOutMin(slippageTolerance).raw,
                 /* path = */rawPath,
                 /* deadline = */deadline,
-                /* gasProvider = */gasProvider,
-                /* recipient = */recipient.bigInt
+                /* recipient = */recipient
             ).let { hash -> Web3SwapTransaction(networkClient, hash) }
         }
     }
@@ -190,10 +187,7 @@ sealed interface UniLikeTrade {
                 .checkTokenAllowance(walletAddress, routerAddress, BigInt.UINT256_MAX)
         }
 
-        suspend fun approveMaxIfRequired(
-            credentials: Credentials,
-            gasProvider: GasProvider? = null
-        ) {
+        suspend fun approveMaxIfRequired(credentials: Credentials) {
             val inputToken = tokens.first
             if (inputToken !is Erc20Token)
                 return
@@ -203,8 +197,7 @@ sealed interface UniLikeTrade {
             networkClient.getTokenContract(inputToken.tokenAddress)
                 .approveMax(
                     credentials = credentials,
-                    spender = routerAddress,
-                    gasProvider = gasProvider
+                    spender = routerAddress
                 )
         }
 
@@ -212,12 +205,11 @@ sealed interface UniLikeTrade {
             credentials: Credentials,
             slippageTolerance: Percentage,
             deadline: BigInt?,
-            gasProvider: GasProvider?,
             recipient: EthereumAddress
         ): Web3SwapTransaction {
             require(slippageTolerance >= 0.bn && slippageTolerance <= 1.bn)
 
-            approveMaxIfRequired(credentials, gasProvider)
+            approveMaxIfRequired(credentials)
 
             val function = when (route.tokens.first) {
                 is DecimalsNativeToken -> networkClient.router::swapNativeForExactTokens
@@ -233,8 +225,7 @@ sealed interface UniLikeTrade {
                 /* amountOut = */amountOut.raw,
                 /* path = */path.map { it.thisOrWrapped.tokenAddress },
                 /* deadline = */deadline,
-                /* gasProvider = */gasProvider,
-                /* recipient = */recipient.bigInt
+                /* recipient = */recipient
             ).let { hash -> Web3SwapTransaction(networkClient, hash) }
         }
     }

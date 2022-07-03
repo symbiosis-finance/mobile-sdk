@@ -2,23 +2,24 @@
 
 package com.symbiosis.sdk.networks
 
+import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
-import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
+import dev.icerock.moko.web3.entity.ContractAddress
 
 open class AvalancheFuji(override val executor: Web3Executor) : DefaultNetwork() {
-    constructor(endpointUrl: String = "https://api.avax-test.network/ext/bc/C/rpc") : this(Web3(endpointUrl))
+    constructor(endpointUrl: String = "https://api.avax-test.network/ext/bc/C/rpc") :
+            this(Web3(CHAIN_ID, endpointUrl))
 
     override val maxBlocksPerRequestInt = 2048
 
     override val networkName: String = "AvalancheFuji"
 
-    override val chainIdInt = 0xA869
     override val synthFabricAddressString = "0x24017eEB483fD95339B66d8e4be74eFFeE67E2cB"
     override val portalAddressString = "0x823389FfdF5F1BAD10eB52089E7195772A54ccBa"
     override val synthesizeAddressString = "0x58c96809ccE40c3849C7CC86fc79F81C9fcA78b6"
@@ -55,5 +56,9 @@ open class AvalancheFuji(override val executor: Web3Executor) : DefaultNetwork()
 
         private fun DecimalsErc20Token(network: Network, tokenAddress: String, decimals: Int) =
             DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
+    }
+
+    companion object {
+        val CHAIN_ID = 0xA869.bi
     }
 }

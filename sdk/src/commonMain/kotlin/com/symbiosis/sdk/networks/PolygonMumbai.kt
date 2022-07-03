@@ -1,20 +1,20 @@
 package com.symbiosis.sdk.networks
 
+import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.DecimalsNativeToken
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.Network
-import dev.icerock.moko.web3.ContractAddress
 import dev.icerock.moko.web3.Web3
 import dev.icerock.moko.web3.Web3Executor
+import dev.icerock.moko.web3.entity.ContractAddress
 
 class PolygonMumbai(override val executor: Web3Executor) : DefaultNetwork() {
-    constructor(endpointUrl: String) : this(Web3(endpointUrl))
+    constructor(endpointUrl: String) : this(Web3(CHAIN_ID, endpointUrl))
 
     override val networkName: String = "PolygonMumbai"
 
-    override val chainIdInt = 0x13881
     override val synthFabricAddressString = "0x014aA1eD19b4B94430Ba664B44C130A7084b5bFa"
     override val portalAddressString = "0x24017eEB483fD95339B66d8e4be74eFFeE67E2cB"
     override val synthesizeAddressString = "0x12723824603df3cF4F55feB298aD0D00E1BFEf48"
@@ -51,5 +51,9 @@ class PolygonMumbai(override val executor: Web3Executor) : DefaultNetwork() {
 
         private fun DecimalsErc20Token(network: Network, tokenAddress: String, decimals: Int) =
             DecimalsErc20Token(network, ContractAddress(tokenAddress), decimals)
+    }
+    
+    companion object {
+        val CHAIN_ID = 0x13881.bi
     }
 }

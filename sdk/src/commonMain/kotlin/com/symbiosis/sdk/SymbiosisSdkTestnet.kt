@@ -2,6 +2,7 @@
 
 package com.symbiosis.sdk
 
+import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.crosschain.testnet.AvalancheFujiBscTestnet
 import com.symbiosis.sdk.crosschain.testnet.AvalancheFujiEthRinkeby
 import com.symbiosis.sdk.crosschain.testnet.BobaRinkebyBscTestnet
@@ -70,13 +71,13 @@ fun SymbiosisSdkTestnet(
     polygonMumbaiUrl: String,
     avalancheFujiUrl: String = "https://api.avax-test.network/ext/bc/C/rpc",
     bobaRinkebyUrl: String = "https://rinkeby.boba.network/",
-    web3Provider: (String) -> Web3Executor = ::Web3
+    web3Provider: (chainId: BigInt, url: String) -> Web3Executor = ::Web3
 ) = SymbiosisSdkTestnet(
-    avalancheFujiExecutor = web3Provider(avalancheFujiUrl),
-    bscTestnetExecutor = web3Provider(bscTestnetUrl),
-    ethRinkebyExecutor = web3Provider(ethRinkebyUrl),
-    polygonMumbaiExecutor = web3Provider(polygonMumbaiUrl),
-    bobaRinkebyExecutor = web3Provider(bobaRinkebyUrl)
+    avalancheFujiExecutor = web3Provider(AvalancheFuji.CHAIN_ID, avalancheFujiUrl),
+    bscTestnetExecutor = web3Provider(BscTestnet.CHAIN_ID, bscTestnetUrl),
+    ethRinkebyExecutor = web3Provider(EthRinkeby.CHAIN_ID, ethRinkebyUrl),
+    polygonMumbaiExecutor = web3Provider(PolygonMumbai.CHAIN_ID, polygonMumbaiUrl),
+    bobaRinkebyExecutor = web3Provider(BobaRinkeby.CHAIN_ID, bobaRinkebyUrl)
 )
 
 fun SymbiosisSdkTestnet(

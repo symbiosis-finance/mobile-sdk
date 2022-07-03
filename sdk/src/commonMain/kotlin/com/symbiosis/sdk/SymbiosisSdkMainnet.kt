@@ -1,5 +1,6 @@
 package com.symbiosis.sdk
 
+import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.crosschain.mainnet.AvalancheMainnetBscMainnet
 import com.symbiosis.sdk.crosschain.mainnet.AvalancheMainnetEthMainnet
 import com.symbiosis.sdk.crosschain.mainnet.AvalancheMainnetPolygonMainnet
@@ -72,13 +73,13 @@ fun SymbiosisSdkMainnet(
     polygonMainnetUrl: String = "https://polygon-rpc.com",
     avalancheMainnetUrl: String = "https://api.avax.network/ext/bc/C/rpc",
     bobaMainnetUrl: String = "https://mainnet.boba.network/",
-    web3Provider: (String) -> Web3Executor = ::Web3
+    web3Provider: (chainId: BigInt, url: String) -> Web3Executor = ::Web3
 ) = SymbiosisSdkMainnet(
-    avalancheMainnetExecutor = web3Provider(avalancheMainnetUrl),
-    bscMainnetExecutor = web3Provider(bscMainnetUrl),
-    ethMainnetExecutor = web3Provider(ethMainnetUrl),
-    polygonMainnetExecutor = web3Provider(polygonMainnetUrl),
-    bobaMainnetExecutor = web3Provider(bobaMainnetUrl)
+    avalancheMainnetExecutor = web3Provider(AvalancheMainnet.CHAIN_ID, avalancheMainnetUrl),
+    bscMainnetExecutor = web3Provider(BscMainnet.CHAIN_ID, bscMainnetUrl),
+    ethMainnetExecutor = web3Provider(EthMainnet.CHAIN_ID, ethMainnetUrl),
+    polygonMainnetExecutor = web3Provider(PolygonMainnet.CHAIN_ID, polygonMainnetUrl),
+    bobaMainnetExecutor = web3Provider(BobaMainnet.CHAIN_ID, bobaMainnetUrl)
 )
 
 fun SymbiosisSdkMainnet(

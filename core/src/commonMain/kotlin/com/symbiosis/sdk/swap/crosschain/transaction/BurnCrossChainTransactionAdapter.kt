@@ -2,7 +2,7 @@ package com.symbiosis.sdk.swap.crosschain.transaction
 
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.requireBurnRequestEvent
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.hex.Hex32String
 

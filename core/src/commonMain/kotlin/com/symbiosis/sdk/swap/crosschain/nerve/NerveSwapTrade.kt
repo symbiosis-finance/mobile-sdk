@@ -2,12 +2,11 @@ package com.symbiosis.sdk.swap.crosschain.nerve
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChain
-import com.symbiosis.sdk.wallet.Credentials
+import dev.icerock.moko.web3.signing.Credentials
 
 data class NerveSwapTrade(
     val amountIn: TokenAmount,
@@ -49,15 +48,13 @@ data class NerveSwapTrade(
 
     suspend fun execute(
         credentials: Credentials,
-        deadline: BigInt,
-        gasProvider: GasProvider? = null
+        deadline: BigInt
     ) = nerveContract.swap(
         credentials = credentials,
         tokenIndexFrom = tokenIndexFrom,
         tokenIndexTo = tokenIndexTo,
         dx = amountIn.raw,
         minDy = amountOutMin.raw,
-        deadline = deadline / 1000,
-        gasProvider = gasProvider
+        deadline = deadline / 1000
     )
 }

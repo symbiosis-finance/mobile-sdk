@@ -5,10 +5,10 @@ import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.OutboundRequest
 import com.symbiosis.sdk.network.contract.abi.portalContractAbi
 import com.symbiosis.sdk.network.contract.abi.synthesizeContractAbi
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.Web3RpcRequest
 import dev.icerock.moko.web3.contract.ABIDecoder
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.entity.LogEvent
+import dev.icerock.moko.web3.entity.Web3RpcRequest
 import dev.icerock.moko.web3.hex.Hex32String
 
 class DefaultStuckTransactionsAdapter(
@@ -44,9 +44,9 @@ private class BurnSwapRequest(
 ) : StuckTransactionsRepository.SwapRequest {
     override val externalId: Hex32String = inputClient.portal
         .getExternalId(internalId, outputClient.network, revertableAddress)
-    override val outboundRequestRequest: Web3RpcRequest<*, out OutboundRequest> =
+    override val outboundRequestRequest: Web3RpcRequest<out OutboundRequest> =
         inputClient.synthesize.requestsRequest(externalId)
-    override val stateRequest: Web3RpcRequest<*, StuckTransaction.State> =
+    override val stateRequest: Web3RpcRequest<StuckTransaction.State> =
         outputClient.portal.unsynthesizeStatesRequest(externalId)
 }
 
@@ -58,9 +58,9 @@ private class SynthSwapRequest(
 ) : StuckTransactionsRepository.SwapRequest {
     override val externalId: Hex32String = inputClient.synthesize
         .getExternalId(internalId, outputClient.network, revertableAddress)
-    override val outboundRequestRequest: Web3RpcRequest<*, out OutboundRequest> =
+    override val outboundRequestRequest: Web3RpcRequest<out OutboundRequest> =
         inputClient.portal.requestsRequest(externalId)
-    override val stateRequest: Web3RpcRequest<*, StuckTransaction.State> =
+    override val stateRequest: Web3RpcRequest<StuckTransaction.State> =
         outputClient.synthesize.synthesizeStatesRequest(externalId)
 
 }

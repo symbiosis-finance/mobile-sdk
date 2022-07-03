@@ -2,27 +2,22 @@ package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.configuration.GasProvider
-import com.symbiosis.sdk.contract.write
 import com.symbiosis.sdk.internal.kbignum.UINT256_MAX
-import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.TransactionHash
-import dev.icerock.moko.web3.WalletAddress
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.TransactionHash
+import dev.icerock.moko.web3.entity.WalletAddress
 import dev.icerock.moko.web3.requests.executeBatch
 import dev.icerock.moko.web3.requests.waitForTransactionReceipt
+import dev.icerock.moko.web3.signing.Credentials
 
 @Suppress("MemberVisibilityCanBePrivate")
 class TokenContract internal constructor(
     private val network: Network,
     private val executor: Web3Executor,
-    private val nonceController: NonceController,
     private val wrapped: SmartContract,
-    private val defaultGasProvider: GasProvider
 ) {
     suspend fun name(): String = executor.executeBatch(nameRequest()).first()
 
@@ -47,21 +42,17 @@ class TokenContract internal constructor(
 
     suspend fun approveMax(
         credentials: Credentials,
-        spender: ContractAddress,
-        gasProvider: GasProvider? = null
+        spender: ContractAddress
     ): TransactionHash {
         val transferAmount = BigInt.UINT256_MAX
 
         val txHash = wrapped.write(
-            chainId = network.chainId,
-            nonceController = nonceController,
             credentials = credentials,
             method = "approve",
             params = listOf(
-                spender.bigInt,
+                spender,
                 transferAmount
-            ),
-            gasProvider = gasProvider ?: defaultGasProvider
+            )
         )
 
         executor.waitForTransactionReceipt(txHash)
@@ -72,7 +63,7 @@ class TokenContract internal constructor(
     fun balanceOfRequest(address: WalletAddress) =
         wrapped.readRequest(
             method = "balanceOf",
-            params = listOf(address.bigInt)
+            params = listOf(address)
         ) { balances -> balances.firstOrNull() as BigInt? ?: 0.bi }
 
     suspend fun balanceOf(address: WalletAddress) =
@@ -81,7 +72,7 @@ class TokenContract internal constructor(
     fun allowanceRequest(owner: WalletAddress, spender: ContractAddress) =
         wrapped.readRequest(
             method = "allowance",
-            params = listOf(owner.bigInt, spender.bigInt)
+            params = listOf(owner, spender)
         ) { (allowance) -> allowance as BigInt }
 
     suspend fun allowance(owner: WalletAddress, spender: ContractAddress): BigInt =
@@ -91,11 +82,10 @@ class TokenContract internal constructor(
 suspend fun TokenContract.approveMaxIfNeed(
     credentials: Credentials,
     spender: ContractAddress,
-    amount: BigInt,
-    gasProvider: GasProvider? = null
+    amount: BigInt
 ) {
     if (allowance(credentials.address, spender) < amount)
-        approveMax(credentials, spender, gasProvider)
+        approveMax(credentials, spender)
 }
 
 suspend fun TokenContract.checkTokenAllowance(

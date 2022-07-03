@@ -1,6 +1,6 @@
 package com.symbiosis.sdk.internal.shortPolling
 
-import dev.icerock.moko.web3.TransactionHash
+import dev.icerock.moko.web3.entity.TransactionHash
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.requests.getTransactionReceipt

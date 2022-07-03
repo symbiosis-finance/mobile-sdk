@@ -1,7 +1,6 @@
 package com.symbiosis.sdk.swap.crosschain.executor
 
 import com.soywiz.kbignum.BigInt
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.DecimalsErc20Token
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.TokenPair
@@ -11,11 +10,11 @@ import com.symbiosis.sdk.swap.crosschain.CrossChain
 import com.symbiosis.sdk.swap.crosschain.SingleNetworkSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.StableSwapTradeAdapter
 import com.symbiosis.sdk.swap.crosschain.transaction.CrossChainSwapTransaction
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.WalletAddress
-import dev.icerock.moko.web3.Web3RpcException
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.WalletAddress
+import dev.icerock.moko.web3.entity.Web3RpcException
 import dev.icerock.moko.web3.hex.HexString
+import dev.icerock.moko.web3.signing.Credentials
 
 class DefaultCrossChainTradeExecutorAdapter(
     private val crossChain: CrossChain,
@@ -40,25 +39,20 @@ class DefaultCrossChainTradeExecutorAdapter(
             .checkTokenAllowance(walletAddress, inputClient.network.metaRouterGatewayAddress, amountIn.raw)
     }
 
-    suspend fun approveMaxIfRequired(
-        credentials: Credentials,
-        gasProvider: GasProvider? = null
-    ) {
+    suspend fun approveMaxIfRequired(credentials: Credentials) {
         if (!isApproveRequired(credentials.address))
             return
 
         inputClient.getTokenContract((tokens.first as DecimalsErc20Token).tokenAddress)
             .approveMax(
                 credentials = credentials,
-                spender = inputClient.network.metaRouterGatewayAddress,
-                gasProvider = gasProvider
+                spender = inputClient.network.metaRouterGatewayAddress
             )
     }
 
     override suspend fun execute(
         credentials: Credentials,
-        deadline: BigInt?,
-        gasProvider: GasProvider?
+        deadline: BigInt?
     ): CrossChainTradeExecutorAdapter.ExecuteResult =
         try {
             // if you want custom gasProvider here
@@ -80,8 +74,7 @@ class DefaultCrossChainTradeExecutorAdapter(
                     amount = inputTrade.amountIn.raw,
                     nativeIn = nativeIn,
                     relayRecipient = directionAdapter.relayRecipient,
-                    otherSideCallData = directionAdapter.otherSideCallData(deadline),
-                    gasProvider = gasProvider
+                    otherSideCallData = directionAdapter.otherSideCallData(deadline)
                 )
 
             val transaction = CrossChainSwapTransaction(txHash, credentials.address, crossChain)

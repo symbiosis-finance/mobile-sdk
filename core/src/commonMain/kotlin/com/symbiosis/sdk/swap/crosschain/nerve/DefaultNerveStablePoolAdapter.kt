@@ -5,6 +5,7 @@ import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.amountRaw
+import com.symbiosis.sdk.internal.kbignum.toBigNum
 import com.symbiosis.sdk.network.networkClient
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChain

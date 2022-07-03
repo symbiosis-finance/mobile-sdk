@@ -2,10 +2,10 @@ package com.symbiosis.sdk.swap.singleNetwork
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.TokenAmount
+import com.symbiosis.sdk.internal.kbignum.toBigNum
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.oneInch.OneInchSwapRepository
@@ -14,10 +14,10 @@ import com.symbiosis.sdk.swap.oneInch.asNetworkPair
 import com.symbiosis.sdk.swap.oneInch.asToken
 import com.symbiosis.sdk.swap.uni.UniLikeTrade
 import com.symbiosis.sdk.transaction.Web3SwapTransaction
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.hex.HexString
+import dev.icerock.moko.web3.signing.Credentials
 
 interface SingleNetworkTrade {
     val slippageTolerance: Percentage
@@ -31,7 +31,7 @@ interface SingleNetworkTrade {
     val callDataOffset: BigInt
     val path: List<DecimalsToken>
 
-    suspend fun execute(credentials: Credentials, gasProvider: GasProvider? = null): Web3SwapTransaction
+    suspend fun execute(credentials: Credentials): Web3SwapTransaction
 
     sealed interface ExactIn : SingleNetworkTrade {
         val amountIn: TokenAmount
@@ -81,8 +81,6 @@ interface SingleNetworkTrade {
             override val value = underlying.value
             override val tokens = underlying.tokens
 
-            override suspend fun execute(credentials: Credentials, gasProvider: GasProvider?): Web3SwapTransaction =
-                underlying.execute(credentials, slippageTolerance, gasProvider = gasProvider)
         }
         data class ExactOut(
             val underlying: UniLikeTrade.ExactOut,
@@ -97,9 +95,6 @@ interface SingleNetworkTrade {
             override val routerAddress = underlying.routerAddress
             override val value = underlying.value(slippageTolerance)
             override val tokens = underlying.tokens
-
-            override suspend fun execute(credentials: Credentials, gasProvider: GasProvider?): Web3SwapTransaction =
-                underlying.execute(credentials, slippageTolerance, gasProvider = gasProvider)
         }
     }
 
@@ -137,7 +132,7 @@ interface SingleNetworkTrade {
 
         override val callDataOffset: BigInt = underlying.callDataOffset
 
-        override suspend fun execute(credentials: Credentials, gasProvider: GasProvider?): Web3SwapTransaction =
-            underlying.execute(credentials, gasProvider)
+        override suspend fun execute(credentials: Credentials): Web3SwapTransaction =
+            underlying.execute(credentials)
     }
 }

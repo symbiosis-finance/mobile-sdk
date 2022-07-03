@@ -4,37 +4,31 @@ package com.symbiosis.sdk.network.contract
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.configuration.GasProvider
-import com.symbiosis.sdk.contract.WriteRequest
-import com.symbiosis.sdk.contract.write
-import com.symbiosis.sdk.contract.writeRequest
-import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.stuck.StuckTransaction
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.BlockState
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.TransactionHash
-import dev.icerock.moko.web3.WalletAddress
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
+import dev.icerock.moko.web3.contract.WriteRequest
 import dev.icerock.moko.web3.crypto.KeccakParameter
 import dev.icerock.moko.web3.crypto.digestKeccak
+import dev.icerock.moko.web3.entity.BlockState
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.entity.LogEvent
+import dev.icerock.moko.web3.entity.TransactionHash
+import dev.icerock.moko.web3.entity.WalletAddress
 import dev.icerock.moko.web3.hex.Hex32String
 import dev.icerock.moko.web3.hex.HexString
 import dev.icerock.moko.web3.hex.fillToHex32
 import dev.icerock.moko.web3.requests.executeBatch
+import dev.icerock.moko.web3.signing.Credentials
 
 
 class SynthesizeContract internal constructor(
     private val executor: Web3Executor,
     private val network: Network,
     private val wrapped: SmartContract,
-    private val nonceController: NonceController,
     private val tokenContractFactory: (ContractAddress) -> TokenContract,
-    private val defaultGasProvider: GasProvider
 ) {
     val address: ContractAddress = wrapped.contractAddress
     suspend fun burnSynthTokens(
@@ -42,29 +36,25 @@ class SynthesizeContract internal constructor(
         stableBridgingFee: BigInt,
         amount: BigInt,
         synthCurrencyAddress: ContractAddress,
-        targetNetwork: Network,
-        gasProvider: GasProvider? = null
+        targetNetwork: Network
     ): TransactionHash {
         tokenContractFactory(synthCurrencyAddress)
-            .approveMaxIfNeed(credentials, wrapped.contractAddress, amount, gasProvider)
+            .approveMaxIfNeed(credentials, wrapped.contractAddress, amount)
 
         return wrapped.write(
-            chainId = network.chainId,
-            nonceController = nonceController,
             credentials = credentials,
             method = "burnSyntheticToken",
             params = listOf(
                 stableBridgingFee,
-                synthCurrencyAddress.bigInt,
+                synthCurrencyAddress,
                 amount,
-                credentials.address.bigInt,
-                targetNetwork.portalAddress.bigInt,
-                targetNetwork.bridgeAddress.bigInt,
-                credentials.address.bigInt,
+                credentials.address,
+                targetNetwork.portalAddress,
+                targetNetwork.bridgeAddress,
+                credentials.address,
                 targetNetwork.chainId,
                 ClientId
             ),
-            gasProvider = gasProvider ?: defaultGasProvider,
             value = 10_000_000_000_000_000.bi
         )
     }
@@ -81,26 +71,26 @@ class SynthesizeContract internal constructor(
         receiveSide: ContractAddress,
         oppositeBridge: ContractAddress,
         chainId: BigInt
-    ): HexString = wrapped.encodeMethod(
+    ): HexString = wrapped.writeRequest(
         method = "metaBurnSyntheticToken",
         params = listOf(
             listOf(
                 stableBridgingFee,
                 amount,
-                fromAddress.bigInt,
-                finalDexRouter.bigInt,
-                sToken.bigInt,
+                fromAddress,
+                finalDexRouter,
+                sToken,
                 finalSwapCallData?.byteArray ?: byteArrayOf(),
                 finalOffset ?: 0.bi,
-                chain2Address.bigInt,
-                receiveSide.bigInt,
-                oppositeBridge.bigInt,
-                chain2Address.bigInt,
+                chain2Address,
+                receiveSide,
+                oppositeBridge,
+                chain2Address,
                 chainId,
                 ClientId
             )
         )
-    )
+    ).callData
 
     fun getMetaMintSyntheticTokenCalldata(
         to: EthereumAddress,
@@ -114,25 +104,25 @@ class SynthesizeContract internal constructor(
         stablePoolAddress: ContractAddress,
         firstSwapAmountOut: BigInt,
         firstStableToken: ContractAddress,
-    ): HexString = wrapped.encodeMethod(
+    ): HexString = wrapped.writeRequest(
         method = "metaMintSyntheticToken",
         params = listOf(
             listOf(
                 1.bi, // bridging fee
                 firstSwapAmountOut, // amount
                 getExternalId(portalRequestsCount, finalNetwork, to).byteArray, // externalId
-                firstStableToken.bigInt, // rtoken
+                firstStableToken, // rtoken
                 network.chainId, // chainId
-                to.bigInt,
-                swapTokens.map(ContractAddress::bigInt), // swap tokens
-                stablePoolAddress.bigInt, // second dex router
+                to,
+                swapTokens, // swap tokens
+                stablePoolAddress, // second dex router
                 stableSwapCallData.byteArray, // second swap call data
-                finalDexRouter.bigInt,
+                finalDexRouter,
                 finalSwapCallData?.byteArray ?: byteArrayOf(),
                 finalSwapOffset
             )
         )
-    )
+    ).callData
 
     fun revertSynthesizeRequestRequest(
         stableBridgingFee: BigInt,
@@ -145,8 +135,8 @@ class SynthesizeContract internal constructor(
         params = listOf(
             stableBridgingFee,
             internalId.byteArray,
-            receiveSide.bigInt,
-            oppositeBridge.bigInt,
+            receiveSide,
+            oppositeBridge,
             chainIdFrom,
             ClientId
         )
@@ -158,10 +148,9 @@ class SynthesizeContract internal constructor(
         internalId: Hex32String,
         receiveSide: ContractAddress,
         oppositeBridge: ContractAddress,
-        chainIdFrom: BigInt,
-        gasProvider: GasProvider = defaultGasProvider
+        chainIdFrom: BigInt
     ) = revertSynthesizeRequestRequest(stableBridgingFee, internalId, receiveSide, oppositeBridge, chainIdFrom)
-        .write(credentials, network.chainId, gasProvider, nonceController)
+        .send(credentials)
 
     fun revertBurnRequest(
         stableBridgingFee: BigInt,
@@ -185,11 +174,11 @@ class SynthesizeContract internal constructor(
         params = listOf(externalId.byteArray),
         mapper = { (recipient, chain2address, amount, token, stoken, state) ->
             BurnOutboundRequest(
-                recipient = EthereumAddress.createInstance(recipient as BigInt),
-                chain2address = WalletAddress.createInstance(chain2address as BigInt),
+                recipient = recipient as EthereumAddress,
+                chain2address = (chain2address as EthereumAddress).run { WalletAddress(prefixed) },
                 amount = amount as BigInt,
-                tokenAddress = ContractAddress.createInstance(token as BigInt),
-                sTokenAddress = ContractAddress.createInstance(stoken as BigInt),
+                tokenAddress = (token as EthereumAddress).run { ContractAddress(prefixed) },
+                sTokenAddress = (stoken as EthereumAddress).run { ContractAddress(prefixed) },
                 state = OutboundRequest.State.values().first { it.ordinal == (state as BigInt).toInt() }
             )
         }

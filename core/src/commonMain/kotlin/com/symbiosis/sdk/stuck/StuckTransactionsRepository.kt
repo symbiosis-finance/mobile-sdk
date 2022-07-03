@@ -3,11 +3,11 @@ package com.symbiosis.sdk.stuck
 import com.symbiosis.sdk.SymbiosisNetworkClient
 import com.symbiosis.sdk.network.NetworkClient
 import com.symbiosis.sdk.network.contract.OutboundRequest
-import dev.icerock.moko.web3.BlockState
-import dev.icerock.moko.web3.EthereumAddress
-import dev.icerock.moko.web3.WalletAddress
-import dev.icerock.moko.web3.Web3RpcRequest
+import dev.icerock.moko.web3.entity.BlockState
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.entity.LogEvent
+import dev.icerock.moko.web3.entity.WalletAddress
+import dev.icerock.moko.web3.entity.Web3RpcRequest
 import dev.icerock.moko.web3.hex.Hex32String
 import dev.icerock.moko.web3.requests.executeBatch
 import dev.icerock.moko.web3.requests.getBlockNumber
@@ -88,7 +88,7 @@ class StuckTransactionsRepository(
         val outputClient: NetworkClient
         val internalId: Hex32String
         val externalId: Hex32String
-        val outboundRequestRequest: Web3RpcRequest<*, out OutboundRequest>
-        val stateRequest: Web3RpcRequest<*, StuckTransaction.State>
+        val outboundRequestRequest: Web3RpcRequest<out OutboundRequest>
+        val stateRequest: Web3RpcRequest<StuckTransaction.State>
     }
 }

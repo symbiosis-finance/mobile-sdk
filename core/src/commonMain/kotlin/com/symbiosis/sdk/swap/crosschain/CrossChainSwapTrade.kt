@@ -3,13 +3,12 @@ package com.symbiosis.sdk.swap.crosschain
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bn
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.currency.TokenPair
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
+import dev.icerock.moko.web3.signing.Credentials
 
 data class CrossChainSwapTrade(
     val tokens: TokenPair,
@@ -51,6 +50,6 @@ data class CrossChainSwapTrade(
         outputTrade = outputTrade.priceImpact
     )
 
-    suspend fun execute(credentials: Credentials, deadline: BigInt? = null, gasProvider: GasProvider? = null) =
-        executor.execute(credentials, deadline, gasProvider)
+    suspend fun execute(credentials: Credentials, deadline: BigInt? = null) =
+        executor.execute(credentials, deadline)
 }

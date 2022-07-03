@@ -15,7 +15,7 @@ import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTokenPair
 import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository.Adapter.CrossChainSwapResult
 import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository.Adapter.SingleNetworkSwapResult
 import com.symbiosis.sdk.symbiosisClient
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class DefaultUnifiedSwapRepositoryAdapter(
     private val crossChains: List<CrossChain>

@@ -12,9 +12,6 @@ class BscTestnetBobaRinkeby(
     bscTestnetExecutor: Web3Executor,
     bobaRinkebyExecutor: Web3Executor
 ) : TestnetCrossChain() {
-    constructor(bscTestnetUrl: String, bobaRinkebyUrl: String) :
-            this(Web3(bscTestnetUrl), Web3(bobaRinkebyUrl))
-
     override val fromNetwork = BscTestnet(bscTestnetExecutor)
     override val toNetwork = BobaRinkeby(bobaRinkebyExecutor)
     override val stablePool: NerveStablePool =

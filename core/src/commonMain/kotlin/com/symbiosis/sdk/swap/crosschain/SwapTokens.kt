@@ -2,7 +2,7 @@ package com.symbiosis.sdk.swap.crosschain
 
 import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.currency.thisOrWrapped
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 
 internal fun getSynthSwapTokens(
     stableTrade: StableSwapTradeAdapter,

@@ -11,7 +11,7 @@ import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository.Adapter.ExactInResult
 import com.symbiosis.sdk.swap.crosschain.bridging.BridgingFeeProvider
 import com.symbiosis.sdk.swap.crosschain.executor.CrossChainTradeExecutorAdapter
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class DefaultCrossChainAdapter(
     private val crossChain: CrossChain,

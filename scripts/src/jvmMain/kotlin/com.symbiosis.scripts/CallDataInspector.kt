@@ -3,6 +3,7 @@ package com.symbiosis.scripts
 import com.soywiz.kbignum.BigInt
 import dev.icerock.moko.web3.contract.ABIDecoder
 import dev.icerock.moko.web3.contract.ABIEncoder
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.hex.HexString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -108,7 +109,7 @@ private fun prettyPrintTypeValue(param: JsonObject, value: Any?): String {
                     stringifyParam(param, value)
                 }.prependIndent()
         }
-        typeName == "address" -> HexString(value as BigInt).prefixed
+        typeName == "address" -> (value as EthereumAddress).prefixed
         typeName.startsWith("bytes") -> HexString(value as ByteArray).prefixed
         typeName.endsWith("[]") -> {
             val subparam = param

@@ -1,7 +1,7 @@
 package com.symbiosis.sdk.transaction
 
 import com.symbiosis.sdk.network.NetworkClient
-import dev.icerock.moko.web3.TransactionHash
+import dev.icerock.moko.web3.entity.TransactionHash
 import dev.icerock.moko.web3.entity.TransactionReceipt
 import dev.icerock.moko.web3.requests.waitForTransactionReceipt
 

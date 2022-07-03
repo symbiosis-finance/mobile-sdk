@@ -12,9 +12,6 @@ class EthRinkebyAvalancheFuji(
     ethRinkebyExecutor: Web3Executor,
     avalancheFujiExecutor: Web3Executor
 ) : TestnetCrossChain() {
-    constructor(ethRinkebyUrl: String, avalancheFujiUrl: String) :
-            this(Web3(ethRinkebyUrl), Web3(avalancheFujiUrl))
-
     override val fromNetwork = EthRinkeby(ethRinkebyExecutor)
     override val toNetwork = AvalancheFuji(avalancheFujiExecutor)
     override val stablePool: NerveStablePool =

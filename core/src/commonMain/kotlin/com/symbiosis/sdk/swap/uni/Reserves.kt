@@ -2,6 +2,7 @@ package com.symbiosis.sdk.swap.uni
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
+import com.symbiosis.sdk.internal.kbignum.toBigNum
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

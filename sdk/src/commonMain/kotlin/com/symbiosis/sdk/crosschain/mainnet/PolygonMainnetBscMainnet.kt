@@ -12,9 +12,6 @@ class PolygonMainnetBscMainnet(
     polygonMainnetExecutor: Web3Executor,
     bscMainnetExecutor: Web3Executor
 ) : MainnetCrossChain() {
-    constructor(polygonMainnetUrl: String, bscMainnetUrl: String) :
-            this(Web3(polygonMainnetUrl), Web3(bscMainnetUrl))
-
     override val fromNetwork = PolygonMainnet(polygonMainnetExecutor)
     override val toNetwork = BscMainnet(bscMainnetExecutor)
     override val stablePool: NerveStablePool = StablePools.POLYGON_MAINNET_USDC_BSC_MAINNET_sBUSD(fromNetwork, toNetwork)

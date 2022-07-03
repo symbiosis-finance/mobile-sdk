@@ -12,9 +12,6 @@ class PolygonMumbaiBscTestnet(
     polygonMumbaiExecutor: Web3Executor,
     bscTestnetExecutor: Web3Executor
 ) : TestnetCrossChain() {
-    constructor(polygonMumbaiUrl: String, bscTestnetUrl: String) :
-            this(Web3(polygonMumbaiUrl), Web3(bscTestnetUrl))
-
     override val fromNetwork = PolygonMumbai(polygonMumbaiExecutor)
     override val toNetwork = BscTestnet(bscTestnetExecutor)
     override val stablePool: NerveStablePool =

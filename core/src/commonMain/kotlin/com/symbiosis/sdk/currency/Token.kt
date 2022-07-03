@@ -1,7 +1,7 @@
 package com.symbiosis.sdk.currency
 
 import com.symbiosis.sdk.network.Network
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 
 sealed interface Token {
     val network: Network

@@ -2,14 +2,11 @@ package com.symbiosis.sdk.networks
 
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
-import com.symbiosis.sdk.configuration.GasProvider
 import com.symbiosis.sdk.configuration.SwapTTLProvider
 import com.symbiosis.sdk.currency.DecimalsToken
-import com.symbiosis.sdk.internal.nonce.NonceController
 import com.symbiosis.sdk.network.Network
-import com.symbiosis.sdk.providers.DefaultGasProvider
 import com.symbiosis.sdk.providers.DefaultTTLProvider
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 
 abstract class DefaultNetwork : Network {
 
@@ -18,11 +15,7 @@ abstract class DefaultNetwork : Network {
     open val maxBlocksPerRequestInt: Int = 5_000
     override val maxBlocksPerRequest: BigInt get() = maxBlocksPerRequestInt.bi
 
-    override val gasProvider: GasProvider = DefaultGasProvider
     override val swapTTLProvider: SwapTTLProvider = DefaultTTLProvider
-
-    abstract val chainIdInt: Int
-    final override val chainId: BigInt get() = chainIdInt.bi
 
     abstract val synthFabricAddressString: String
     final override val synthFabricAddress: ContractAddress get() = ContractAddress(synthFabricAddressString)
@@ -38,10 +31,6 @@ abstract class DefaultNetwork : Network {
     override val metaRouterAddress: ContractAddress get() = ContractAddress(metaRouterAddressString)
     abstract val metaRouterGatewayAddressString: String
     final override val metaRouterGatewayAddress: ContractAddress get() = ContractAddress(metaRouterGatewayAddressString)
-
-    override val nonceController: NonceController by lazy {
-        NonceController(executor)
-    }
 
     override fun toString(): String = "$networkName (Predefined)"
 }

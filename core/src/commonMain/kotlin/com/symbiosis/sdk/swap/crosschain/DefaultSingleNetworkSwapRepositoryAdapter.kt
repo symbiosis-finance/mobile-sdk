@@ -6,7 +6,7 @@ import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.crosschain.CrossChainSwapRepository.Adapter.ExactInResult
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTokenPair
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class DefaultSingleNetworkSwapRepositoryAdapter(
     private val singleNetworkSwapRepository: SingleNetworkSwapRepository

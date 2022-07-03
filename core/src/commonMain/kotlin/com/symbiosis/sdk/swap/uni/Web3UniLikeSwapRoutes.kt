@@ -3,7 +3,7 @@ package com.symbiosis.sdk.swap.uni
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.dex.DexEndpoint
 import com.symbiosis.sdk.network.NetworkClient
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 
 class Web3UniLikeSwapRoutes(
   private val networkClient: NetworkClient,

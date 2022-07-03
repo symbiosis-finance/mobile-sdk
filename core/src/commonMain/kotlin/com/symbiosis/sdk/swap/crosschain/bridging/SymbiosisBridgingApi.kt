@@ -3,7 +3,7 @@ package com.symbiosis.sdk.swap.crosschain.bridging
 import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.bi
 import com.symbiosis.sdk.serializer.BigIntSerializer
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 import dev.icerock.moko.web3.hex.HexString
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

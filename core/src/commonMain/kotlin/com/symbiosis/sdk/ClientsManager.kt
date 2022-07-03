@@ -6,7 +6,7 @@ import com.symbiosis.sdk.currency.DecimalsToken
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.swap.crosschain.SymbiosisCrossChainClient
 import com.symbiosis.sdk.swap.unified.UnifiedSwapRepository
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 
 /**
  * This is a parent class for all swap clients
@@ -16,8 +16,6 @@ interface ClientsManager {
     val allTokens: List<DecimalsToken>
     val allClients: List<SymbiosisNetworkClient>
     val allCrossChainClients: List<SymbiosisCrossChainClient>
-
-
 }
 
 val ClientsManager.swap: UnifiedSwapRepository get() = UnifiedSwapRepository(allCrossChainClients.map { it.crossChain })

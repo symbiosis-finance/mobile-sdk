@@ -5,7 +5,7 @@ import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository.ExactInResult
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkSwapRepository.ExactOutResult
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 internal class ComposedExactInAdapter(
     private val first: SingleNetworkSwapRepository.ExactInAdapter,

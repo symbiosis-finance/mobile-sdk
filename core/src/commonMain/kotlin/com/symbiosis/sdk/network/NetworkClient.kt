@@ -9,7 +9,6 @@ import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.thisOrWrapped
 import com.symbiosis.sdk.dex.DexEndpoint
-import com.symbiosis.sdk.gas.GasConfiguration
 import com.symbiosis.sdk.network.contract.NerveContract
 import com.symbiosis.sdk.network.contract.OracleContract
 import com.symbiosis.sdk.network.contract.PoolContract
@@ -32,13 +31,13 @@ import com.symbiosis.sdk.network.contract.metaRouter.MetaRouterContract
 import com.symbiosis.sdk.swap.crosschain.NerveStablePool
 import com.symbiosis.sdk.swap.uni.LPTokenAddressGenerator
 import com.symbiosis.sdk.swap.uni.generate
-import com.symbiosis.sdk.transaction.SignedTransaction
-import com.symbiosis.sdk.wallet.Credentials
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.WalletAddress
 import dev.icerock.moko.web3.Web3Executor
 import dev.icerock.moko.web3.contract.SmartContract
 import dev.icerock.moko.web3.contract.createErc20TokenAbi
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.WalletAddress
+import dev.icerock.moko.web3.requests.sendTransferTransaction
+import dev.icerock.moko.web3.signing.Credentials
 import kotlinx.serialization.json.Json
 
 /**
@@ -78,9 +77,7 @@ class NetworkClient constructor(val network: Network) :
         executor = network.executor,
         network = network,
         wrapped = synthesizeSmartContract,
-        nonceController = network.nonceController,
-        tokenContractFactory = ::getTokenContract,
-        defaultGasProvider = network.gasProvider
+        tokenContractFactory = ::getTokenContract
     )
 
     private val portalSmartContract = SmartContract(
@@ -92,9 +89,7 @@ class NetworkClient constructor(val network: Network) :
         executor = network.executor,
         network = network,
         wrapped = portalSmartContract,
-        nonceController = network.nonceController,
-        tokenContractFactory = ::getTokenContract,
-        defaultGasProvider = network.gasProvider
+        tokenContractFactory = ::getTokenContract
     )
 
     private val routerSmartContract = SmartContract(
@@ -106,10 +101,8 @@ class NetworkClient constructor(val network: Network) :
         executor = network.executor,
         network = network,
         wrapped = routerSmartContract,
-        nonceController = network.nonceController,
         tokenContractFactory = ::getTokenContract,
-        defaultSwapTTLProvider = network.swapTTLProvider,
-        defaultGasProvider = network.gasProvider
+        defaultSwapTTLProvider = network.swapTTLProvider
     )
 
     private val metaRouterV2SmartContract: SmartContract = SmartContract(
@@ -120,8 +113,6 @@ class NetworkClient constructor(val network: Network) :
     val metaRouter: MetaRouterContract = MetaRouterContract(
         metaRouterV2SmartContract = metaRouterV2SmartContract,
         metaRouterGatewayAddress = network.metaRouterGatewayAddress,
-        nonceController = network.nonceController,
-        defaultGasProvider = network.gasProvider,
         chainId = network.chainId
     )
 
@@ -133,10 +124,7 @@ class NetworkClient constructor(val network: Network) :
         )
         return NerveContract(
             wrapped = nerveSmartContract,
-            network = network,
-            nonceController = network.nonceController,
             executor = network.executor,
-            defaultGasProvider = network.gasProvider
         )
     }
 
@@ -149,7 +137,6 @@ class NetworkClient constructor(val network: Network) :
 
     fun oneInchOracle(address: ContractAddress): OracleContract =
         OracleContract(
-            executor = this,
             wrapped = oneInchOracleContract(address)
         )
 
@@ -157,18 +144,14 @@ class NetworkClient constructor(val network: Network) :
         TokenContract(
             network = network,
             executor = network.executor,
-            nonceController = network.nonceController,
             wrapped = SmartContract(network.executor, address, createErc20TokenAbi(Json)),
-            defaultGasProvider = network.gasProvider
         )
 
     fun getWrappedTokenContract(address: ContractAddress) =
         WrappedContract(
             network = network,
             executor = network.executor,
-            nonceController = network.nonceController,
             wrapped = SmartContract(network.executor, address, createWrappedContractAbi(Json)),
-            defaultGasProvider = network.gasProvider
         )
 
     fun getPoolContract(dex: DexEndpoint, pair: NetworkTokenPair): PoolContract {
@@ -206,25 +189,11 @@ class NetworkClient constructor(val network: Network) :
      * You should consume [SignedTransaction] inside
      * the [handler] block, so nonce will be used safely
      */
-    suspend fun <T> createTransferTransaction(
+    suspend fun createTransferTransaction(
         credentials: Credentials,
         to: WalletAddress,
         value: BigInt,
-        gasConfiguration: GasConfiguration? = null,
-        handler: suspend (SignedTransaction) -> T
-    ): T = network.nonceController.withNonce(credentials.address) { nonce ->
-        val signedTransaction = credentials.signer.signTransferTransaction(
-            nonce, network.chainId, to, value,
-            gasConfiguration = gasConfiguration ?: network.gasProvider.getGasConfiguration(
-                from = credentials.address,
-                to = ContractAddress(to.prefixed),
-                callData = null,
-                value = value,
-                executor = network.executor
-            )
-        )
-        return@withNonce handler(signedTransaction)
-    }
+    ) = network.executor.sendTransferTransaction(credentials, to, value)
 
 //    suspend fun getStuckTransactions(
 //        address: WalletAddress,

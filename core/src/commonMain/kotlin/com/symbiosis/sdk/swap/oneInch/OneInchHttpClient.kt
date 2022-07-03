@@ -4,8 +4,8 @@ import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.network.Network
 import com.symbiosis.sdk.serializer.BigIntSerializer
 import com.symbiosis.sdk.swap.Percentage
-import dev.icerock.moko.web3.ContractAddress
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.ContractAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 import dev.icerock.moko.web3.hex.HexString
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

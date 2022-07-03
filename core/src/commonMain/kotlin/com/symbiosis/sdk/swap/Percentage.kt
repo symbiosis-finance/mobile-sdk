@@ -4,6 +4,7 @@ import com.soywiz.kbignum.BigInt
 import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bi
 import com.soywiz.kbignum.bn
+import com.symbiosis.sdk.internal.kbignum.toBigNum
 
 class Percentage(val fractionalValue: BigNum) {
     val intPercentage: BigInt get() = fractionalValue.convertToScale(otherScale = 2).int

@@ -4,7 +4,7 @@ import com.symbiosis.sdk.contract.sortedAddresses
 import com.symbiosis.sdk.currency.NetworkTokenPair
 import com.symbiosis.sdk.currency.thisOrWrapped
 import com.symbiosis.sdk.dex.DexEndpoint
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 import dev.icerock.moko.web3.crypto.Keccak
 import dev.icerock.moko.web3.crypto.KeccakParameter
 import dev.icerock.moko.web3.crypto.digestKeccak

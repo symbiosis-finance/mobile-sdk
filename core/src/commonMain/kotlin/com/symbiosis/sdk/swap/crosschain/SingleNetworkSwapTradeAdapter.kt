@@ -11,7 +11,7 @@ import com.symbiosis.sdk.currency.Erc20Token
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
 import com.symbiosis.sdk.swap.singleNetwork.SingleNetworkTrade
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 import dev.icerock.moko.web3.hex.HexString
 
 sealed interface SingleNetworkSwapTradeAdapter {

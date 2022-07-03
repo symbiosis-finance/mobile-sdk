@@ -2,7 +2,7 @@ package com.symbiosis.sdk.dex
 
 import com.soywiz.kbignum.BigNum
 import com.soywiz.kbignum.bn
-import dev.icerock.moko.web3.ContractAddress
+import dev.icerock.moko.web3.entity.ContractAddress
 import dev.icerock.moko.web3.hex.Hex32String
 
 /**

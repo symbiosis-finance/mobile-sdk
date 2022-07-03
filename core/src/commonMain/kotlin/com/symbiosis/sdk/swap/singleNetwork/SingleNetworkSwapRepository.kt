@@ -3,7 +3,7 @@ package com.symbiosis.sdk.swap.singleNetwork
 import com.soywiz.kbignum.BigInt
 import com.symbiosis.sdk.currency.TokenAmount
 import com.symbiosis.sdk.swap.Percentage
-import dev.icerock.moko.web3.EthereumAddress
+import dev.icerock.moko.web3.entity.EthereumAddress
 
 class SingleNetworkSwapRepository(adapters: List<Adapter>) {
 
