@@ -15,7 +15,7 @@ which allows for convenient handling of cross-chain swaps
 ## Features
 
 We maintain this section separately on the website, see [full documentation](
-https://sdk.symbiosis.finance/symbiosis-mobile-sdk/mobile-sdk-quick-start) here.
+https://docs.symbiosis.finance/developer-tools/symbiosis-mobile-sdk) here.
 
 ## Installation
 
